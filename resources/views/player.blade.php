@@ -2820,6 +2820,8 @@
   </div>
 
   <script>
+    let realPlayer = new Audio();
+
     let TRACKS_DB = [];
 
     async function fetchTracksFromDatabase() {
@@ -2955,27 +2957,29 @@
     }
 
     function playTrack(index) {
-      if (index !== undefined && index !== currentTrackIndex) {
+    if (index !== undefined && index !== currentTrackIndex) {
         loadTrack(index);
-      }
-      isPlaying = true;
-      startSynthSound();
-      updatePlayIcons(true);
+    }
+    const track = TRACKS_DB[currentTrackIndex];
+    if (!track) return;
 
-      if (playbackTimer) clearInterval(playbackTimer);
-      playbackTimer = setInterval(tickPlayback, 1000);
-      highlightActiveTrackRows();
-      showToast(`در حال پخش: ${TRACKS_DB[currentTrackIndex].title}`);
+    if (realPlayer.src !== track.stream_url) {
+        realPlayer.src = track.stream_url;
+    }
+
+    realPlayer.play();
+    isPlaying = true;
+    updatePlayIcons(true);
+    highlightActiveTrackRows();
+    showToast(`در حال پخش: ${track.title}`);
     }
 
     function pauseTrack() {
-      isPlaying = false;
-      stopSynthSound();
-      updatePlayIcons(false);
-      if (playbackTimer) clearInterval(playbackTimer);
-      highlightActiveTrackRows();
+    isPlaying = false;
+    realPlayer.pause();
+    updatePlayIcons(false);
+    highlightActiveTrackRows();
     }
-
     function nextTrack() {
       let nextIndex;
       if (isShuffle) {
@@ -2989,12 +2993,8 @@
       playTrack(nextIndex);
     }
 
-    function prevTrack() {
-      if (currentSeconds > 3) {
-        seekToSeconds(0);
-      } else {
-        playTrack(currentTrackIndex - 1);
-      }
+    function seekToSeconds(seconds) {
+        realPlayer.currentTime = seconds;
     }
 
     function updatePlayIcons(playing) {
@@ -3060,6 +3060,8 @@
       document.getElementById('full-time-cur').textContent = formatted;
       syncLyricsHighlight(currentSeconds);
     }
+
+
 
     function bindSliderDrag(trackElem, onUpdate, onCommit) {
       if (!trackElem) return;
@@ -3161,16 +3163,9 @@
     }
 
     function setAudioVolume(fraction) {
-      audioVolume = Math.max(0, Math.min(1, fraction));
-      if (audioVolume > 0 && isMuted) {
-        isMuted = false;
-      }
-      updateVolumeUI();
-
-      if (synthGain && audioCtx) {
-        const effectiveVol = isMuted ? 0 : audioVolume;
-        synthGain.gain.setValueAtTime(Math.max(0.0001, 0.05 * effectiveVol), audioCtx.currentTime);
-      }
+    audioVolume = Math.max(0, Math.min(1, fraction));
+    realPlayer.volume = audioVolume;
+    updateVolumeUI();
     }
 
     function toggleMute() {
@@ -3710,6 +3705,21 @@
       updateFavoriteBadges();
       handleSearchInput('');
     });
+
+    // هماهنگی نوار پیشرفت و کارائوکه با پخش واقعی آهنگ
+    realPlayer.ontimeupdate = () => {
+    currentSeconds = Math.floor(realPlayer.currentTime);
+    const track = TRACKS_DB[currentTrackIndex];
+    const total = track ? (track.duration_sec || 210) : 210;
+    updateScrubbers((currentSeconds / total) * 100);
+    document.getElementById('mini-time-cur').textContent = formatSeconds(currentSeconds);
+    document.getElementById('full-time-cur').textContent = formatSeconds(currentSeconds);
+    syncLyricsHighlight(currentSeconds);
+    };
+
+    realPlayer.onended = () => {
+    nextTrack();
+    };
   </script>
 </body>
 </html>

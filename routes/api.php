@@ -1,20 +1,20 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TrackController;
 use App\Models\Playlist;
 use App\Models\Artist;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+// پلیر عمومی
 Route::get('/tracks', [TrackController::class, 'index']);
+Route::get('/tracks/{id}/stream', [TrackController::class, 'stream']);
 Route::post('/tracks/{id}/favorite', [TrackController::class, 'toggleFavorite']);
 Route::get('/playlists', fn() => response()->json(Playlist::all()));
 Route::get('/artists', fn() => response()->json(Artist::all()));
 
-// APIهای استودیو ادمین
+// استودیو ادمین
 Route::prefix('admin')->group(function () {
+    Route::post('/tracks', [TrackController::class, 'store']);
+    Route::delete('/tracks/{id}', [TrackController::class, 'destroy']);
     Route::post('/tracks/{id}/lyrics', [TrackController::class, 'saveLyrics']);
 });

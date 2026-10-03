@@ -1974,56 +1974,69 @@
 
         <input type="hidden" id="track-form-id" />
 
+        <!-- فیلد فایل صوتی -->
+        <div class="form-group" style="background: rgba(16, 185, 84, 0.08); padding: 12px; border-radius: var(--radius-sm); border: 1px dashed var(--border-brand);">
+          <label class="form-label" style="color: var(--brand); font-weight: 800;">فایل صوتی ترانه (MP3, FLAC, WAV) *</label>
+          <input type="file" class="form-control" id="track-form-audio-file" accept="audio/*" onchange="detectAudioDuration(this)" />
+        </div>
+
         <div class="form-row-2">
           <div class="form-group">
             <label class="form-label">عنوان ترانه *</label>
-            <input type="text" class="form-control" id="track-form-name" placeholder="مثال: آرمان‌شهر" />
+            <input type="text" class="form-control" id="track-form-name" placeholder="مثال: شیدایی" />
           </div>
           <div class="form-group">
             <label class="form-label">هنرمند / گروه *</label>
-            <input type="text" class="form-control" id="track-form-artist" placeholder="مثال: چارتار" />
+            <input type="text" class="form-control" id="track-form-artist" placeholder="مثال: همایون شجریان" />
           </div>
         </div>
 
         <div class="form-row-2">
           <div class="form-group">
             <label class="form-label">نام آلبوم</label>
-            <input type="text" class="form-control" id="track-form-album" placeholder="مثال: باران تویی" />
+            <input type="text" class="form-control" id="track-form-album" placeholder="مثال: نسیم وصل" />
           </div>
           <div class="form-group">
             <label class="form-label">ژانر موسیقی</label>
             <select class="form-control" id="track-form-genre">
-              <option>تلفیقی و الکترونیک</option>
               <option>سنتی معاصر</option>
+              <option>تلفیقی و الکترونیک</option>
               <option>آلترناتیو</option>
-              <option>امبینت و ریلکس</option>
               <option>پاپ مدرن</option>
+              <option>امبینت و ریلکس</option>
             </select>
           </div>
         </div>
 
         <div class="form-row-2">
           <div class="form-group">
-            <label class="form-label">مدت زمان (دقیقه:ثانیه) *</label>
-            <input type="text" class="form-control" id="track-form-duration" placeholder="04:12" value="03:45" />
+            <label class="form-label">مدت زمان (دقیقه:ثانیه)</label>
+            <input type="text" class="form-control" id="track-form-duration" placeholder="03:45" value="03:45" readonly />
+            <input type="hidden" id="track-form-duration-sec" value="225" />
           </div>
           <div class="form-group">
-            <label class="form-label">کیفیت FLAC Lossless</label>
+            <label class="form-label">کیفیت استودیو</label>
             <select class="form-control" id="track-form-hires">
-              <option value="true">بله - 24bit / 96kHz Lossless</option>
-              <option value="false">خیر - 320kbps MP3</option>
+              <option value="true">FLAC 24-bit Lossless</option>
+              <option value="false">MP3 320kbps</option>
             </select>
           </div>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">آدرس کاور تصویر (URL Artwork)</label>
-          <input type="text" class="form-control" id="track-form-cover" value="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80" />
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">انتخاب فایل کاور تصویر</label>
+            <input type="file" class="form-control" id="track-form-cover-file" accept="image/*" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">یا آدرس اینترنتی کاور (URL)</label>
+            <input type="text" class="form-control" id="track-form-cover" value="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80" />
+          </div>
         </div>
 
         <div class="modal-actions">
           <button class="btn-secondary" onclick="closeModal('modal-track')">انصراف</button>
-          <button class="btn-quick-action" onclick="saveTrackFromModal()">ذخیره آهنگ</button>
+          <button class="btn-quick-action" id="btn-save-track" onclick="saveTrackFromModal()">آپلود و ذخیره در سرور</button>
         </div>
       </div>
     </div>
@@ -2261,7 +2274,37 @@
       }
     ];
 
-    let TRACKS_DB = JSON.parse(localStorage.getItem('sehpatify_tracks')) || DEFAULT_TRACKS;
+    let TRACKS_DB = [];
+    let realAudio = new Audio(); // پلیر صوتی واقعی استودیو
+
+    // تشخیص خودکار مدت زمان آهنگ پس از انتخاب فایل
+    function detectAudioDuration(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const tempAudio = new Audio();
+        tempAudio.src = URL.createObjectURL(file);
+        tempAudio.onloadedmetadata = () => {
+          const sec = Math.floor(tempAudio.duration);
+          document.getElementById('track-form-duration-sec').value = sec;
+          document.getElementById('track-form-duration').value = formatTimeWithMs(sec).slice(0, 5);
+        };
+      }
+    }
+
+    // واکشی قطعات از لاراول
+    async function fetchTracksFromBackend() {
+      try {
+        const res = await fetch('/api/tracks');
+        TRACKS_DB = await res.json();
+        renderTracksTable();
+        if (TRACKS_DB.length > 0) {
+          selectedStudioTrackId = TRACKS_DB[0].id;
+          renderStudioView();
+        }
+      } catch (err) {
+        showToast('خطا در دریافت آهنگ‌ها از سرور');
+      }
+    }
 
     let PLAYLISTS_DB = JSON.parse(localStorage.getItem('sehpatify_playlists')) || [
       { id: 101, title: "شب‌های تهران", count: "۲۴ قطعه", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&auto=format&fit=crop&q=80", desc: "نواهای دلنشین برای رانندگی شبانه و آرامش پایتخت" },
@@ -2269,6 +2312,7 @@
       { id: 103, title: "نوستالژی دهه‌ی هفتاد", count: "۵۰ قطعه", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=500&auto=format&fit=crop&q=80", desc: "یادآور خاطرات طلایی و آواهای ماندگار کاست‌ها" },
       { id: 104, title: "Persian Essentials", count: "۳۲ قطعه", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=80", desc: "شاهکارهای اصیل موسیقی که هر ایرانی باید بشنود" }
     ];
+
 
     let ARTISTS_DB = JSON.parse(localStorage.getItem('sehpatify_artists')) || [
       { name: "چارتار", listeners: "۱,۸۴۰,۳۲۰", verified: true, count: 18, genre: "تلفیقی الکترونیک" },
@@ -2798,20 +2842,192 @@
       syncKaraokeHighlight(studioCurrentTime);
     }
 
-    function toggleStudioAudio() {
-      studioIsPlaying = !studioIsPlaying;
-      const playBtn = document.getElementById('studio-play-btn');
-      
-      if (studioIsPlaying) {
-        playBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
-        startAudioTone();
-        studioTimerInterval = setInterval(tickStudioAudio, 100);
-      } else {
-        playBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
-        stopAudioTone();
-        if (studioTimerInterval) clearInterval(studioTimerInterval);
+    let TRACKS_DB = [];
+    let realAudio = new Audio(); // پلیر صوتی واقعی استودیو
+
+    // تشخیص خودکار مدت زمان آهنگ پس از انتخاب فایل
+    function detectAudioDuration(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const tempAudio = new Audio();
+        tempAudio.src = URL.createObjectURL(file);
+        tempAudio.onloadedmetadata = () => {
+          const sec = Math.floor(tempAudio.duration);
+          document.getElementById('track-form-duration-sec').value = sec;
+          document.getElementById('track-form-duration').value = formatTimeWithMs(sec).slice(0, 5);
+        };
       }
     }
+
+    // واکشی قطعات از لاراول
+    async function fetchTracksFromBackend() {
+      try {
+        const res = await fetch('/api/tracks');
+        TRACKS_DB = await res.json();
+        renderTracksTable();
+        if (TRACKS_DB.length > 0) {
+          selectedStudioTrackId = TRACKS_DB[0].id;
+          renderStudioView();
+        }
+      } catch (err) {
+        showToast('خطا در دریافت آهنگ‌ها از سرور');
+      }
+    }
+
+    // ارسال فرم آپلود با FormData به لاراول
+    async function saveTrackFromModal() {
+      const audioInput = document.getElementById('track-form-audio-file');
+      const title = document.getElementById('track-form-name').value.trim();
+      const artist = document.getElementById('track-form-artist').value.trim();
+
+      if (!title || !artist) {
+        showToast('لطفاً عنوان و نام هنرمند را وارد کنید');
+        return;
+      }
+
+      if (!audioInput.files || audioInput.files.length === 0) {
+        showToast('لطفاً فایل صوتی آهنگ را انتخاب کنید');
+        return;
+      }
+
+      const saveBtn = document.getElementById('btn-save-track');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'در حال آپلود فایل...';
+
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('artist', artist);
+      formData.append('album', document.getElementById('track-form-album').value.trim());
+      formData.append('genre', document.getElementById('track-form-genre').value);
+      formData.append('duration', document.getElementById('track-form-duration').value);
+      formData.append('duration_sec', document.getElementById('track-form-duration-sec').value);
+      formData.append('is_lossless', document.getElementById('track-form-hires').value);
+      formData.append('audio_file', audioInput.files[0]);
+
+      const coverInput = document.getElementById('track-form-cover-file');
+      if (coverInput.files && coverInput.files[0]) {
+        formData.append('cover_file', coverInput.files[0]);
+      } else {
+        formData.append('cover_url', document.getElementById('track-form-cover').value);
+      }
+
+      try {
+        const res = await fetch('/api/admin/tracks', {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: formData
+        });
+
+        if (!res.ok) throw new Error('خطا در آپلود');
+
+        const newTrack = await res.json();
+        showToast(`آهنگ «${newTrack.title}» با موفقیت آپلود و ذخیره شد ✓`);
+        closeModal('modal-track');
+        fetchTracksFromBackend();
+      } catch (err) {
+        showToast('خطا در بارگذاری آهنگ روی سرور');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'آپلود و ذخیره در سرور';
+      }
+    }
+
+    // پخش / توقف فایل صوتی واقعی
+    function toggleStudioAudio() {
+      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
+      if (!track) return;
+
+      const playBtn = document.getElementById('studio-play-btn');
+
+      if (realAudio.src !== track.stream_url) {
+        realAudio.src = track.stream_url;
+      }
+
+      if (realAudio.paused) {
+        realAudio.play();
+        studioIsPlaying = true;
+        playBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+      } else {
+        realAudio.pause();
+        studioIsPlaying = false;
+        playBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+      }
+    }
+
+    // به‌روزرسانی تایمر بر اساس صدای زنده واقعی
+    realAudio.ontimeupdate = () => {
+      studioCurrentTime = realAudio.currentTime;
+      updateStudioTimerDisplay(studioCurrentTime);
+      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
+      const maxSec = track ? (track.duration_sec || 240) : 240;
+      updateStudioScrubberFill((studioCurrentTime / maxSec) * 100);
+      syncKaraokeHighlight(studioCurrentTime);
+    };
+
+    function jumpStudioAudio(offset) {
+      realAudio.currentTime = Math.max(0, realAudio.currentTime + offset);
+    }
+
+    function onStudioScrubberClick(e) {
+      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
+      if (!track) return;
+      const rect = e.currentTarget.getBoundingClientRect();
+      const frac = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      realAudio.currentTime = frac * (track.duration_sec || realAudio.duration || 200);
+    }
+
+    // ذخیره لیریکس نهایی در پایگاه‌داده MySQL
+    async function saveCurrentTrackLyrics() {
+      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
+      if (!track) return;
+
+      try {
+        const res = await fetch(`/api/admin/tracks/${track.id}/lyrics`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: JSON.stringify({ lyrics: track.lyrics })
+        });
+
+        if (res.ok) {
+          showToast(`لیریکس ${track.title} با موفقیت در دیتابیس ذخیره شد ✓`);
+        }
+      } catch (err) {
+        showToast('خطا در ذخیره لیریکس');
+      }
+    }
+
+    // حذف آهنگ از دیتابیس و هارد دیسک
+    async function deleteTrack(trackId) {
+      if (!confirm('آیا از حذف این قطعه مطمئن هستید؟')) return;
+
+      try {
+        const res = await fetch(`/api/admin/tracks/${trackId}`, {
+          method: 'DELETE',
+          headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+        });
+        if (res.ok) {
+          showToast('قطعه صوتی با موفقیت حذف گردید.');
+          fetchTracksFromBackend();
+        }
+      } catch (err) {
+        showToast('خطا در حذف آهنگ');
+      }
+    }
+
+    // لود اولیه از بک‌اند لاراول
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchTracksFromBackend();
+      renderPlaylistsAdmin();
+      renderArtistsAdmin();
+      renderUsersAdmin();
+      renderLiveActivity();
+      drawStreamsChart('7d');
+    });
 
     function setStudioSpeed(speed, btn) {
       studioPlaybackRate = speed;
@@ -2887,25 +3103,27 @@
       });
     }
 
+    // ذخیره لیریکس نهایی در پایگاه‌داده MySQL
     async function saveCurrentTrackLyrics() {
-    const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-    if (!track) return;
+      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
+      if (!track) return;
 
-    try {
+      try {
         const res = await fetch(`/api/admin/tracks/${track.id}/lyrics`, {
-        method: 'POST',
-        headers: {
+          method: 'POST',
+          headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        },
-        body: JSON.stringify({ lyrics: track.lyrics })
+          },
+          body: JSON.stringify({ lyrics: track.lyrics })
         });
+
         if (res.ok) {
-        showToast(`لیریکس ${track.title} با موفقیت در دیتابیس لاراول ذخیره شد ✓`);
+          showToast(`لیریکس ${track.title} با موفقیت در دیتابیس ذخیره شد ✓`);
         }
-    } catch(e) {
+      } catch (err) {
         showToast('خطا در ذخیره لیریکس');
-    }
+      }
     }
 
     function openBulkLyricsModal() {
@@ -3141,59 +3359,201 @@
       openModal('modal-track');
     }
 
-    function saveTrackFromModal() {
-      const id = document.getElementById('track-form-id').value;
+    let TRACKS_DB = [];
+    let realAudio = new Audio(); // پلیر صوتی واقعی استودیو
+
+    // به‌روزرسانی تایمر بر اساس صدای زنده واقعی
+    realAudio.ontimeupdate = () => {
+      studioCurrentTime = realAudio.currentTime;
+      updateStudioTimerDisplay(studioCurrentTime);
+      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
+      const maxSec = track ? (track.duration_sec || 240) : 240;
+      updateStudioScrubberFill((studioCurrentTime / maxSec) * 100);
+      syncKaraokeHighlight(studioCurrentTime);
+    };
+
+    // تشخیص خودکار مدت زمان آهنگ پس از انتخاب فایل
+    function detectAudioDuration(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const tempAudio = new Audio();
+        tempAudio.src = URL.createObjectURL(file);
+        tempAudio.onloadedmetadata = () => {
+          const sec = Math.floor(tempAudio.duration);
+          document.getElementById('track-form-duration-sec').value = sec;
+          document.getElementById('track-form-duration').value = formatTimeWithMs(sec).slice(0, 5);
+        };
+      }
+    }
+
+    // واکشی قطعات از لاراول
+    async function fetchTracksFromBackend() {
+      try {
+        const res = await fetch('/api/tracks');
+        TRACKS_DB = await res.json();
+        renderTracksTable();
+        if (TRACKS_DB.length > 0) {
+          selectedStudioTrackId = TRACKS_DB[0].id;
+          renderStudioView();
+        }
+      } catch (err) {
+        showToast('خطا در دریافت آهنگ‌ها از سرور');
+      }
+    }
+
+    // ارسال فرم آپلود با FormData به لاراول
+    async function saveTrackFromModal() {
+      const audioInput = document.getElementById('track-form-audio-file');
       const title = document.getElementById('track-form-name').value.trim();
       const artist = document.getElementById('track-form-artist').value.trim();
-      const album = document.getElementById('track-form-album').value.trim() || title;
-      const duration = document.getElementById('track-form-duration').value.trim() || "03:30";
-      const cover = document.getElementById('track-form-cover').value.trim();
-      const genre = document.getElementById('track-form-genre').value;
-      const isLossless = document.getElementById('track-form-hires').value === 'true';
 
       if (!title || !artist) {
-        showToast('لطفاً عنوان اثر و نام هنرمند را وارد فرمایید.');
+        showToast('لطفاً عنوان و نام هنرمند را وارد کنید');
         return;
       }
 
-      const durSec = parseDurationToSeconds(duration);
-
-      if (id) {
-        const t = TRACKS_DB.find(item => item.id === parseInt(id, 10));
-        if (t) {
-          t.title = title;
-          t.artist = artist;
-          t.album = album;
-          t.duration = duration;
-          t.durationSec = durSec;
-          t.cover = cover;
-          t.genre = genre;
-          t.isLossless = isLossless;
-          showToast(`قطعه «${title}» با موفقیت ویرایش گردید ✓`);
-        }
-      } else {
-        const newTrack = {
-          id: Date.now(),
-          title,
-          artist,
-          album,
-          duration,
-          durationSec: durSec,
-          cover,
-          genre,
-          isLossless,
-          streams: 0,
-          lyrics: []
-        };
-        TRACKS_DB.push(newTrack);
-        showToast(`آهنگ «${title}» به گنجینه سهپاتیفای افزوده شد ✓`);
+      if (!audioInput.files || audioInput.files.length === 0) {
+        showToast('لطفاً فایل صوتی آهنگ را انتخاب کنید');
+        return;
       }
 
-      saveState();
-      closeModal('modal-track');
-      renderTracksTable();
-      renderStudioView();
+      const saveBtn = document.getElementById('btn-save-track');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'در حال آپلود فایل...';
+
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('artist', artist);
+      formData.append('album', document.getElementById('track-form-album').value.trim());
+      formData.append('genre', document.getElementById('track-form-genre').value);
+      formData.append('duration', document.getElementById('track-form-duration').value);
+      formData.append('duration_sec', document.getElementById('track-form-duration-sec').value);
+      formData.append('is_lossless', document.getElementById('track-form-hires').value);
+      formData.append('audio_file', audioInput.files[0]);
+
+      const coverInput = document.getElementById('track-form-cover-file');
+      if (coverInput.files && coverInput.files[0]) {
+        formData.append('cover_file', coverInput.files[0]);
+      } else {
+        formData.append('cover_url', document.getElementById('track-form-cover').value);
+      }
+
+      try {
+        const res = await fetch('/api/admin/tracks', {
+          method: 'POST',
+          headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: formData
+        });
+
+        if (!res.ok) throw new Error('خطا در آپلود');
+
+        const newTrack = await res.json();
+        showToast(`آهنگ «${newTrack.title}» با موفقیت آپلود و ذخیره شد ✓`);
+        closeModal('modal-track');
+        fetchTracksFromBackend();
+      } catch (err) {
+        showToast('خطا در بارگذاری آهنگ روی سرور');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'آپلود و ذخیره در سرور';
+      }
     }
+
+    // پخش / توقف فایل صوتی واقعی
+    function toggleStudioAudio() {
+      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
+      if (!track) return;
+
+      const playBtn = document.getElementById('studio-play-btn');
+
+      if (realAudio.src !== track.stream_url) {
+        realAudio.src = track.stream_url;
+      }
+
+      if (realAudio.paused) {
+        realAudio.play();
+        studioIsPlaying = true;
+        playBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+      } else {
+        realAudio.pause();
+        studioIsPlaying = false;
+        playBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+      }
+    }
+
+    // به‌روزرسانی تایمر بر اساس صدای زنده واقعی
+    realAudio.ontimeupdate = () => {
+      studioCurrentTime = realAudio.currentTime;
+      updateStudioTimerDisplay(studioCurrentTime);
+      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
+      const maxSec = track ? (track.duration_sec || 240) : 240;
+      updateStudioScrubberFill((studioCurrentTime / maxSec) * 100);
+      syncKaraokeHighlight(studioCurrentTime);
+    };
+
+    function jumpStudioAudio(offset) {
+      realAudio.currentTime = Math.max(0, realAudio.currentTime + offset);
+    }
+    function onStudioScrubberClick(e) {
+      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
+      if (!track) return;
+      const rect = e.currentTarget.getBoundingClientRect();
+      const frac = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      realAudio.currentTime = frac * (track.duration_sec || realAudio.duration || 200);
+    }
+
+    // ذخیره لیریکس نهایی در پایگاه‌داده MySQL
+    async function saveCurrentTrackLyrics() {
+      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
+      if (!track) return;
+
+      try {
+        const res = await fetch(`/api/admin/tracks/${track.id}/lyrics`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: JSON.stringify({ lyrics: track.lyrics })
+        });
+
+        if (res.ok) {
+          showToast(`لیریکس ${track.title} با موفقیت در دیتابیس ذخیره شد ✓`);
+        }
+      } catch (err) {
+        showToast('خطا در ذخیره لیریکس');
+      }
+    }
+
+    // حذف آهنگ از دیتابیس و هارد دیسک
+    async function deleteTrack(trackId) {
+      if (!confirm('آیا از حذف این قطعه مطمئن هستید؟')) return;
+
+      try {
+        const res = await fetch(`/api/admin/tracks/${trackId}`, {
+          method: 'DELETE',
+          headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+        });
+        if (res.ok) {
+          showToast('قطعه صوتی با موفقیت حذف گردید.');
+          fetchTracksFromBackend();
+        }
+      } catch (err) {
+        showToast('خطا در حذف آهنگ');
+      }
+    }
+
+   // لود اولیه از بک‌اند لاراول
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchTracksFromBackend();
+      renderPlaylistsAdmin();
+      renderArtistsAdmin();
+      renderUsersAdmin();
+      renderLiveActivity();
+      drawStreamsChart('7d');
+    });
 
     function deleteTrack(trackId) {
       TRACKS_DB = TRACKS_DB.filter(t => t.id !== trackId);
