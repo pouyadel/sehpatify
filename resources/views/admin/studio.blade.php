@@ -2191,28 +2191,7 @@
   </div>
 
 <script>
-    const FALLBACK_TRACKS = [
-      {
-        id: 1,
-        title: "آرمان‌شهر",
-        artist: "چارتار (Chaartaar)",
-        album: "باران تویی",
-        duration: "04:12",
-        duration_sec: 252,
-        cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80",
-        genre: "تلفیقی و الکترونیک",
-        is_lossless: true,
-        streams: 142800,
-        stream_url: null,
-        lyrics: [
-          { time: 0, fa: "در هوایت بی قرارم روز و شب...", en: "Restless in your yearning day and night..." },
-          { time: 15.2, fa: "سر ز پایت بر ندارم روز و شب...", en: "My head upon your path, without end..." },
-          { time: 30.5, fa: "آسمان با رقص ما روشن شد از نور سحر", en: "The skies ignited with dawn from our dance" },
-          { time: 55.0, fa: "ریتم باران روی سازم زندگی بخشید باز", en: "The rhythm of rain breathed life upon my strings" }
-        ]
-      }
-    ];
-
+    const FALLBACK_TRACKS = [];
     let TRACKS_DB = [];
     let PLAYLISTS_DB = JSON.parse(localStorage.getItem('sehpatify_playlists')) || [
       { id: 101, title: "شب‌های تهران", count: "۲۴ قطعه", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500", desc: "نواهای دلنشین برای رانندگی شبانه" }
@@ -2225,7 +2204,7 @@
     ];
 
     let currentAdminView = 'dashboard';
-    let selectedStudioTrackId = 1;
+    let selectedStudioTrackId = null;
     let studioIsPlaying = false;
     let studioCurrentTime = 0;
     let studioPlaybackRate = 1.0;
@@ -2278,14 +2257,15 @@
       try {
         const res = await fetch('/api/tracks');
         if (!res.ok) throw new Error();
-        const data = await res.json();
-        TRACKS_DB = data.length > 0 ? data : FALLBACK_TRACKS;
+        TRACKS_DB = await res.json();
       } catch (err) {
         TRACKS_DB = FALLBACK_TRACKS;
       }
       renderTracksTable();
       if (TRACKS_DB.length > 0) {
-        selectedStudioTrackId = TRACKS_DB[0].id;
+        if (!selectedStudioTrackId || !TRACKS_DB.some(t => t.id === selectedStudioTrackId)) {
+          selectedStudioTrackId = TRACKS_DB[0].id;
+        }
         renderStudioView();
       }
     }
@@ -2293,6 +2273,14 @@
     function renderTracksTable(tracksToRender = TRACKS_DB) {
       const tbody = document.getElementById('tracks-table-body');
       if (!tbody) return;
+
+      if (!tracksToRender || tracksToRender.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:30px; color:var(--muted);">هیچ قطعه‌ای ثبت نشده است. روی دکمه «آهنگ جدید» کلیک کنید.</td></tr>`;
+        document.getElementById('kpi-total-tracks').textContent = '۰';
+        document.getElementById('kpi-synced-lyrics').textContent = '۰';
+        document.getElementById('badge-track-count').textContent = '۰';
+        return;
+      }
 
       tbody.innerHTML = tracksToRender.map((t, idx) => `
         <tr>
@@ -2314,8 +2302,11 @@
           <td style="font-weight:700; color:var(--muted);">${(t.streams || 0).toLocaleString('fa-IR')}</td>
           <td>
             <div class="table-actions-cell">
-              <button class="btn-table-action lyrics-action" onclick="openTrackInLyricsStudio(${t.id})">لیریکس</button>
-              <button class="btn-table-action danger" onclick="deleteTrack(${t.id})">✕</button>
+              <button class="btn-table-action lyrics-action" onclick="openTrackInLyricsStudio(${t.id})" title="ورود به استودیو لیریکس">لیریکس</button>
+              <button class="btn-table-action" onclick="openEditTrackModal(${t.id})" title="ویرایش اطلاعات">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+              </button>
+              <button class="btn-table-action danger" onclick="deleteTrack(${t.id})" title="حذف اثر">✕</button>
             </div>
           </td>
         </tr>
@@ -2373,23 +2364,59 @@
       }
     }
 
+    function openAddTrackModal() {
+      document.getElementById('modal-track-title').textContent = "افزودن آهنگ جدید به سهپاتیفای";
+      document.getElementById('track-form-id').value = "";
+      document.getElementById('track-form-name').value = "";
+      document.getElementById('track-form-artist').value = "";
+      document.getElementById('track-form-album').value = "";
+      document.getElementById('track-form-audio-file').value = "";
+      document.getElementById('track-form-cover-file').value = "";
+      document.getElementById('track-form-duration').value = "03:45";
+      document.getElementById('track-form-duration-sec').value = "225";
+      document.getElementById('btn-save-track').textContent = "آپلود و ذخیره در سرور";
+      openModal('modal-track');
+    }
+
+    function openEditTrackModal(trackId) {
+      const t = TRACKS_DB.find(item => item.id === trackId);
+      if (!t) return;
+      document.getElementById('modal-track-title').textContent = `ویرایش ترانه: ${t.title}`;
+      document.getElementById('track-form-id').value = t.id;
+      document.getElementById('track-form-name').value = t.title || "";
+      document.getElementById('track-form-artist').value = t.artist || "";
+      document.getElementById('track-form-album').value = t.album || "";
+      document.getElementById('track-form-genre').value = t.genre || "پاپ مدرن";
+      document.getElementById('track-form-duration').value = t.duration || "03:45";
+      document.getElementById('track-form-duration-sec').value = t.duration_sec || "225";
+      document.getElementById('track-form-cover').value = t.cover || "";
+      document.getElementById('track-form-hires').value = t.is_lossless ? "true" : "false";
+      document.getElementById('track-form-audio-file').value = "";
+      document.getElementById('track-form-cover-file').value = "";
+      document.getElementById('btn-save-track').textContent = "ذخیره تغییرات";
+      openModal('modal-track');
+    }
+
     async function saveTrackFromModal() {
+      const trackId = document.getElementById('track-form-id').value;
       const audioInput = document.getElementById('track-form-audio-file');
       const title = document.getElementById('track-form-name').value.trim();
       const artist = document.getElementById('track-form-artist').value.trim();
 
       if (!title || !artist) {
-        showToast('عنوان اثر و نام هنرمند الزامی است.');
+        showToast('عنوان ترانه و نام هنرمند الزامی است.');
         return;
       }
-      if (!audioInput.files || audioInput.files.length === 0) {
+
+      // فایل صوتی فقط در حالت افزودن اجباری است، در حالت ویرایش اختیاری است
+      if (!trackId && (!audioInput.files || audioInput.files.length === 0)) {
         showToast('لطفاً فایل صوتی آهنگ را انتخاب کنید.');
         return;
       }
 
       const saveBtn = document.getElementById('btn-save-track');
       saveBtn.disabled = true;
-      saveBtn.textContent = 'در حال آپلود...';
+      saveBtn.textContent = 'در حال ذخیره‌سازی...';
 
       const formData = new FormData();
       formData.append('title', title);
@@ -2399,7 +2426,10 @@
       formData.append('duration', document.getElementById('track-form-duration').value);
       formData.append('duration_sec', document.getElementById('track-form-duration-sec').value);
       formData.append('is_lossless', document.getElementById('track-form-hires').value);
-      formData.append('audio_file', audioInput.files[0]);
+
+      if (audioInput.files && audioInput.files[0]) {
+        formData.append('audio_file', audioInput.files[0]);
+      }
 
       const coverInput = document.getElementById('track-form-cover-file');
       if (coverInput.files && coverInput.files[0]) {
@@ -2408,47 +2438,79 @@
         formData.append('cover_url', document.getElementById('track-form-cover').value);
       }
 
+      const endpoint = trackId ? `/api/admin/tracks/${trackId}` : '/api/admin/tracks';
+
       try {
-        const res = await fetch('/api/admin/tracks', {
+        const res = await fetch(endpoint, {
           method: 'POST',
-          headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
           body: formData
         });
-        if (!res.ok) throw new Error();
-        showToast('آهنگ با موفقیت آپلود و ذخیره شد ✓');
+
+        const data = await res.json().catch(() => null);
+
+        if (!res.ok) {
+          const errMsg = data?.message || (data?.errors ? Object.values(data.errors)[0][0] : 'خطا در ذخیره‌سازی');
+          throw new Error(errMsg);
+        }
+
+        showToast(trackId ? 'تغییرات با موفقیت ثبت شد ✓' : `آهنگ «${data.title}» ذخیره شد ✓`);
         closeModal('modal-track');
         fetchTracksFromBackend();
       } catch (err) {
-        showToast('خطا در آپلود فایل');
+        showToast(err.message || 'خطا در ارتباط با سرور');
       } finally {
         saveBtn.disabled = false;
-        saveBtn.textContent = 'آپلود و ذخیره در سرور';
+        saveBtn.textContent = trackId ? 'ذخیره تغییرات' : 'آپلود و ذخیره در سرور';
       }
     }
 
     async function deleteTrack(trackId) {
-      if (!confirm('آیا از حذف این قطعه اطمینان دارید؟')) return;
+      if (!confirm('آیا از حذف این قطعه صوتی اطمینان دارید؟')) return;
       try {
-        await fetch(`/api/admin/tracks/${trackId}`, {
+        const res = await fetch(`/api/admin/tracks/${trackId}`, {
           method: 'DELETE',
-          headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          }
         });
-        showToast('قطعه صوتی حذف گردید.');
+
+        const data = await res.json().catch(() => null);
+
+        if (!res.ok) {
+          throw new Error(data?.message || 'خطا در حذف اثر');
+        }
+
+        showToast('قطعه صوتی با موفقیت حذف گردید.');
         fetchTracksFromBackend();
       } catch (err) {
-        showToast('خطا در حذف قطعه');
+        showToast(err.message || 'خطا در حذف قطعه');
       }
     }
 
     function renderStudioView() {
       const picker = document.getElementById('studio-track-picker');
       if (!picker) return;
+
+      if (!TRACKS_DB || TRACKS_DB.length === 0) {
+        picker.innerHTML = `<option value="">هیچ آهنگی وجود ندارد</option>`;
+        document.getElementById('preview-track-title').textContent = "آهنگی وجود ندارد";
+        document.getElementById('preview-track-artist').textContent = "-";
+        document.getElementById('studio-lyrics-list').innerHTML = `<div style="text-align:center; padding:45px 16px; color:var(--muted);">ابتدا از بخش مدیریت، آهنگ جدید آپلود کنید.</div>`;
+        return;
+      }
+
       picker.innerHTML = TRACKS_DB.map(t => `
         <option value="${t.id}" ${t.id === selectedStudioTrackId ? 'selected' : ''}>
           ${t.title} — ${t.artist} (${t.lyrics ? t.lyrics.length : 0} سطر)
         </option>
       `).join('');
-      loadStudioTrack(selectedStudioTrackId);
+
+      loadStudioTrack(selectedStudioTrackId || TRACKS_DB[0].id);
     }
 
     function onStudioTrackChange(trackId) {
@@ -2465,6 +2527,7 @@
       const track = TRACKS_DB.find(t => t.id === trackId) || TRACKS_DB[0];
       if (!track) return;
 
+      selectedStudioTrackId = track.id;
       document.getElementById('preview-track-art').src = track.cover || '';
       document.getElementById('preview-track-title').textContent = track.title;
       document.getElementById('preview-track-artist').textContent = track.artist;
@@ -2493,7 +2556,7 @@
       if (!track) return;
 
       if (!track.stream_url) {
-        showToast('برای این قطعه هنوز فایل صوتی آپلود نشده است.');
+        showToast('برای این اثر فایل صوتی آپلود نشده است.');
         return;
       }
 
@@ -2562,8 +2625,8 @@
           <div style="display:flex; align-items:center; gap:4px; justify-content:flex-end;">
             <button class="nudge-btn" onclick="event.stopPropagation(); nudgeLineTime(${idx}, -0.5);">-0.5s</button>
             <button class="nudge-btn" onclick="event.stopPropagation(); nudgeLineTime(${idx}, +0.5);">+0.5s</button>
-            <button class="btn-table-action" onclick="event.stopPropagation(); stampCurrentTimeOnLine(${idx});">⏱</button>
-            <button class="btn-table-action danger" onclick="event.stopPropagation(); deleteLyricLine(${idx});">✕</button>
+            <button class="btn-table-action" onclick="event.stopPropagation(); stampCurrentTimeOnLine(${idx});" title="ثبت زمان فعلی">⏱</button>
+            <button class="btn-table-action danger" onclick="event.stopPropagation(); deleteLyricLine(${idx});" title="حذف سطر">✕</button>
           </div>
         </div>
       `).join('');
@@ -2680,13 +2743,19 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'Accept': 'application/json',
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
           },
           body: JSON.stringify({ lyrics: track.lyrics })
         });
-        if (res.ok) showToast(`لیریکس ${track.title} در دیتابیس ذخیره شد ✓`);
+        const data = await res.json().catch(() => null);
+        if (res.ok) {
+          showToast(`لیریکس ${track.title} با موفقیت در دیتابیس ثبت شد ✓`);
+        } else {
+          throw new Error(data?.message || 'خطا در ثبت لیریکس');
+        }
       } catch (err) {
-        showToast('خطا در ذخیره لیریکس');
+        showToast(err.message || 'خطا در ذخیره لیریکس');
       }
     }
 
@@ -2701,12 +2770,6 @@
     function openModal(id) { const m = document.getElementById(id); if (m) m.classList.add('open'); }
     function closeModal(id) { const m = document.getElementById(id); if (m) m.classList.remove('open'); }
 
-    function openAddTrackModal() {
-      document.getElementById('track-form-name').value = "";
-      document.getElementById('track-form-artist').value = "";
-      document.getElementById('track-form-album').value = "";
-      openModal('modal-track');
-    }
     function openAddPlaylistModal() { openModal('modal-playlist'); }
     function openAddArtistModal() { openModal('modal-artist'); }
     function openAddUserModal() { openModal('modal-user'); }

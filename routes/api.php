@@ -12,9 +12,10 @@ Route::post('/tracks/{id}/favorite', [TrackController::class, 'toggleFavorite'])
 Route::get('/playlists', fn() => response()->json(Playlist::all()));
 Route::get('/artists', fn() => response()->json(Artist::all()));
 
-// استودیو ادمین
+// استودیو و مدیریت ادمین
 Route::prefix('admin')->group(function () {
     Route::post('/tracks', [TrackController::class, 'store']);
+    Route::post('/tracks/{id}', [TrackController::class, 'update']); // ویرایش با پشتیبانی FormData
     Route::delete('/tracks/{id}', [TrackController::class, 'destroy']);
     Route::post('/tracks/{id}/lyrics', [TrackController::class, 'saveLyrics']);
 });
