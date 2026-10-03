@@ -2819,130 +2819,95 @@
 
   </div>
 
-  <script>
-    let realPlayer = new Audio();
-
-    let TRACKS_DB = [];
-
-    async function fetchTracksFromDatabase() {
-    try {
-        const res = await fetch('/api/tracks');
-        TRACKS_DB = await res.json();
-        renderAppGrids();
-        initSliders();
-        if (TRACKS_DB.length > 0) loadTrack(0);
-        updateFavoriteBadges();
-    } catch (e) {
-        console.error('ارتباط با سرور برقرار نشد');
-    }
-    }
-
-    if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js');
-    });
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-    fetchTracksFromDatabase();
-    });
+<script>
+    const DEFAULT_PLAYER_TRACKS = [
+      {
+        id: 1,
+        title: "آرمان‌شهر",
+        artist: "چارتار (Chaartaar)",
+        album: "باران تویی",
+        duration: "04:12",
+        duration_sec: 252,
+        cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80",
+        genre: "تلفیقی و الکترونیک",
+        mood: "تمرکز",
+        favorited: true,
+        stream_url: null,
+        lyrics: [
+          { time: 0, fa: "در هوایت بی قرارم روز و شب...", en: "Restless in your yearning day and night..." },
+          { time: 15, fa: "سر ز پایت بر ندارم روز و شب...", en: "My head upon your path, without end..." },
+          { time: 30, fa: "آسمان با رقص ما روشن شد از نور سحر", en: "The skies ignited with dawn from our dance" },
+          { time: 55, fa: "ریتم باران روی سازم زندگی بخشید باز", en: "The rhythm of rain breathed life upon my strings" }
+        ]
+      }
+    ];
 
     const PLAYLISTS_DB = [
-      { id: 101, title: "شب‌های تهران", count: "۲۴ قطعه", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&auto=format&fit=crop&q=80", desc: "نواهای دلنشین برای رانندگی شبانه و آرامش پایتخت" },
-      { id: 102, title: "تمرکز عمیق (Deep Focus)", count: "۳۸ قطعه", cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80", desc: "لوفای و امبینت برای بیشترین تمرکز کاری و ذهنی" },
-      { id: 103, title: "نوستالژی دهه‌ی هفتاد", count: "۵۰ قطعه", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=500&auto=format&fit=crop&q=80", desc: "یادآور خاطرات طلایی و آواهای ماندگار کاست‌ها" },
-      { id: 104, title: "Persian Essentials", count: "۳۲ قطعه", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=80", desc: "شاهکارهای اصیل موسیقی که هر ایرانی باید بشنود" }
+      { id: 101, title: "شب‌های تهران", count: "۲۴ قطعه", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500", desc: "نواهای دلنشین برای رانندگی شبانه" },
+      { id: 102, title: "تمرکز عمیق (Deep Focus)", count: "۳۸ قطعه", cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500", desc: "لوفای و امبینت برای بیشترین تمرکز کاری" }
     ];
 
     const ARTISTS_DB = [
-      { name: "چارتار", listeners: "۱.۸ میلیون", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=80" },
-      { name: "همایون شجریان", listeners: "۲.۴ میلیون", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=80" },
-      { name: "اکو تهران", listeners: "۹۵۰ هزار", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=80" },
-      { name: "نیما فرهمند", listeners: "۶۴۰ هزار", img: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=500&auto=format&fit=crop&q=80" }
+      { name: "چارتار", listeners: "۱.۸ میلیون", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500" },
+      { name: "همایون شجریان", listeners: "۲.۴ میلیون", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500" }
     ];
 
+    let TRACKS_DB = DEFAULT_PLAYER_TRACKS;
+    let realPlayer = new Audio();
     let currentTrackIndex = 0;
     let isPlaying = false;
     let currentSeconds = 0;
     let isShuffle = false;
-    let repeatMode = 0; // 0: Off, 1: Repeat All, 2: Repeat One
+    let repeatMode = 0;
     let isMuted = false;
     let audioVolume = 0.8;
-    let previousVolume = 0.8;
-    let playbackTimer = null;
     let isUserScrubbing = false;
     let isFullPlayerOpen = false;
 
-    let audioCtx = null;
-    let synthOsc = null;
-    let synthGain = null;
-
-    function initWebAudio() {
-      if (!audioCtx) {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        audioCtx = new AudioContext();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-    }
-
-    function startSynthSound() {
+    async function fetchTracksFromDatabase() {
       try {
-        initWebAudio();
-        stopSynthSound();
-        synthOsc = audioCtx.createOscillator();
-        synthGain = audioCtx.createGain();
-        
-        synthOsc.type = 'sine';
-        synthOsc.frequency.setValueAtTime(220, audioCtx.currentTime);
-        synthOsc.frequency.exponentialRampToValueAtTime(329.63, audioCtx.currentTime + 3);
-        
-        const effectiveVol = isMuted ? 0 : audioVolume;
-        synthGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-        synthGain.gain.exponentialRampToValueAtTime(Math.max(0.001, 0.05 * effectiveVol), audioCtx.currentTime + 0.8);
-        
-        synthOsc.connect(synthGain);
-        synthGain.connect(audioCtx.destination);
-        synthOsc.start();
-      } catch (e) {}
-    }
-
-    function stopSynthSound() {
-      if (synthGain && audioCtx) {
-        try {
-          synthGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.2);
-          setTimeout(() => {
-            if (synthOsc) {
-              synthOsc.stop();
-              synthOsc = null;
-            }
-          }, 200);
-        } catch(e) {}
+        const res = await fetch('/api/tracks');
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.length > 0) {
+            TRACKS_DB = data;
+          }
+        }
+      } catch (e) {
+        console.warn('استفاده از دیتای محلی به دلیل عدم پاسخ سرور');
       }
+
+      renderAppGrids();
+      initSliders();
+      if (TRACKS_DB.length > 0) {
+        loadTrack(0);
+      }
+      updateFavoriteBadges();
     }
 
     function loadTrack(index) {
+      if (!TRACKS_DB || TRACKS_DB.length === 0) return;
       currentTrackIndex = (index + TRACKS_DB.length) % TRACKS_DB.length;
       const track = TRACKS_DB[currentTrackIndex];
-      currentSeconds = 0;
+      if (!track) return;
 
-      // Update Mini Player Metadata
-      document.getElementById('mini-art-img').src = track.cover;
+      currentSeconds = 0;
+      const coverUrl = track.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500';
+
+      document.getElementById('mini-art-img').src = coverUrl;
       document.getElementById('mini-title').textContent = track.title;
       document.getElementById('mini-artist').textContent = track.artist;
-      document.getElementById('mini-time-tot').textContent = track.duration;
+      document.getElementById('mini-time-tot').textContent = track.duration || '03:30';
       document.getElementById('mini-time-cur').textContent = "0:00";
 
-      // Update Full Player Metadata
-      document.getElementById('full-art-img').src = track.cover;
+      document.getElementById('full-art-img').src = coverUrl;
       document.getElementById('full-track-title').textContent = track.title;
       document.getElementById('full-track-artist').textContent = track.artist;
-      document.getElementById('full-time-tot').textContent = track.duration;
+      document.getElementById('full-time-tot').textContent = track.duration || '03:30';
       document.getElementById('full-time-cur').textContent = "0:00";
 
       updateScrubbers(0);
-      updateFavoriteButtons(track.favorited);
+      updateFavoriteButtons(!!track.favorited);
       renderLyrics();
       renderQueue();
       highlightActiveTrackRows();
@@ -2957,769 +2922,335 @@
     }
 
     function playTrack(index) {
-    if (index !== undefined && index !== currentTrackIndex) {
+      if (!TRACKS_DB || TRACKS_DB.length === 0) return;
+      if (index !== undefined && index !== currentTrackIndex) {
         loadTrack(index);
-    }
-    const track = TRACKS_DB[currentTrackIndex];
-    if (!track) return;
+      }
+      const track = TRACKS_DB[currentTrackIndex];
+      if (!track) return;
 
-    if (realPlayer.src !== track.stream_url) {
+      if (!track.stream_url) {
+        showToast('هنوز فایل صوتی برای این ترانه آپلود نشده است.');
+        pauseTrack();
+        return;
+      }
+
+      if (realPlayer.src !== track.stream_url) {
         realPlayer.src = track.stream_url;
-    }
+      }
 
-    realPlayer.play();
-    isPlaying = true;
-    updatePlayIcons(true);
-    highlightActiveTrackRows();
-    showToast(`در حال پخش: ${track.title}`);
+      realPlayer.play().then(() => {
+        isPlaying = true;
+        updatePlayIcons(true);
+        highlightActiveTrackRows();
+        showToast(`در حال پخش: ${track.title}`);
+      }).catch(() => {
+        showToast('خطا در پخش فایل صوتی');
+        pauseTrack();
+      });
     }
 
     function pauseTrack() {
-    isPlaying = false;
-    realPlayer.pause();
-    updatePlayIcons(false);
-    highlightActiveTrackRows();
+      isPlaying = false;
+      realPlayer.pause();
+      updatePlayIcons(false);
+      highlightActiveTrackRows();
     }
+
     function nextTrack() {
-      let nextIndex;
-      if (isShuffle) {
-        nextIndex = Math.floor(Math.random() * TRACKS_DB.length);
-        if (nextIndex === currentTrackIndex && TRACKS_DB.length > 1) {
-          nextIndex = (nextIndex + 1) % TRACKS_DB.length;
-        }
-      } else {
-        nextIndex = currentTrackIndex + 1;
-      }
+      if (!TRACKS_DB || TRACKS_DB.length === 0) return;
+      let nextIndex = isShuffle ? Math.floor(Math.random() * TRACKS_DB.length) : currentTrackIndex + 1;
       playTrack(nextIndex);
     }
 
+    function prevTrack() {
+      if (!TRACKS_DB || TRACKS_DB.length === 0) return;
+      if (currentSeconds > 3) {
+        seekToSeconds(0);
+      } else {
+        let prevIndex = isShuffle 
+          ? Math.floor(Math.random() * TRACKS_DB.length) 
+          : (currentTrackIndex - 1 + TRACKS_DB.length) % TRACKS_DB.length;
+        playTrack(prevIndex);
+      }
+    }
+
+    realPlayer.ontimeupdate = () => {
+      if (isUserScrubbing) return;
+      currentSeconds = Math.floor(realPlayer.currentTime);
+      const track = TRACKS_DB[currentTrackIndex];
+      const total = track ? (track.duration_sec || 210) : 210;
+      updateScrubbers((currentSeconds / total) * 100);
+      document.getElementById('mini-time-cur').textContent = formatSeconds(currentSeconds);
+      document.getElementById('full-time-cur').textContent = formatSeconds(currentSeconds);
+      syncLyricsHighlight(currentSeconds);
+    };
+
+    realPlayer.onended = () => {
+      if (repeatMode === 2) {
+        seekToSeconds(0);
+        playTrack(currentTrackIndex);
+      } else {
+        nextTrack();
+      }
+    };
+
     function seekToSeconds(seconds) {
+      if (realPlayer.src) {
         realPlayer.currentTime = seconds;
+      }
+    }
+
+    function updateScrubbers(percent) {
+      const p = Math.max(0, Math.min(100, percent)) + '%';
+      const m = document.getElementById('mini-scrub-fill');
+      const f = document.getElementById('full-scrub-fill');
+      const t = document.getElementById('progress-top-fill');
+      if (m) m.style.width = p;
+      if (f) f.style.width = p;
+      if (t) t.style.width = p;
+    }
+
+    function setAudioVolume(fraction) {
+      audioVolume = Math.max(0, Math.min(1, fraction));
+      realPlayer.volume = audioVolume;
+      updateVolumeUI();
+    }
+
+    function toggleMute() {
+      isMuted = !isMuted;
+      realPlayer.muted = isMuted;
+      updateVolumeUI();
+    }
+
+    function updateVolumeUI() {
+      const p = (isMuted ? 0 : audioVolume * 100) + '%';
+      const m = document.getElementById('mini-volume-fill');
+      const f = document.getElementById('full-volume-fill');
+      if (m) m.style.width = p;
+      if (f) f.style.width = p;
+    }
+
+    function toggleShuffle() {
+      isShuffle = !isShuffle;
+      document.getElementById('ctrl-shuffle')?.classList.toggle('active', isShuffle);
+      document.getElementById('full-shuffle-btn')?.classList.toggle('active', isShuffle);
+      showToast(isShuffle ? 'پخش تصادفی فعال شد' : 'پخش تصادفی غیرفعال شد');
+    }
+
+    function toggleRepeat() {
+      repeatMode = (repeatMode + 1) % 3;
+      showToast(repeatMode === 1 ? 'تکرار کل لیست' : repeatMode === 2 ? 'تکرار همین ترانه' : 'تکرار خاموش');
+    }
+
+    async function toggleFavoriteCurrent() {
+      const track = TRACKS_DB[currentTrackIndex];
+      if (!track) return;
+      track.favorited = !track.favorited;
+      updateFavoriteButtons(track.favorited);
+      updateFavoriteBadges();
+      renderAppGrids();
+      try {
+        await fetch(`/api/tracks/${track.id}/favorite`, {
+          method: 'POST',
+          headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+        });
+      } catch (e) {}
+    }
+
+    function updateFavoriteButtons(isFav) {
+      const activeSvg = `<svg width="18" height="18" fill="var(--brand)" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
+      const inactiveSvg = `<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>`;
+      const m = document.getElementById('mini-fav-btn');
+      const f = document.getElementById('full-fav-top-btn');
+      if (m) m.innerHTML = isFav ? activeSvg : inactiveSvg;
+      if (f) f.innerHTML = isFav ? activeSvg : inactiveSvg;
+    }
+
+    function updateFavoriteBadges() {
+      const c = TRACKS_DB.filter(t => t.favorited).length;
+      const favBadge = document.getElementById('fav-count');
+      const mobBadge = document.getElementById('mob-fav-count');
+      if (favBadge) favBadge.textContent = c;
+      if (mobBadge) mobBadge.textContent = c;
     }
 
     function updatePlayIcons(playing) {
       const playSvg = `<svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
       const pauseSvg = `<svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
-      
-      const fullPlaySvg = `<svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
-      const fullPauseSvg = `<svg width="28" height="28" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
-
-      const mainBtn = document.getElementById('main-play-btn');
-      if (mainBtn) mainBtn.innerHTML = playing ? pauseSvg : playSvg;
-
-      const fullBtn = document.getElementById('full-play-btn');
-      if (fullBtn) fullBtn.innerHTML = playing ? fullPauseSvg : fullPlaySvg;
-
-      const heroIcon = document.getElementById('hero-play-icon');
-      if (heroIcon) heroIcon.innerHTML = playing ? pauseSvg : playSvg;
-    }
-
-    function tickPlayback() {
-      if (isUserScrubbing) return;
-      const track = TRACKS_DB[currentTrackIndex];
-      currentSeconds++;
-
-      if (currentSeconds > track.durationSec) {
-        if (repeatMode === 2) {
-          seekToSeconds(0);
-          playTrack(currentTrackIndex);
-        } else if (repeatMode === 1 || currentTrackIndex < TRACKS_DB.length - 1) {
-          nextTrack();
-        } else {
-          pauseTrack();
-          seekToSeconds(0);
-        }
-        return;
-      }
-
-      const percent = (currentSeconds / track.durationSec) * 100;
-      updateScrubbers(percent);
-      const formatted = formatSeconds(currentSeconds);
-      document.getElementById('mini-time-cur').textContent = formatted;
-      document.getElementById('full-time-cur').textContent = formatted;
-      syncLyricsHighlight(currentSeconds);
-    }
-
-    function updateScrubbers(percent) {
-      const p = Math.max(0, Math.min(100, percent)) + '%';
-      const miniFill = document.getElementById('mini-scrub-fill');
-      const fullFill = document.getElementById('full-scrub-fill');
-      const topFill = document.getElementById('progress-top-fill');
-      if (miniFill) miniFill.style.width = p;
-      if (fullFill) fullFill.style.width = p;
-      if (topFill) topFill.style.width = p;
-    }
-
-    function seekToSeconds(seconds) {
-      const track = TRACKS_DB[currentTrackIndex];
-      currentSeconds = Math.max(0, Math.min(track.durationSec, seconds));
-      const percent = (currentSeconds / track.durationSec) * 100;
-      updateScrubbers(percent);
-      const formatted = formatSeconds(currentSeconds);
-      document.getElementById('mini-time-cur').textContent = formatted;
-      document.getElementById('full-time-cur').textContent = formatted;
-      syncLyricsHighlight(currentSeconds);
-    }
-
-
-
-    function bindSliderDrag(trackElem, onUpdate, onCommit) {
-      if (!trackElem) return;
-      let isDragging = false;
-
-      function calculateFraction(e) {
-        const rect = trackElem.getBoundingClientRect();
-        const clientX = e.clientX ?? (e.touches ? e.touches[0].clientX : 0);
-        const offsetX = clientX - rect.left;
-        return Math.max(0, Math.min(1, offsetX / rect.width));
-      }
-
-      function onPointerDown(e) {
-        isDragging = true;
-        trackElem.classList.add('dragging');
-        trackElem.setPointerCapture(e.pointerId);
-        const fraction = calculateFraction(e);
-        onUpdate(fraction);
-      }
-
-      function onPointerMove(e) {
-        if (!isDragging) return;
-        const fraction = calculateFraction(e);
-        onUpdate(fraction);
-      }
-
-      function onPointerUp(e) {
-        if (!isDragging) return;
-        isDragging = false;
-        trackElem.classList.remove('dragging');
-        try { trackElem.releasePointerCapture(e.pointerId); } catch(err) {}
-        const fraction = calculateFraction(e);
-        if (onCommit) onCommit(fraction);
-      }
-
-      trackElem.addEventListener('pointerdown', onPointerDown);
-      trackElem.addEventListener('pointermove', onPointerMove);
-      trackElem.addEventListener('pointerup', onPointerUp);
-      trackElem.addEventListener('pointercancel', onPointerUp);
-    }
-
-    function initSliders() {
-      // 1. Mini Scrubber Bar
-      const miniScrub = document.getElementById('mini-scrub-track');
-      bindSliderDrag(miniScrub, 
-        (frac) => {
-          isUserScrubbing = true;
-          const track = TRACKS_DB[currentTrackIndex];
-          const sec = Math.floor(frac * track.durationSec);
-          updateScrubbers(frac * 100);
-          document.getElementById('mini-time-cur').textContent = formatSeconds(sec);
-          document.getElementById('full-time-cur').textContent = formatSeconds(sec);
-        },
-        (frac) => {
-          isUserScrubbing = false;
-          const track = TRACKS_DB[currentTrackIndex];
-          seekToSeconds(Math.floor(frac * track.durationSec));
-        }
-      );
-
-      // 2. Full Scrubber Bar
-      const fullScrub = document.getElementById('full-scrub-track');
-      bindSliderDrag(fullScrub, 
-        (frac) => {
-          isUserScrubbing = true;
-          const track = TRACKS_DB[currentTrackIndex];
-          const sec = Math.floor(frac * track.durationSec);
-          updateScrubbers(frac * 100);
-          document.getElementById('mini-time-cur').textContent = formatSeconds(sec);
-          document.getElementById('full-time-cur').textContent = formatSeconds(sec);
-        },
-        (frac) => {
-          isUserScrubbing = false;
-          const track = TRACKS_DB[currentTrackIndex];
-          seekToSeconds(Math.floor(frac * track.durationSec));
-        }
-      );
-
-      // 3. Top edge progress bar in mini player
-      const topScrub = document.getElementById('mini-progress-top');
-      bindSliderDrag(topScrub,
-        (frac) => {
-          const track = TRACKS_DB[currentTrackIndex];
-          seekToSeconds(Math.floor(frac * track.durationSec));
-        },
-        (frac) => {
-          const track = TRACKS_DB[currentTrackIndex];
-          seekToSeconds(Math.floor(frac * track.durationSec));
-        }
-      );
-
-      // 4. Mini Volume Slider
-      const miniVol = document.getElementById('mini-volume-track');
-      bindSliderDrag(miniVol, (frac) => setAudioVolume(frac), (frac) => setAudioVolume(frac));
-
-      // 5. Full Volume Slider
-      const fullVol = document.getElementById('full-volume-track');
-      bindSliderDrag(fullVol, (frac) => setAudioVolume(frac), (frac) => setAudioVolume(frac));
-    }
-
-    function setAudioVolume(fraction) {
-    audioVolume = Math.max(0, Math.min(1, fraction));
-    realPlayer.volume = audioVolume;
-    updateVolumeUI();
-    }
-
-    function toggleMute() {
-      if (isMuted) {
-        isMuted = false;
-        audioVolume = previousVolume || 0.8;
-      } else {
-        previousVolume = audioVolume;
-        isMuted = true;
-        audioVolume = 0;
-      }
-      updateVolumeUI();
-      if (synthGain && audioCtx) {
-        const effectiveVol = isMuted ? 0 : audioVolume;
-        synthGain.gain.setValueAtTime(Math.max(0.0001, 0.05 * effectiveVol), audioCtx.currentTime);
-      }
-      showToast(isMuted ? 'صدا قطع شد' : 'صدا وصل شد');
-    }
-
-    function updateVolumeUI() {
-      const percent = (isMuted ? 0 : audioVolume * 100) + '%';
-      const miniFill = document.getElementById('mini-volume-fill');
-      const fullFill = document.getElementById('full-volume-fill');
-      if (miniFill) miniFill.style.width = percent;
-      if (fullFill) fullFill.style.width = percent;
-
-      let iconSvg;
-      if (isMuted || audioVolume === 0) {
-        iconSvg = `<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15zM17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/></svg>`;
-      } else if (audioVolume < 0.5) {
-        iconSvg = `<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>`;
-      } else {
-        iconSvg = `<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/></svg>`;
-      }
-
-      const miniIcon = document.getElementById('mini-vol-icon-wrap');
-      const fullIcon = document.getElementById('full-vol-icon-wrap');
-      if (miniIcon) miniIcon.innerHTML = iconSvg;
-      if (fullIcon) fullIcon.innerHTML = iconSvg;
-    }
-
-    function toggleShuffle() {
-      isShuffle = !isShuffle;
-      const miniBtn = document.getElementById('ctrl-shuffle');
-      const fullBtn = document.getElementById('full-shuffle-btn');
-      if (miniBtn) miniBtn.classList.toggle('active', isShuffle);
-      if (fullBtn) fullBtn.classList.toggle('active', isShuffle);
-      showToast(isShuffle ? 'پخش تصادفی فعال شد' : 'پخش عادی فعال شد');
-    }
-
-    function toggleRepeat() {
-      repeatMode = (repeatMode + 1) % 3;
-      const miniBtn = document.getElementById('ctrl-repeat');
-      const fullBtn = document.getElementById('full-repeat-btn');
-
-      [miniBtn, fullBtn].forEach(btn => {
-        if (!btn) return;
-        btn.classList.remove('active', 'repeat-one');
-        if (repeatMode === 1) {
-          btn.classList.add('active');
-        } else if (repeatMode === 2) {
-          btn.classList.add('active', 'repeat-one');
-        }
-      });
-
-      if (repeatMode === 1) {
-        showToast('تکرار تمام پلی‌لیست فعال شد');
-      } else if (repeatMode === 2) {
-        showToast('تکرار همین ترانه فعال شد');
-      } else {
-        showToast('حالت تکرار غیرفعال شد');
-      }
-    }
-
-    function toggleFavoriteCurrent() {
-      const track = TRACKS_DB[currentTrackIndex];
-      track.favorited = !track.favorited;
-      updateFavoriteButtons(track.favorited);
-      updateFavoriteBadges();
-      renderAppGrids();
-      showToast(track.favorited ? 'به موردعلاقه‌ها اضافه شد' : 'از موردعلاقه‌ها برداشته شد');
-    }
-
-    function updateFavoriteButtons(isFav) {
-      const favSvgActive = `<svg width="18" height="18" fill="var(--brand)" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
-      const favSvgInactive = `<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>`;
-
-      const miniFav = document.getElementById('mini-fav-btn');
-      const fullFav = document.getElementById('full-fav-top-btn');
-      if (miniFav) {
-        miniFav.innerHTML = isFav ? favSvgActive : favSvgInactive;
-        miniFav.classList.toggle('favorited', isFav);
-      }
-      if (fullFav) {
-        fullFav.innerHTML = isFav ? favSvgActive : favSvgInactive;
-        fullFav.classList.toggle('favorited', isFav);
-      }
-    }
-
-    function updateFavoriteBadges() {
-      const count = TRACKS_DB.filter(t => t.favorited).length;
-      const favBadge = document.getElementById('fav-count');
-      const mobFavBadge = document.getElementById('mob-fav-count');
-      if (favBadge) favBadge.textContent = count;
-      if (mobFavBadge) mobFavBadge.textContent = count;
-    }
-
-    function formatSeconds(sec) {
-      const m = Math.floor(sec / 60);
-      const s = sec % 60;
-      return `${m}:${s < 10 ? '0' : ''}${s}`;
-    }
-
-    function switchFullPlayerView(viewName) {
-      document.querySelectorAll('.full-tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.full-panel-view').forEach(p => p.classList.remove('active'));
-
-      const targetTab = document.getElementById(`full-tab-${viewName}`);
-      const targetView = document.getElementById(`full-view-${viewName}`);
-      if (targetTab) targetTab.classList.add('active');
-      if (targetView) targetView.classList.add('active');
-    }
-
-    function toggleFullPlayer() {
-      const modal = document.getElementById('full-player-modal');
-      modal.classList.toggle('active');
-      isFullPlayerOpen = modal.classList.contains('active');
-      if (isFullPlayerOpen) {
-        initVisualizerLoop();
-        switchFullPlayerView('now');
-      }
+      const m = document.getElementById('main-play-btn');
+      const f = document.getElementById('full-play-btn');
+      if (m) m.innerHTML = playing ? pauseSvg : playSvg;
+      if (f) f.innerHTML = playing ? pauseSvg : playSvg;
     }
 
     function renderLyrics() {
       const track = TRACKS_DB[currentTrackIndex];
-      const sideContainer = document.getElementById('lyrics-container');
-      const fullContainer = document.getElementById('full-lyrics-container');
-
-      if (!track.lyrics || track.lyrics.length === 0) {
-        const emptyMsg = `<div style="color:var(--muted); text-align:center; padding:40px 0;">متن ترانه‌ای برای این اثر یافت نشد.</div>`;
-        if (sideContainer) sideContainer.innerHTML = emptyMsg;
-        if (fullContainer) fullContainer.innerHTML = emptyMsg;
+      const side = document.getElementById('lyrics-container');
+      const full = document.getElementById('full-lyrics-container');
+      if (!track || !track.lyrics || track.lyrics.length === 0) {
+        const empty = `<div style="color:var(--muted); text-align:center; padding:30px;">فاقد متن ترانه</div>`;
+        if (side) side.innerHTML = empty;
+        if (full) full.innerHTML = empty;
         return;
       }
-
-      const sideHtml = track.lyrics.map((line, idx) => `
-        <div class="lyrics-line ${idx === 0 ? 'active' : ''}" data-time="${line.time}" onclick="seekToSeconds(${line.time})">
-          ${line.fa}
-          <span class="lyrics-translation">${line.en}</span>
+      const html = track.lyrics.map((l, i) => `
+        <div class="lyrics-line ${i === 0 ? 'active' : ''}" data-time="${l.time}" onclick="seekToSeconds(${l.time})">
+          ${l.fa}
+          <span class="lyrics-translation">${l.en || ''}</span>
         </div>
       `).join('');
-
-      const fullHtml = track.lyrics.map((line, idx) => `
-        <div class="full-lyrics-line ${idx === 0 ? 'active' : ''}" data-time="${line.time}" onclick="seekToSeconds(${line.time})">
-          ${line.fa}
-          <span class="full-lyrics-trans">${line.en}</span>
-        </div>
-      `).join('');
-
-      if (sideContainer) sideContainer.innerHTML = sideHtml;
-      if (fullContainer) fullContainer.innerHTML = fullHtml;
+      if (side) side.innerHTML = html;
+      if (full) full.innerHTML = html;
     }
 
     function syncLyricsHighlight(sec) {
-      const updateLines = (selector, activeCls) => {
-        const lines = document.querySelectorAll(selector);
-        lines.forEach(line => {
-          const t = parseInt(line.getAttribute('data-time') || '0', 10);
-          if (sec >= t) {
-            lines.forEach(l => l.classList.remove(activeCls));
-            line.classList.add(activeCls);
-          }
-        });
-      };
-      updateLines('.lyrics-line', 'active');
-      updateLines('.full-lyrics-line', 'active');
-    }
-
-    function renderQueue() {
-      const sideQueue = document.getElementById('queue-container');
-      const fullQueue = document.getElementById('full-queue-container');
-
-      const itemsHtml = TRACKS_DB.map((t, idx) => `
-        <div class="queue-item" onclick="playTrack(${idx})">
-          <img src="${t.cover}" style="width:38px; height:38px; border-radius:6px; object-fit:cover;" />
-          <div style="flex:1; overflow:hidden;">
-            <div style="font-size:12.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; ${idx === currentTrackIndex ? 'color:var(--brand);' : ''}">${t.title}</div>
-            <div style="font-size:11px; color:var(--muted);">${t.artist}</div>
-          </div>
-          <span style="font-size:11px; color:var(--muted); direction:ltr;">${t.duration}</span>
-        </div>
-      `).join('');
-
-      if (sideQueue) sideQueue.innerHTML = itemsHtml;
-      if (fullQueue) fullQueue.innerHTML = itemsHtml;
-    }
-
-    function toggleLyricsDrawer() {
-      const lyrics = document.getElementById('lyrics-drawer');
-      const queue = document.getElementById('queue-drawer');
-      if (queue) queue.classList.remove('open');
-      if (lyrics) lyrics.classList.toggle('open');
-    }
-
-    function toggleQueueDrawer() {
-      const queue = document.getElementById('queue-drawer');
-      const lyrics = document.getElementById('lyrics-drawer');
-      if (lyrics) lyrics.classList.remove('open');
-      if (queue) queue.classList.toggle('open');
-    }
-
-    function switchView(viewId) {
-      document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active'));
-      document.querySelectorAll('.nav-link').forEach(item => item.classList.remove('active'));
-      document.querySelectorAll('.mobile-nav-btn').forEach(btn => btn.classList.remove('active'));
-
-      const targetView = document.getElementById(`view-${viewId}`);
-      if (targetView) targetView.classList.add('active');
-
-      const desktopNav = document.getElementById(`nav-${viewId}`);
-      if (desktopNav) desktopNav.classList.add('active');
-
-      const mobNav = document.getElementById(`mob-${viewId}`);
-      if (mobNav) mobNav.classList.add('active');
-
-      document.getElementById('viewport').scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // Profile Dropdown Handler
-    function toggleProfileMenu() {
-      const menu = document.getElementById('profile-dropdown-menu');
-      const pill = document.getElementById('profile-pill-btn');
-      menu.classList.toggle('open');
-      pill.classList.toggle('active');
-    }
-
-    function closeProfileMenu() {
-      const menu = document.getElementById('profile-dropdown-menu');
-      const pill = document.getElementById('profile-pill-btn');
-      if (menu) menu.classList.remove('open');
-      if (pill) pill.classList.remove('active');
-    }
-
-    document.addEventListener('click', (e) => {
-      const wrap = document.querySelector('.profile-widget-wrap');
-      if (wrap && !wrap.contains(e.target)) {
-        closeProfileMenu();
-      }
-    });
-
-    function renderAppGrids() {
-      // 1. Home Recommended Grid
-      const homeFeatured = document.getElementById('home-featured-grid');
-      homeFeatured.innerHTML = TRACKS_DB.map((t, idx) => `
-        <div class="music-card" onclick="playTrack(${idx})">
-          <div class="card-art-box">
-            <img class="card-art-img" src="${t.cover}" alt="${t.title}" />
-            <button class="card-play-overlay" title="پخش">
-              <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            </button>
-          </div>
-          <div class="card-title">${t.title}</div>
-          <div class="card-subtitle">${t.artist}</div>
-        </div>
-      `).join('');
-
-      // 2. Home Recent Tracks with Centered Favorite Icons
-      const recentList = document.getElementById('home-recent-tracks');
-      recentList.innerHTML = TRACKS_DB.map((t, idx) => `
-        <div class="track-row ${idx === currentTrackIndex && isPlaying ? 'playing' : ''}" onclick="playTrack(${idx})">
-          <div class="track-num">${idx + 1}</div>
-          <div class="equalizer-wave">
-            <div class="eq-bar"></div>
-            <div class="eq-bar"></div>
-            <div class="eq-bar"></div>
-          </div>
-          <div class="track-thumb">
-            <img src="${t.cover}" alt="${t.title}" />
-          </div>
-          <div class="track-meta">
-            <div class="track-name">${t.title}</div>
-            <div class="track-artist">${t.artist}</div>
-          </div>
-          <div class="track-album">${t.album}</div>
-          <div class="track-duration">${t.duration}</div>
-          <button class="fav-action-btn ${t.favorited ? 'favorited' : ''}" onclick="event.stopPropagation(); toggleFavTrack(${idx});" title="موردعلاقه‌ها">
-            <svg width="18" height="18" fill="${t.favorited ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-          </button>
-        </div>
-      `).join('');
-
-      // 3. Home Featured Artists
-      const homeArtists = document.getElementById('home-artists-grid');
-      homeArtists.innerHTML = ARTISTS_DB.map(a => `
-        <div class="music-card artist-card" onclick="openArtistPage('${a.name}', '${a.img}', '${a.listeners}')">
-          <div class="card-art-box">
-            <img class="card-art-img" src="${a.img}" alt="${a.name}" />
-          </div>
-          <div class="card-title">${a.name}</div>
-          <div class="card-subtitle">${a.listeners} شنونده</div>
-        </div>
-      `).join('');
-
-      // 4. Playlists Grid
-      const playGrid = document.getElementById('playlists-grid');
-      playGrid.innerHTML = PLAYLISTS_DB.map(p => `
-        <div class="music-card" onclick="showToast('بارگذاری پلی‌‌لیست: ${p.title}')">
-          <div class="card-art-box">
-            <img class="card-art-img" src="${p.cover}" alt="${p.title}" />
-            <button class="card-play-overlay"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
-          </div>
-          <div class="card-title">${p.title}</div>
-          <div class="card-subtitle">${p.count} • ${p.desc}</div>
-        </div>
-      `).join('');
-
-      // 5. Discover Genres Grid
-      const genres = ["سنتی اصیل", "تلفیقی", "پاپ مدرن", "آلترناتیو و راک", "لوفای و ریلکس", "الکترونیک و کلاب", "جاز و بلوز", "موسیقی متن سینما"];
-      const discGrid = document.getElementById('discover-genres-grid');
-      discGrid.innerHTML = genres.map(g => `
-        <div class="music-card" onclick="filterByMood('${g}')">
-          <div class="card-art-box" style="background: linear-gradient(135deg, #10B954 0%, #0d381c 100%); display:flex; align-items:center; justify-content:center;">
-            <svg width="40" height="40" stroke="#FFFFFF" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
-          </div>
-          <div class="card-title">${g}</div>
-          <div class="card-subtitle">برترین ترانه‌ها</div>
-        </div>
-      `).join('');
-
-      // 6. Library Grid
-      document.getElementById('library-grid').innerHTML = homeFeatured.innerHTML;
-    }
-
-    function highlightActiveTrackRows() {
-      document.querySelectorAll('.track-row').forEach((row, i) => {
-        if (i === currentTrackIndex && isPlaying) {
-          row.classList.add('playing');
-        } else {
-          row.classList.remove('playing');
+      document.querySelectorAll('.lyrics-line').forEach(line => {
+        const t = parseFloat(line.getAttribute('data-time') || '0');
+        if (sec >= t) {
+          document.querySelectorAll('.lyrics-line').forEach(l => l.classList.remove('active'));
+          line.classList.add('active');
         }
       });
     }
 
-    function toggleFavTrack(index) {
-      TRACKS_DB[index].favorited = !TRACKS_DB[index].favorited;
-      renderAppGrids();
-      loadTrack(currentTrackIndex);
-      updateFavoriteBadges();
-      showToast(TRACKS_DB[index].favorited ? 'به علاقه‌‌مندی‌ها اضافه شد' : 'حذف شد');
-    }
-
-    function handleSearchInput(query) {
-      if (query.trim().length > 0) {
-        switchView('search');
-      }
-      const list = document.getElementById('search-results-list');
-      const q = query.toLowerCase().trim();
-
-      const results = TRACKS_DB.filter(t => 
-        t.title.toLowerCase().includes(q) || 
-        t.artist.toLowerCase().includes(q) ||
-        t.album.toLowerCase().includes(q) ||
-        t.genre.toLowerCase().includes(q)
-      );
-
-      if (results.length === 0) {
-        list.innerHTML = `<div style="text-align:center; padding:40px; color:var(--muted);">اثری منطبق با «${query}» یافت نشد.</div>`;
-        return;
-      }
-
-      list.innerHTML = results.map((t, idx) => `
-        <div class="track-row" onclick="playTrack(${t.id - 1})">
-          <div class="track-num">${idx + 1}</div>
-          <div class="track-thumb">
-            <img src="${t.cover}" alt="${t.title}" />
+    function renderQueue() {
+      const q = document.getElementById('queue-container');
+      if (!q) return;
+      q.innerHTML = TRACKS_DB.map((t, idx) => `
+        <div class="queue-item" onclick="playTrack(${idx})">
+          <img src="${t.cover || ''}" style="width:36px; height:36px; border-radius:6px; object-fit:cover;" />
+          <div style="flex:1; overflow:hidden;">
+            <div style="font-weight:700; font-size:12px; ${idx === currentTrackIndex ? 'color:var(--brand);' : ''}">${t.title}</div>
+            <div style="font-size:11px; color:var(--muted);">${t.artist}</div>
           </div>
-          <div class="track-meta">
-            <div class="track-name">${t.title}</div>
-            <div class="track-artist">${t.artist}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderAppGrids() {
+      const featured = document.getElementById('home-featured-grid');
+      if (featured) {
+        featured.innerHTML = TRACKS_DB.map((t, idx) => `
+          <div class="music-card" onclick="playTrack(${idx})">
+            <div class="card-art-box"><img class="card-art-img" src="${t.cover || ''}" /></div>
+            <div class="card-title">${t.title}</div>
+            <div class="card-subtitle">${t.artist}</div>
           </div>
-          <div class="track-album">${t.album}</div>
-          <div class="track-duration">${t.duration}</div>
-          <button class="fav-action-btn ${t.favorited ? 'favorited' : ''}" onclick="event.stopPropagation(); toggleFavTrack(${t.id - 1});">
-            <svg width="18" height="18" fill="${t.favorited ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-          </button>
-        </div>
-      `).join('');
-    }
+        `).join('');
+      }
 
-    function applySearchTag(tag) {
-      document.querySelectorAll('.search-tag').forEach(t => t.classList.remove('active'));
-      event.target.classList.add('active');
-      if (tag === 'همه') {
-        handleSearchInput('');
-      } else {
-        handleSearchInput(tag);
+      const recent = document.getElementById('home-recent-tracks');
+      if (recent) {
+        recent.innerHTML = TRACKS_DB.map((t, idx) => `
+          <div class="track-row ${idx === currentTrackIndex && isPlaying ? 'playing' : ''}" onclick="playTrack(${idx})">
+            <div class="track-num">${idx + 1}</div>
+            <div class="track-thumb"><img src="${t.cover || ''}" /></div>
+            <div class="track-meta"><div class="track-name">${t.title}</div><div class="track-artist">${t.artist}</div></div>
+            <div class="track-album">${t.album || t.title}</div>
+            <div class="track-duration">${t.duration || '03:30'}</div>
+          </div>
+        `).join('');
+      }
+
+      const artists = document.getElementById('home-artists-grid');
+      if (artists) {
+        artists.innerHTML = ARTISTS_DB.map(a => `
+          <div class="music-card artist-card">
+            <div class="card-art-box"><img class="card-art-img" src="${a.img}" /></div>
+            <div class="card-title">${a.name}</div>
+            <div class="card-subtitle">${a.listeners} شنونده</div>
+          </div>
+        `).join('');
+      }
+
+      const playlists = document.getElementById('playlists-grid');
+      if (playlists) {
+        playlists.innerHTML = PLAYLISTS_DB.map(p => `
+          <div class="music-card">
+            <div class="card-art-box"><img class="card-art-img" src="${p.cover}" /></div>
+            <div class="card-title">${p.title}</div>
+            <div class="card-subtitle">${p.desc}</div>
+          </div>
+        `).join('');
       }
     }
 
-    function filterByMood(mood) {
-      switchView('search');
-      document.getElementById('global-search-input').value = mood;
-      handleSearchInput(mood);
-      showToast(`فیلتر ژانر: ${mood}`);
+    function highlightActiveTrackRows() {
+      document.querySelectorAll('.track-row').forEach((row, i) => {
+        row.classList.toggle('playing', i === currentTrackIndex && isPlaying);
+      });
     }
 
-    function filterFavorites() {
-      switchView('search');
-      document.getElementById('global-search-input').value = "";
-      const list = document.getElementById('search-results-list');
-      const favs = TRACKS_DB.filter(t => t.favorited);
-      
-      // Update nav active state for mobile
-      document.querySelectorAll('.mobile-nav-btn').forEach(btn => btn.classList.remove('active'));
-      const mobFavBtn = document.getElementById('mob-favorites');
-      if (mobFavBtn) mobFavBtn.classList.add('active');
-
-      if (favs.length === 0) {
-        list.innerHTML = `<div style="text-align:center; padding:40px; color:var(--muted);">هنوز هیچ ترانه‌ای به موردعلاقه‌ها اضافه نشده است.</div>`;
-        return;
-      }
-
-      list.innerHTML = favs.map((t, idx) => `
-        <div class="track-row" onclick="playTrack(${t.id - 1})">
-          <div class="track-num">${idx + 1}</div>
-          <div class="track-thumb"><img src="${t.cover}" /></div>
-          <div class="track-meta"><div class="track-name">${t.title}</div><div class="track-artist">${t.artist}</div></div>
-          <div class="track-album">${t.album}</div>
-          <div class="track-duration">${t.duration}</div>
-          <button class="fav-action-btn favorited" onclick="event.stopPropagation(); toggleFavTrack(${t.id - 1});">
-            <svg width="18" height="18" fill="var(--brand)" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-          </button>
-        </div>
-      `).join('');
-      showToast('نمایش ترانه‌های موردعلاقه');
+    function switchView(viewId) {
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+      document.querySelectorAll('.mobile-nav-btn').forEach(m => m.classList.remove('active'));
+      document.getElementById(`view-${viewId}`)?.classList.add('active');
+      document.getElementById(`nav-${viewId}`)?.classList.add('active');
+      document.getElementById(`mob-${viewId}`)?.classList.add('active');
     }
 
-    function openArtistPage(name, img, listeners) {
-      document.getElementById('artist-page-name').textContent = name;
-      document.getElementById('artist-page-img').src = img;
-      
-      const artistTracks = TRACKS_DB.filter(t => t.artist.includes(name.split(' ')[0]));
-      const list = document.getElementById('artist-tracks-list');
-      list.innerHTML = (artistTracks.length > 0 ? artistTracks : TRACKS_DB.slice(0, 3)).map((t, idx) => `
-        <div class="track-row" onclick="playTrack(${t.id - 1})">
-          <div class="track-num">${idx + 1}</div>
-          <div class="track-thumb"><img src="${t.cover}" /></div>
-          <div class="track-meta"><div class="track-name">${t.title}</div><div class="track-artist">${t.artist}</div></div>
-          <div class="track-album">${t.album}</div>
-          <div class="track-duration">${t.duration}</div>
-          <button class="fav-action-btn ${t.favorited ? 'favorited' : ''}" onclick="event.stopPropagation(); toggleFavTrack(${t.id - 1});">
-            <svg width="18" height="18" fill="${t.favorited ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-          </button>
-        </div>
-      `).join('');
-
-      switchView('artist');
+    function toggleFullPlayer() {
+      const m = document.getElementById('full-player-modal');
+      m.classList.toggle('active');
+      isFullPlayerOpen = m.classList.contains('active');
     }
 
-    function toggleFollowArtist() {
-      const btn = document.getElementById('btn-follow-artist');
-      if (btn.innerText.includes('دنبال شده')) {
-        btn.innerHTML = `<span>دنبال کردن</span>`;
-        showToast('هنرمند از لیست دنبال‌شدگان شما برداشته شد');
-      } else {
-        btn.innerHTML = `<span style="color:var(--brand);">دنبال شده ✓</span>`;
-        showToast('به جمع شنوندگان رسمی این هنرمند پیوستید');
-      }
+    function toggleLyricsDrawer() { document.getElementById('lyrics-drawer')?.classList.toggle('open'); }
+    function toggleQueueDrawer() { document.getElementById('queue-drawer')?.classList.toggle('open'); }
+    function toggleProfileMenu() { document.getElementById('profile-dropdown-menu')?.classList.toggle('open'); }
+    function closeProfileMenu() { document.getElementById('profile-dropdown-menu')?.classList.remove('open'); }
+    function openAudioSettings() { document.getElementById('settings-modal')?.classList.add('open'); }
+    function closeAudioSettings() { document.getElementById('settings-modal')?.classList.remove('open'); }
+
+    function formatSeconds(s) {
+      const m = Math.floor(s / 60);
+      const sec = s % 60;
+      return `${m}:${sec < 10 ? '0' : ''}${sec}`;
     }
 
-    let canvasAnimId = null;
-    function initVisualizerLoop() {
-      const canvas = document.getElementById('canvas-visualizer');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      canvas.width = canvas.parentElement.offsetWidth;
-      canvas.height = 75;
-
-      let step = 0;
-      function renderWave() {
-        if (!isFullPlayerOpen) return;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        step += 0.05;
-        const bars = 36;
-        const barWidth = canvas.width / bars;
-
-        for (let i = 0; i < bars; i++) {
-          const heightFactor = isPlaying 
-            ? Math.abs(Math.sin(step + i * 0.25)) * 48 + 8 
-            : 6;
-          
-          const grad = ctx.createLinearGradient(0, canvas.height, 0, 0);
-          grad.addColorStop(0, "rgba(16, 185, 84, 0.1)");
-          grad.addColorStop(1, "rgba(16, 185, 84, 0.88)");
-
-          ctx.fillStyle = grad;
-          ctx.fillRect(i * barWidth, canvas.height - heightFactor, barWidth - 3, heightFactor);
-        }
-
-        canvasAnimId = requestAnimationFrame(renderWave);
-      }
-      if (canvasAnimId) cancelAnimationFrame(canvasAnimId);
-      renderWave();
-    }
-
-    function showToast(message) {
+    function showToast(msg) {
       const shelf = document.getElementById('toast-shelf');
-      const toast = document.createElement('div');
-      toast.className = 'toast-msg';
-      toast.innerHTML = `
-        <svg width="17" height="17" fill="var(--brand)" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-        <span>${message}</span>
-      `;
-      shelf.appendChild(toast);
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(10px)';
-        toast.style.transition = 'all 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-      }, 3000);
+      if (!shelf) return;
+      const t = document.createElement('div');
+      t.className = 'toast-msg';
+      t.textContent = msg;
+      shelf.appendChild(t);
+      setTimeout(() => t.remove(), 2800);
     }
 
-    function openAudioSettings() {
-      document.getElementById('settings-modal').classList.add('open');
+    function initSliders() {
+      const bind = (elem, cb) => {
+        if (!elem) return;
+        elem.onclick = (e) => {
+          const rect = elem.getBoundingClientRect();
+          const frac = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+          cb(frac);
+        };
+      };
+
+      bind(document.getElementById('mini-scrub-track'), frac => {
+        const track = TRACKS_DB[currentTrackIndex];
+        seekToSeconds(frac * (track ? (track.duration_sec || 210) : 210));
+      });
+      bind(document.getElementById('full-scrub-track'), frac => {
+        const track = TRACKS_DB[currentTrackIndex];
+        seekToSeconds(frac * (track ? (track.duration_sec || 210) : 210));
+      });
+      bind(document.getElementById('mini-volume-track'), frac => setAudioVolume(frac));
+      bind(document.getElementById('full-volume-track'), frac => setAudioVolume(frac));
     }
 
-    function closeAudioSettings(e) {
-      document.getElementById('settings-modal').classList.remove('open');
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      renderAppGrids();
-      initSliders();
-      loadTrack(0);
-      updateVolumeUI();
-      updateFavoriteBadges();
-      handleSearchInput('');
+      fetchTracksFromDatabase();
     });
-
-    // هماهنگی نوار پیشرفت و کارائوکه با پخش واقعی آهنگ
-    realPlayer.ontimeupdate = () => {
-    currentSeconds = Math.floor(realPlayer.currentTime);
-    const track = TRACKS_DB[currentTrackIndex];
-    const total = track ? (track.duration_sec || 210) : 210;
-    updateScrubbers((currentSeconds / total) * 100);
-    document.getElementById('mini-time-cur').textContent = formatSeconds(currentSeconds);
-    document.getElementById('full-time-cur').textContent = formatSeconds(currentSeconds);
-    syncLyricsHighlight(currentSeconds);
-    };
-
-    realPlayer.onended = () => {
-    nextTrack();
-    };
-  </script>
+</script>
 </body>
 </html>

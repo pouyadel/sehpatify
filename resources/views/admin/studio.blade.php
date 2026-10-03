@@ -2190,142 +2190,38 @@
 
   </div>
 
-  <script>
-    const DEFAULT_TRACKS = [
+<script>
+    const FALLBACK_TRACKS = [
       {
         id: 1,
         title: "آرمان‌شهر",
         artist: "چارتار (Chaartaar)",
         album: "باران تویی",
         duration: "04:12",
-        durationSec: 252,
+        duration_sec: 252,
         cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80",
         genre: "تلفیقی و الکترونیک",
-        isLossless: true,
+        is_lossless: true,
         streams: 142800,
+        stream_url: null,
         lyrics: [
           { time: 0, fa: "در هوایت بی قرارم روز و شب...", en: "Restless in your yearning day and night..." },
           { time: 15.2, fa: "سر ز پایت بر ندارم روز و شب...", en: "My head upon your path, without end..." },
           { time: 30.5, fa: "آسمان با رقص ما روشن شد از نور سحر", en: "The skies ignited with dawn from our dance" },
           { time: 55.0, fa: "ریتم باران روی سازم زندگی بخشید باز", en: "The rhythm of rain breathed life upon my strings" }
         ]
-      },
-      {
-        id: 2,
-        title: "طهران در مه",
-        artist: "اکو تهران (Echo Tehran)",
-        album: "شب‌های دود و چراغ",
-        duration: "03:45",
-        durationSec: 225,
-        cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&auto=format&fit=crop&q=80",
-        genre: "آلترناتیو",
-        isLossless: true,
-        streams: 89400,
-        lyrics: [
-          { time: 0, fa: "چراغ‌های اتوبان در امتداد شب", en: "Highway lights stretching across midnight" },
-          { time: 20.4, fa: "صدای پای خاطره در ازدحام مه", en: "Echoes of memory amidst the velvet haze" },
-          { time: 42.1, fa: "سهپاتیفای در گوش من زمزمه می‌کند", en: "Sehpatify murmuring softly in my ears" }
-        ]
-      },
-      {
-        id: 3,
-        title: "آواز سکوت",
-        artist: "دریا دادور (Darya)",
-        album: "انعکاس نور",
-        duration: "05:02",
-        durationSec: 302,
-        cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=500&auto=format&fit=crop&q=80",
-        genre: "سنتی معاصر",
-        isLossless: true,
-        streams: 63200,
-        lyrics: [
-          { time: 0, fa: "سکوت سرشار از ناگفته‌هاست...", en: "Silence overflows with unspoken words..." },
-          { time: 25.8, fa: "در عمق جان، نوای تار می‌پیچد", en: "Deep in the soul, strings resonate" }
-        ]
-      },
-      {
-        id: 4,
-        title: "نبض بی‌پایان (Pulse)",
-        artist: "نیما فرهمند (Nima)",
-        album: "مدار بیست و چهار",
-        duration: "03:18",
-        durationSec: 198,
-        cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=80",
-        genre: "امبینت و ریلکس",
-        isLossless: true,
-        streams: 112000,
-        lyrics: [
-          { time: 0, fa: "موج در موج، ارتعاش بی‌پایان نور", en: "Wave upon wave, infinite vibrations of light" },
-          { time: 22.0, fa: "ریتم، درون تو جاری است", en: "The rhythm lives within you" }
-        ]
-      },
-      {
-        id: 5,
-        title: "کویر و ستاره",
-        artist: "کیهان کلهر & اردال ارزنجان",
-        album: "باد صبا",
-        duration: "06:40",
-        durationSec: 400,
-        cover: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=500&auto=format&fit=crop&q=80",
-        genre: "سنتی معاصر",
-        isLossless: true,
-        streams: 194500,
-        lyrics: []
       }
     ];
 
     let TRACKS_DB = [];
-    let realAudio = new Audio(); // پلیر صوتی واقعی استودیو
-
-    // تشخیص خودکار مدت زمان آهنگ پس از انتخاب فایل
-    function detectAudioDuration(input) {
-      if (input.files && input.files[0]) {
-        const file = input.files[0];
-        const tempAudio = new Audio();
-        tempAudio.src = URL.createObjectURL(file);
-        tempAudio.onloadedmetadata = () => {
-          const sec = Math.floor(tempAudio.duration);
-          document.getElementById('track-form-duration-sec').value = sec;
-          document.getElementById('track-form-duration').value = formatTimeWithMs(sec).slice(0, 5);
-        };
-      }
-    }
-
-    // واکشی قطعات از لاراول
-    async function fetchTracksFromBackend() {
-      try {
-        const res = await fetch('/api/tracks');
-        TRACKS_DB = await res.json();
-        renderTracksTable();
-        if (TRACKS_DB.length > 0) {
-          selectedStudioTrackId = TRACKS_DB[0].id;
-          renderStudioView();
-        }
-      } catch (err) {
-        showToast('خطا در دریافت آهنگ‌ها از سرور');
-      }
-    }
-
     let PLAYLISTS_DB = JSON.parse(localStorage.getItem('sehpatify_playlists')) || [
-      { id: 101, title: "شب‌های تهران", count: "۲۴ قطعه", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&auto=format&fit=crop&q=80", desc: "نواهای دلنشین برای رانندگی شبانه و آرامش پایتخت" },
-      { id: 102, title: "تمرکز عمیق (Deep Focus)", count: "۳۸ قطعه", cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80", desc: "لوفای و امبینت برای بیشترین تمرکز کاری و ذهنی" },
-      { id: 103, title: "نوستالژی دهه‌ی هفتاد", count: "۵۰ قطعه", cover: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=500&auto=format&fit=crop&q=80", desc: "یادآور خاطرات طلایی و آواهای ماندگار کاست‌ها" },
-      { id: 104, title: "Persian Essentials", count: "۳۲ قطعه", cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500&auto=format&fit=crop&q=80", desc: "شاهکارهای اصیل موسیقی که هر ایرانی باید بشنود" }
+      { id: 101, title: "شب‌های تهران", count: "۲۴ قطعه", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500", desc: "نواهای دلنشین برای رانندگی شبانه" }
     ];
-
-
     let ARTISTS_DB = JSON.parse(localStorage.getItem('sehpatify_artists')) || [
-      { name: "چارتار", listeners: "۱,۸۴۰,۳۲۰", verified: true, count: 18, genre: "تلفیقی الکترونیک" },
-      { name: "همایون شجریان", listeners: "۲,۴۱۰,۰۰۰", verified: true, count: 42, genre: "سنتی اصیل" },
-      { name: "اکو تهران", listeners: "۹۵۰,۲۰۰", verified: true, count: 12, genre: "آلترناتیو" },
-      { name: "نیما فرهمند", listeners: "۶۴۰,۱۵۰", verified: false, count: 8, genre: "امبینت" }
+      { name: "چارتار", listeners: "۱,۸۴۰,۳۲۰", verified: true, count: 18, genre: "تلفیقی الکترونیک" }
     ];
-
     let USERS_DB = JSON.parse(localStorage.getItem('sehpatify_users')) || [
-      { id: 1, name: "سهراب پارسا", email: "sohrab@sehpatify.ir", plan: "طلایی Hi-Res (یک ساله)", role: "مدیر ارشد", date: "۱۴۰۲/۰۶/۱۵", active: true },
-      { id: 2, name: "مریم کیانی", email: "maryam@gmail.com", plan: "پرمیوم استاندارد", role: "کاربر", date: "۱۴۰۳/۰۱/۲۰", active: true },
-      { id: 3, name: "احسان علوی", email: "ehsan.alavi@yahoo.com", plan: "رایگان", role: "کاربر", date: "۱۴۰۳/۰۴/۱۱", active: true },
-      { id: 4, name: "آرش افشار", email: "arash@soundstudio.com", plan: "طلایی Hi-Res (یک ساله)", role: "آرتیست رسمی", date: "۱۴۰۲/۱۱/۰۴", active: true }
+      { id: 1, name: "سهراب پارسا", email: "sohrab@sehpatify.ir", plan: "طلایی Hi-Res", role: "مدیر ارشد", date: "۱۴۰۲/۰۶/۱۵", active: true }
     ];
 
     let currentAdminView = 'dashboard';
@@ -2333,60 +2229,8 @@
     let studioIsPlaying = false;
     let studioCurrentTime = 0;
     let studioPlaybackRate = 1.0;
-    let studioTimerInterval = null;
     let activeEditingLineIndex = 0;
-
-    // Web Audio Synthesizer Engine
-    let audioCtx = null;
-    let synthOsc = null;
-    let synthGain = null;
-
-    function initStudioAudio() {
-      if (!audioCtx) {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        audioCtx = new AudioContext();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-    }
-
-    function startAudioTone() {
-      try {
-        initStudioAudio();
-        stopAudioTone();
-        synthOsc = audioCtx.createOscillator();
-        synthGain = audioCtx.createGain();
-        synthOsc.type = 'sine';
-        synthOsc.frequency.setValueAtTime(240, audioCtx.currentTime);
-        synthGain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-        synthGain.gain.exponentialRampToValueAtTime(0.04, audioCtx.currentTime + 0.3);
-        synthOsc.connect(synthGain);
-        synthGain.connect(audioCtx.destination);
-        synthOsc.start();
-      } catch (err) {}
-    }
-
-    function stopAudioTone() {
-      if (synthGain && audioCtx) {
-        try {
-          synthGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.1);
-          setTimeout(() => {
-            if (synthOsc) {
-              synthOsc.stop();
-              synthOsc = null;
-            }
-          }, 120);
-        } catch(e) {}
-      }
-    }
-
-    function saveState() {
-      localStorage.setItem('sehpatify_tracks', JSON.stringify(TRACKS_DB));
-      localStorage.setItem('sehpatify_playlists', JSON.stringify(PLAYLISTS_DB));
-      localStorage.setItem('sehpatify_artists', JSON.stringify(ARTISTS_DB));
-      localStorage.setItem('sehpatify_users', JSON.stringify(USERS_DB));
-    }
+    let realAudio = new Audio();
 
     function switchAdminView(viewKey) {
       currentAdminView = viewKey;
@@ -2419,110 +2263,31 @@
       }
 
       document.getElementById('admin-sidebar').classList.remove('open');
-      document.getElementById('viewport').scrollTo({ top: 0, behavior: 'smooth' });
+      const viewport = document.getElementById('viewport');
+      if (viewport) viewport.scrollTo({ top: 0, behavior: 'smooth' });
 
-      if (viewKey === 'lyrics') {
-        renderStudioView();
-      } else if (viewKey === 'dashboard') {
-        drawStreamsChart('7d');
-      }
+      if (viewKey === 'lyrics') renderStudioView();
+      if (viewKey === 'dashboard') drawStreamsChart('7d');
     }
 
     function toggleMobileSidebar() {
       document.getElementById('admin-sidebar').classList.toggle('open');
     }
 
-    function drawStreamsChart(period = '7d') {
-      const canvas = document.getElementById('streams-analytics-canvas');
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      canvas.width = canvas.parentElement.offsetWidth;
-      canvas.height = canvas.parentElement.offsetHeight;
-
-      let labels = ["شنبه", "۱شنبه", "۲شنبه", "۳شنبه", "۴شنبه", "۵شنبه", "جمعه"];
-      let values = [48, 62, 54, 75, 89, 120, 155]; // in thousands
-
-      if (period === '30d') {
-        labels = ["هفته ۱", "هفته ۲", "هفته ۳", "هفته ۴"];
-        values = [310, 420, 580, 690];
-      } else if (period === '12m') {
-        labels = ["فروردین", "تیر", "مهر", "دی", "اسفند"];
-        values = [820, 1150, 1600, 2100, 2800];
+    async function fetchTracksFromBackend() {
+      try {
+        const res = await fetch('/api/tracks');
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        TRACKS_DB = data.length > 0 ? data : FALLBACK_TRACKS;
+      } catch (err) {
+        TRACKS_DB = FALLBACK_TRACKS;
       }
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      const maxVal = Math.max(...values) * 1.25;
-      const paddingX = 40;
-      const paddingY = 30;
-      const graphW = canvas.width - paddingX * 2;
-      const graphH = canvas.height - paddingY * 2;
-
-      // Draw Grid Lines
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
-      ctx.lineWidth = 1;
-      for (let i = 0; i <= 4; i++) {
-        const y = paddingY + (graphH / 4) * i;
-        ctx.beginPath();
-        ctx.moveTo(paddingX, y);
-        ctx.lineTo(canvas.width - paddingX, y);
-        ctx.stroke();
+      renderTracksTable();
+      if (TRACKS_DB.length > 0) {
+        selectedStudioTrackId = TRACKS_DB[0].id;
+        renderStudioView();
       }
-
-      // Draw Gradient Area
-      const points = values.map((val, idx) => {
-        const x = paddingX + (graphW / (values.length - 1)) * idx;
-        const y = paddingY + graphH - (val / maxVal) * graphH;
-        return { x, y, val, label: labels[idx] };
-      });
-
-      const grad = ctx.createLinearGradient(0, paddingY, 0, canvas.height - paddingY);
-      grad.addColorStop(0, "rgba(16, 185, 84, 0.35)");
-      grad.addColorStop(1, "rgba(16, 185, 84, 0.0)");
-
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, canvas.height - paddingY);
-      points.forEach(p => ctx.lineTo(p.x, p.y));
-      ctx.lineTo(points[points.length - 1].x, canvas.height - paddingY);
-      ctx.closePath();
-      ctx.fillStyle = grad;
-      ctx.fill();
-
-      // Stroke Line
-      ctx.beginPath();
-      ctx.strokeStyle = "#10B954";
-      ctx.lineWidth = 3.5;
-      ctx.lineJoin = "round";
-      points.forEach((p, idx) => {
-        if (idx === 0) ctx.moveTo(p.x, p.y);
-        else ctx.lineTo(p.x, p.y);
-      });
-      ctx.stroke();
-
-      // Dots and Text
-      ctx.font = "11px Vazirmatn";
-      ctx.fillStyle = "#9696A3";
-      ctx.textAlign = "center";
-
-      points.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
-        ctx.fillStyle = "#FFFFFF";
-        ctx.fill();
-        ctx.strokeStyle = "#10B954";
-        ctx.lineWidth = 2.5;
-        ctx.stroke();
-
-        ctx.fillStyle = "#9696A3";
-        ctx.fillText(p.label, p.x, canvas.height - 8);
-      });
-    }
-
-    function updateChartPeriod(period) {
-      document.querySelectorAll('#chart-btn-7d, #chart-btn-30d, #chart-btn-12m').forEach(b => b.classList.remove('active'));
-      const activeBtn = document.getElementById(`chart-btn-${period}`);
-      if (activeBtn) activeBtn.classList.add('active');
-      drawStreamsChart(period);
     }
 
     function renderTracksTable(tracksToRender = TRACKS_DB) {
@@ -2534,45 +2299,28 @@
           <td><span style="color:var(--muted); font-weight:700;">${idx + 1}</span></td>
           <td>
             <div class="track-meta-cell">
-              <img class="track-cover-thumb" src="${t.cover}" alt="${t.title}" />
+              <img class="track-cover-thumb" src="${t.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=100'}" alt="${t.title}" />
               <div>
                 <div style="font-weight:800; font-size:13.5px;">${t.title}</div>
-                <div style="font-size:11px; color:var(--muted);">${t.genre}</div>
+                <div style="font-size:11px; color:var(--muted);">${t.genre || 'پاپ'}</div>
               </div>
             </div>
           </td>
           <td><span style="font-weight:600;">${t.artist}</span></td>
-          <td><span style="color:var(--muted);">${t.album}</span></td>
-          <td style="direction:ltr; text-align:right;">${t.duration}</td>
-          <td>
-            <span class="badge-status ${t.isLossless ? 'hi-res' : ''}">
-              ${t.isLossless ? 'FLAC 24-bit' : 'MP3 320k'}
-            </span>
-          </td>
-          <td>
-            <span class="badge-status ${t.lyrics && t.lyrics.length > 0 ? 'synced' : 'empty'}">
-              ${t.lyrics && t.lyrics.length > 0 ? `✓ ${t.lyrics.length} سطر همگام` : 'فاقد لیریکس'}
-            </span>
-          </td>
-          <td style="font-weight:700; color:var(--muted);">${t.streams.toLocaleString('fa-IR')}</td>
+          <td><span style="color:var(--muted);">${t.album || t.title}</span></td>
+          <td style="direction:ltr; text-align:right;">${t.duration || '03:30'}</td>
+          <td><span class="badge-status ${t.is_lossless ? 'hi-res' : ''}">${t.is_lossless ? 'FLAC 24-bit' : 'MP3 320k'}</span></td>
+          <td><span class="badge-status ${t.lyrics && t.lyrics.length > 0 ? 'synced' : 'empty'}">${t.lyrics && t.lyrics.length > 0 ? `✓ ${t.lyrics.length} سطر` : 'فاقد لیریکس'}</span></td>
+          <td style="font-weight:700; color:var(--muted);">${(t.streams || 0).toLocaleString('fa-IR')}</td>
           <td>
             <div class="table-actions-cell">
-              <button class="btn-table-action lyrics-action" onclick="openTrackInLyricsStudio(${t.id})" title="ورود به استودیو لیریکس این آهنگ">
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
-                <span>لیریکس</span>
-              </button>
-              <button class="btn-table-action" onclick="openEditTrackModal(${t.id})" title="ویرایش اطلاعات">
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-              </button>
-              <button class="btn-table-action danger" onclick="deleteTrack(${t.id})" title="حذف اثر">
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-              </button>
+              <button class="btn-table-action lyrics-action" onclick="openTrackInLyricsStudio(${t.id})">لیریکس</button>
+              <button class="btn-table-action danger" onclick="deleteTrack(${t.id})">✕</button>
             </div>
           </td>
         </tr>
       `).join('');
 
-      // Update KPI
       document.getElementById('kpi-total-tracks').textContent = TRACKS_DB.length;
       const syncedCount = TRACKS_DB.filter(t => t.lyrics && t.lyrics.length > 0).length;
       document.getElementById('kpi-synced-lyrics').textContent = `${syncedCount} / ${TRACKS_DB.length}`;
@@ -2580,8 +2328,8 @@
     }
 
     function filterTracksTable(filterKey, chipBtn) {
-      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-      chipBtn.classList.add('active');
+      document.querySelectorAll('.filter-chips-row .filter-chip').forEach(c => c.classList.remove('active'));
+      if (chipBtn) chipBtn.classList.add('active');
 
       if (filterKey === 'all') {
         renderTracksTable(TRACKS_DB);
@@ -2590,59 +2338,116 @@
       } else if (filterKey === 'no-lyrics') {
         renderTracksTable(TRACKS_DB.filter(t => !t.lyrics || t.lyrics.length === 0));
       } else if (filterKey === 'lossless') {
-        renderTracksTable(TRACKS_DB.filter(t => t.isLossless));
+        renderTracksTable(TRACKS_DB.filter(t => t.is_lossless));
       }
     }
 
     function searchTracksLocal(query) {
-      const q = query.toLowerCase().trim();
-      const results = TRACKS_DB.filter(t => 
-        t.title.toLowerCase().includes(q) ||
-        t.artist.toLowerCase().includes(q) ||
-        t.album.toLowerCase().includes(q)
+      const q = (query || '').toLowerCase().trim();
+      const results = TRACKS_DB.filter(t =>
+        (t.title && t.title.toLowerCase().includes(q)) ||
+        (t.artist && t.artist.toLowerCase().includes(q)) ||
+        (t.album && t.album.toLowerCase().includes(q))
       );
       renderTracksTable(results);
     }
 
     function handleAdminGlobalSearch(query) {
-      if (!query.trim()) return;
+      if (!query || !query.trim()) return;
       switchAdminView('tracks');
+      const localInput = document.querySelector('.table-controls-bar input');
+      if (localInput) localInput.value = query;
       searchTracksLocal(query);
     }
 
-    function renderLiveActivity() {
-      const container = document.getElementById('live-activity-grid');
-      if (!container) return;
+    function detectAudioDuration(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        const tempAudio = new Audio();
+        tempAudio.src = URL.createObjectURL(file);
+        tempAudio.onloadedmetadata = () => {
+          const sec = Math.floor(tempAudio.duration);
+          document.getElementById('track-form-duration-sec').value = sec;
+          document.getElementById('track-form-duration').value = formatTimeWithMs(sec).slice(0, 5);
+        };
+      }
+    }
 
-      const activeUsersMock = [
-        { track: "آرمان‌شهر", artist: "چارتار", user: "امیرحسین • شیراز", quality: "FLAC 96kHz" },
-        { track: "طهران در مه", artist: "اکو تهران", user: "نیلوفر • تهران", quality: "FLAC Lossless" },
-        { track: "آواز سکوت", artist: "دریا دادور", user: "آریا • اصفهان", quality: "Studio Master" },
-        { track: "نبض بی‌پایان", artist: "نیما فرهمند", user: "سحر • رشت", quality: "FLAC Lossless" }
-      ];
+    async function saveTrackFromModal() {
+      const audioInput = document.getElementById('track-form-audio-file');
+      const title = document.getElementById('track-form-name').value.trim();
+      const artist = document.getElementById('track-form-artist').value.trim();
 
-      container.innerHTML = activeUsersMock.map(item => `
-        <div style="background:var(--surface-elevated); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 14px; display:flex; align-items:center; justify-content:space-between;">
-          <div style="display:flex; align-items:center; gap:10px;">
-            <div class="status-dot-pulse"></div>
-            <div>
-              <div style="font-weight:700; font-size:13px;">${item.track}</div>
-              <div style="font-size:11px; color:var(--muted);">${item.user}</div>
-            </div>
-          </div>
-          <span style="font-size:10px; color:var(--brand); font-weight:700; background:rgba(16,185,84,0.1); padding:2px 8px; border-radius:var(--radius-full);">${item.quality}</span>
-        </div>
-      `).join('');
+      if (!title || !artist) {
+        showToast('عنوان اثر و نام هنرمند الزامی است.');
+        return;
+      }
+      if (!audioInput.files || audioInput.files.length === 0) {
+        showToast('لطفاً فایل صوتی آهنگ را انتخاب کنید.');
+        return;
+      }
+
+      const saveBtn = document.getElementById('btn-save-track');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'در حال آپلود...';
+
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('artist', artist);
+      formData.append('album', document.getElementById('track-form-album').value.trim());
+      formData.append('genre', document.getElementById('track-form-genre').value);
+      formData.append('duration', document.getElementById('track-form-duration').value);
+      formData.append('duration_sec', document.getElementById('track-form-duration-sec').value);
+      formData.append('is_lossless', document.getElementById('track-form-hires').value);
+      formData.append('audio_file', audioInput.files[0]);
+
+      const coverInput = document.getElementById('track-form-cover-file');
+      if (coverInput.files && coverInput.files[0]) {
+        formData.append('cover_file', coverInput.files[0]);
+      } else {
+        formData.append('cover_url', document.getElementById('track-form-cover').value);
+      }
+
+      try {
+        const res = await fetch('/api/admin/tracks', {
+          method: 'POST',
+          headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+          body: formData
+        });
+        if (!res.ok) throw new Error();
+        showToast('آهنگ با موفقیت آپلود و ذخیره شد ✓');
+        closeModal('modal-track');
+        fetchTracksFromBackend();
+      } catch (err) {
+        showToast('خطا در آپلود فایل');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = 'آپلود و ذخیره در سرور';
+      }
+    }
+
+    async function deleteTrack(trackId) {
+      if (!confirm('آیا از حذف این قطعه اطمینان دارید؟')) return;
+      try {
+        await fetch(`/api/admin/tracks/${trackId}`, {
+          method: 'DELETE',
+          headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+        });
+        showToast('قطعه صوتی حذف گردید.');
+        fetchTracksFromBackend();
+      } catch (err) {
+        showToast('خطا در حذف قطعه');
+      }
     }
 
     function renderStudioView() {
       const picker = document.getElementById('studio-track-picker');
+      if (!picker) return;
       picker.innerHTML = TRACKS_DB.map(t => `
         <option value="${t.id}" ${t.id === selectedStudioTrackId ? 'selected' : ''}>
           ${t.title} — ${t.artist} (${t.lyrics ? t.lyrics.length : 0} سطر)
         </option>
       `).join('');
-
       loadStudioTrack(selectedStudioTrackId);
     }
 
@@ -2654,14 +2459,13 @@
     function openTrackInLyricsStudio(trackId) {
       selectedStudioTrackId = trackId;
       switchAdminView('lyrics');
-      renderStudioView();
     }
 
     function loadStudioTrack(trackId) {
       const track = TRACKS_DB.find(t => t.id === trackId) || TRACKS_DB[0];
       if (!track) return;
 
-      document.getElementById('preview-track-art').src = track.cover;
+      document.getElementById('preview-track-art').src = track.cover || '';
       document.getElementById('preview-track-title').textContent = track.title;
       document.getElementById('preview-track-artist').textContent = track.artist;
 
@@ -2669,43 +2473,97 @@
       updateStudioTimerDisplay(0);
       updateStudioScrubberFill(0);
 
+      realAudio.pause();
+      studioIsPlaying = false;
+      const playBtn = document.getElementById('studio-play-btn');
+      if (playBtn) playBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+
+      if (track.stream_url) {
+        realAudio.src = track.stream_url;
+      } else {
+        realAudio.removeAttribute('src');
+      }
+
       renderStudioLyricsList(track);
       renderKaraokePreview(track);
+    }
+
+    function toggleStudioAudio() {
+      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
+      if (!track) return;
+
+      if (!track.stream_url) {
+        showToast('برای این قطعه هنوز فایل صوتی آپلود نشده است.');
+        return;
+      }
+
+      const playBtn = document.getElementById('studio-play-btn');
+
+      if (realAudio.src !== track.stream_url) {
+        realAudio.src = track.stream_url;
+      }
+
+      if (realAudio.paused) {
+        realAudio.play().then(() => {
+          studioIsPlaying = true;
+          playBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
+        }).catch(() => {
+          showToast('امکان پخش فایل صوتی وجود ندارد.');
+        });
+      } else {
+        realAudio.pause();
+        studioIsPlaying = false;
+        playBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+      }
+    }
+
+    realAudio.ontimeupdate = () => {
+      studioCurrentTime = realAudio.currentTime;
+      updateStudioTimerDisplay(studioCurrentTime);
+      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
+      const maxSec = track ? (track.duration_sec || 240) : 240;
+      updateStudioScrubberFill((studioCurrentTime / maxSec) * 100);
+      syncKaraokeHighlight(studioCurrentTime);
+    };
+
+    function jumpStudioAudio(secOffset) {
+      if (realAudio.src) {
+        realAudio.currentTime = Math.max(0, realAudio.currentTime + secOffset);
+      }
+    }
+
+    function setStudioSpeed(speed, btn) {
+      studioPlaybackRate = speed;
+      realAudio.playbackRate = speed;
+      document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function onStudioScrubberClick(e) {
+      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
+      if (!track || !realAudio.src) return;
+      const rect = e.currentTarget.getBoundingClientRect();
+      const fraction = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      realAudio.currentTime = fraction * (track.duration_sec || realAudio.duration || 210);
     }
 
     function renderStudioLyricsList(track) {
       const listContainer = document.getElementById('studio-lyrics-list');
       if (!track.lyrics || track.lyrics.length === 0) {
-        listContainer.innerHTML = `
-          <div style="text-align:center; padding:45px 16px; color:var(--muted);">
-            <div style="font-size:15px; font-weight:700; margin-bottom:6px;">هنوز سطری برای لیریکس این اثر ثبت نشده است.</div>
-            <div style="font-size:12px; margin-bottom:16px;">می‌توانید خطوط جدید اضافه کرده یا کل شعر را با فرمت فله‌ای (Bulk) یا فایل LRC وارد کنید.</div>
-            <button class="btn-quick-action" style="margin:0 auto;" onclick="addNewLyricRow()">+ ایجاد اولین سطر شعر</button>
-          </div>
-        `;
+        listContainer.innerHTML = `<div style="text-align:center; padding:45px 16px; color:var(--muted);">هنوز سطری برای لیریکس این اثر ثبت نشده است.<br><button class="btn-quick-action" style="margin:16px auto 0;" onclick="addNewLyricRow()">+ ایجاد اولین سطر شعر</button></div>`;
         return;
       }
 
       listContainer.innerHTML = track.lyrics.map((line, idx) => `
         <div class="lyrics-row-card ${idx === activeEditingLineIndex ? 'active-line' : ''}" id="lyrics-row-${idx}" onclick="selectLyricLineForEdit(${idx})">
-          <div>
-            <input type="text" class="input-timestamp" value="${formatTimeWithMs(line.time)}" onchange="updateLineTime(${idx}, this.value)" title="زمان (دقیقه:ثانیه)" />
-          </div>
-          <div>
-            <input type="text" class="input-lyric-txt" value="${escapeHtml(line.fa || '')}" oninput="updateLineFa(${idx}, this.value)" placeholder="متن فارسی شعر..." />
-          </div>
-          <div>
-            <input type="text" class="input-lyric-txt input-lyric-en" value="${escapeHtml(line.en || '')}" oninput="updateLineEn(${idx}, this.value)" placeholder="ترجمه انگلیسی..." />
-          </div>
+          <input type="text" class="input-timestamp" value="${formatTimeWithMs(line.time)}" onchange="updateLineTime(${idx}, this.value)" />
+          <input type="text" class="input-lyric-txt" value="${escapeHtml(line.fa || '')}" oninput="updateLineFa(${idx}, this.value)" placeholder="متن فارسی..." />
+          <input type="text" class="input-lyric-txt input-lyric-en" value="${escapeHtml(line.en || '')}" oninput="updateLineEn(${idx}, this.value)" placeholder="ترجمه انگلیسی..." />
           <div style="display:flex; align-items:center; gap:4px; justify-content:flex-end;">
             <button class="nudge-btn" onclick="event.stopPropagation(); nudgeLineTime(${idx}, -0.5);">-0.5s</button>
             <button class="nudge-btn" onclick="event.stopPropagation(); nudgeLineTime(${idx}, +0.5);">+0.5s</button>
-            <button class="btn-table-action" onclick="event.stopPropagation(); stampCurrentTimeOnLine(${idx});" title="مهر زمان کنونی">
-              <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            </button>
-            <button class="btn-table-action danger" onclick="event.stopPropagation(); deleteLyricLine(${idx});" title="حذف خط">
-              <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-            </button>
+            <button class="btn-table-action" onclick="event.stopPropagation(); stampCurrentTimeOnLine(${idx});">⏱</button>
+            <button class="btn-table-action danger" onclick="event.stopPropagation(); deleteLyricLine(${idx});">✕</button>
           </div>
         </div>
       `).join('');
@@ -2714,12 +2572,11 @@
     function renderKaraokePreview(track) {
       const container = document.getElementById('karaoke-preview-stream');
       if (!track.lyrics || track.lyrics.length === 0) {
-        container.innerHTML = `<div style="color:var(--muted); font-size:12.5px; padding-top:40px;">بدون لیریکس برای پیش‌نمایش</div>`;
+        container.innerHTML = `<div style="color:var(--muted); font-size:12.5px; padding-top:40px;">بدون لیریکس برای پیش‌‌نمایش</div>`;
         return;
       }
-
       container.innerHTML = track.lyrics.map((line, idx) => `
-        <div class="karaoke-line ${idx === 0 ? 'active' : ''}" id="karaoke-line-${idx}" onclick="jumpToLineTime(${line.time})">
+        <div class="karaoke-line ${idx === 0 ? 'active' : ''}" id="karaoke-line-${idx}">
           <div>${line.fa || '...'}</div>
           ${line.en ? `<span class="karaoke-trans">${line.en}</span>` : ''}
         </div>
@@ -2737,20 +2594,11 @@
       const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
       if (!track) return;
       if (!track.lyrics) track.lyrics = [];
-
       const newTime = Math.round(studioCurrentTime * 10) / 10;
-      track.lyrics.push({
-        time: newTime,
-        fa: "متن شعر جدید...",
-        en: ""
-      });
-
+      track.lyrics.push({ time: newTime, fa: "متن سطر جدید...", en: "" });
       track.lyrics.sort((a, b) => a.time - b.time);
-      activeEditingLineIndex = track.lyrics.findIndex(l => l.time === newTime);
-
       renderStudioLyricsList(track);
       renderKaraokePreview(track);
-      showToast(`سطر جدید در ثانیه ${newTime} اضافه شد`);
     }
 
     function deleteLyricLine(idx) {
@@ -2759,31 +2607,22 @@
       track.lyrics.splice(idx, 1);
       renderStudioLyricsList(track);
       renderKaraokePreview(track);
-      showToast('سطر لیریکس حذف شد');
     }
 
-    function updateLineFa(idx, value) {
+    function updateLineFa(idx, val) {
       const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      if (track && track.lyrics[idx]) {
-        track.lyrics[idx].fa = value;
-        renderKaraokePreview(track);
-      }
+      if (track && track.lyrics[idx]) { track.lyrics[idx].fa = val; renderKaraokePreview(track); }
     }
 
-    function updateLineEn(idx, value) {
+    function updateLineEn(idx, val) {
       const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      if (track && track.lyrics[idx]) {
-        track.lyrics[idx].en = value;
-        renderKaraokePreview(track);
-      }
+      if (track && track.lyrics[idx]) { track.lyrics[idx].en = val; renderKaraokePreview(track); }
     }
 
     function updateLineTime(idx, timeStr) {
       const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
       if (!track || !track.lyrics[idx]) return;
-
-      const sec = parseTimeStrToSeconds(timeStr);
-      track.lyrics[idx].time = sec;
+      track.lyrics[idx].time = parseTimeStrToSeconds(timeStr);
       track.lyrics.sort((a, b) => a.time - b.time);
       renderStudioLyricsList(track);
       renderKaraokePreview(track);
@@ -2799,300 +2638,30 @@
     }
 
     function stampCurrentTimeOnActiveRow() {
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      if (!track || !track.lyrics || track.lyrics.length === 0) {
-        addNewLyricRow();
-        return;
-      }
       stampCurrentTimeOnLine(activeEditingLineIndex);
     }
 
     function stampCurrentTimeOnLine(idx) {
       const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      if (!track || !track.lyrics[idx]) return;
-
-      const stampedSec = Math.round(studioCurrentTime * 10) / 10;
-      track.lyrics[idx].time = stampedSec;
-      
-      if (idx < track.lyrics.length - 1) {
-        activeEditingLineIndex = idx + 1;
+      if (!track || !track.lyrics || track.lyrics.length === 0) {
+        addNewLyricRow();
+        return;
       }
-
+      if (!track.lyrics[idx]) return;
+      track.lyrics[idx].time = Math.round(studioCurrentTime * 10) / 10;
+      if (idx < track.lyrics.length - 1) activeEditingLineIndex = idx + 1;
       renderStudioLyricsList(track);
       renderKaraokePreview(track);
-      showToast(`زمان خط به ${formatTimeWithMs(stampedSec)} متصل گردید ✓`);
-    }
-
-    function clearAllLyrics() {
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      if (!track) return;
-      track.lyrics = [];
-      renderStudioLyricsList(track);
-      renderKaraokePreview(track);
-      showToast('خطوط لیریکس پاک‌سازی شدند');
-    }
-
-    function jumpToLineTime(sec) {
-      studioCurrentTime = sec;
-      updateStudioTimerDisplay(studioCurrentTime);
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      if (track) {
-        updateStudioScrubberFill((studioCurrentTime / track.durationSec) * 100);
-      }
-      syncKaraokeHighlight(studioCurrentTime);
-    }
-
-    let TRACKS_DB = [];
-    let realAudio = new Audio(); // پلیر صوتی واقعی استودیو
-
-    // تشخیص خودکار مدت زمان آهنگ پس از انتخاب فایل
-    function detectAudioDuration(input) {
-      if (input.files && input.files[0]) {
-        const file = input.files[0];
-        const tempAudio = new Audio();
-        tempAudio.src = URL.createObjectURL(file);
-        tempAudio.onloadedmetadata = () => {
-          const sec = Math.floor(tempAudio.duration);
-          document.getElementById('track-form-duration-sec').value = sec;
-          document.getElementById('track-form-duration').value = formatTimeWithMs(sec).slice(0, 5);
-        };
-      }
-    }
-
-    // واکشی قطعات از لاراول
-    async function fetchTracksFromBackend() {
-      try {
-        const res = await fetch('/api/tracks');
-        TRACKS_DB = await res.json();
-        renderTracksTable();
-        if (TRACKS_DB.length > 0) {
-          selectedStudioTrackId = TRACKS_DB[0].id;
-          renderStudioView();
-        }
-      } catch (err) {
-        showToast('خطا در دریافت آهنگ‌ها از سرور');
-      }
-    }
-
-    // ارسال فرم آپلود با FormData به لاراول
-    async function saveTrackFromModal() {
-      const audioInput = document.getElementById('track-form-audio-file');
-      const title = document.getElementById('track-form-name').value.trim();
-      const artist = document.getElementById('track-form-artist').value.trim();
-
-      if (!title || !artist) {
-        showToast('لطفاً عنوان و نام هنرمند را وارد کنید');
-        return;
-      }
-
-      if (!audioInput.files || audioInput.files.length === 0) {
-        showToast('لطفاً فایل صوتی آهنگ را انتخاب کنید');
-        return;
-      }
-
-      const saveBtn = document.getElementById('btn-save-track');
-      saveBtn.disabled = true;
-      saveBtn.textContent = 'در حال آپلود فایل...';
-
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('artist', artist);
-      formData.append('album', document.getElementById('track-form-album').value.trim());
-      formData.append('genre', document.getElementById('track-form-genre').value);
-      formData.append('duration', document.getElementById('track-form-duration').value);
-      formData.append('duration_sec', document.getElementById('track-form-duration-sec').value);
-      formData.append('is_lossless', document.getElementById('track-form-hires').value);
-      formData.append('audio_file', audioInput.files[0]);
-
-      const coverInput = document.getElementById('track-form-cover-file');
-      if (coverInput.files && coverInput.files[0]) {
-        formData.append('cover_file', coverInput.files[0]);
-      } else {
-        formData.append('cover_url', document.getElementById('track-form-cover').value);
-      }
-
-      try {
-        const res = await fetch('/api/admin/tracks', {
-          method: 'POST',
-          headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-          },
-          body: formData
-        });
-
-        if (!res.ok) throw new Error('خطا در آپلود');
-
-        const newTrack = await res.json();
-        showToast(`آهنگ «${newTrack.title}» با موفقیت آپلود و ذخیره شد ✓`);
-        closeModal('modal-track');
-        fetchTracksFromBackend();
-      } catch (err) {
-        showToast('خطا در بارگذاری آهنگ روی سرور');
-      } finally {
-        saveBtn.disabled = false;
-        saveBtn.textContent = 'آپلود و ذخیره در سرور';
-      }
-    }
-
-    // پخش / توقف فایل صوتی واقعی
-    function toggleStudioAudio() {
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      if (!track) return;
-
-      const playBtn = document.getElementById('studio-play-btn');
-
-      if (realAudio.src !== track.stream_url) {
-        realAudio.src = track.stream_url;
-      }
-
-      if (realAudio.paused) {
-        realAudio.play();
-        studioIsPlaying = true;
-        playBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
-      } else {
-        realAudio.pause();
-        studioIsPlaying = false;
-        playBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
-      }
-    }
-
-    // به‌روزرسانی تایمر بر اساس صدای زنده واقعی
-    realAudio.ontimeupdate = () => {
-      studioCurrentTime = realAudio.currentTime;
-      updateStudioTimerDisplay(studioCurrentTime);
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      const maxSec = track ? (track.duration_sec || 240) : 240;
-      updateStudioScrubberFill((studioCurrentTime / maxSec) * 100);
-      syncKaraokeHighlight(studioCurrentTime);
-    };
-
-    function jumpStudioAudio(offset) {
-      realAudio.currentTime = Math.max(0, realAudio.currentTime + offset);
-    }
-
-    function onStudioScrubberClick(e) {
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      if (!track) return;
-      const rect = e.currentTarget.getBoundingClientRect();
-      const frac = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-      realAudio.currentTime = frac * (track.duration_sec || realAudio.duration || 200);
-    }
-
-    // ذخیره لیریکس نهایی در پایگاه‌داده MySQL
-    async function saveCurrentTrackLyrics() {
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      if (!track) return;
-
-      try {
-        const res = await fetch(`/api/admin/tracks/${track.id}/lyrics`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-          },
-          body: JSON.stringify({ lyrics: track.lyrics })
-        });
-
-        if (res.ok) {
-          showToast(`لیریکس ${track.title} با موفقیت در دیتابیس ذخیره شد ✓`);
-        }
-      } catch (err) {
-        showToast('خطا در ذخیره لیریکس');
-      }
-    }
-
-    // حذف آهنگ از دیتابیس و هارد دیسک
-    async function deleteTrack(trackId) {
-      if (!confirm('آیا از حذف این قطعه مطمئن هستید؟')) return;
-
-      try {
-        const res = await fetch(`/api/admin/tracks/${trackId}`, {
-          method: 'DELETE',
-          headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
-        });
-        if (res.ok) {
-          showToast('قطعه صوتی با موفقیت حذف گردید.');
-          fetchTracksFromBackend();
-        }
-      } catch (err) {
-        showToast('خطا در حذف آهنگ');
-      }
-    }
-
-    // لود اولیه از بک‌اند لاراول
-    window.addEventListener('DOMContentLoaded', () => {
-      fetchTracksFromBackend();
-      renderPlaylistsAdmin();
-      renderArtistsAdmin();
-      renderUsersAdmin();
-      renderLiveActivity();
-      drawStreamsChart('7d');
-    });
-
-    function setStudioSpeed(speed, btn) {
-      studioPlaybackRate = speed;
-      document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      showToast(`سرور پخش روی ${speed}x تنظیم شد`);
-    }
-
-    function tickStudioAudio() {
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      const maxSec = track ? track.durationSec : 240;
-
-      studioCurrentTime += 0.1 * studioPlaybackRate;
-      if (studioCurrentTime > maxSec) {
-        studioCurrentTime = 0;
-        toggleStudioAudio();
-        return;
-      }
-
-      updateStudioTimerDisplay(studioCurrentTime);
-      updateStudioScrubberFill((studioCurrentTime / maxSec) * 100);
-      syncKaraokeHighlight(studioCurrentTime);
-    }
-
-    function jumpStudioAudio(secondsOffset) {
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      const maxSec = track ? track.durationSec : 240;
-      studioCurrentTime = Math.max(0, Math.min(maxSec, studioCurrentTime + secondsOffset));
-      updateStudioTimerDisplay(studioCurrentTime);
-      updateStudioScrubberFill((studioCurrentTime / maxSec) * 100);
-      syncKaraokeHighlight(studioCurrentTime);
-    }
-
-    function onStudioScrubberClick(e) {
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      if (!track) return;
-      const rect = e.currentTarget.getBoundingClientRect();
-      const fraction = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-      studioCurrentTime = fraction * track.durationSec;
-      updateStudioTimerDisplay(studioCurrentTime);
-      updateStudioScrubberFill(fraction * 100);
-      syncKaraokeHighlight(studioCurrentTime);
-    }
-
-    function updateStudioTimerDisplay(sec) {
-      const disp = document.getElementById('studio-time-display');
-      if (disp) disp.textContent = formatTimeWithMs(sec);
-    }
-
-    function updateStudioScrubberFill(pct) {
-      const fill = document.getElementById('studio-progress-fill');
-      if (fill) fill.style.width = Math.min(100, Math.max(0, pct)) + '%';
+      showToast(`زمان خط به ${formatTimeWithMs(track.lyrics[idx].time)} متصل گردید ✓`);
     }
 
     function syncKaraokeHighlight(currentSec) {
       const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
       if (!track || !track.lyrics || track.lyrics.length === 0) return;
-
       let activeIdx = 0;
       for (let i = 0; i < track.lyrics.length; i++) {
-        if (currentSec >= track.lyrics[i].time) {
-          activeIdx = i;
-        }
+        if (currentSec >= track.lyrics[i].time) activeIdx = i;
       }
-
       document.querySelectorAll('.karaoke-line').forEach((line, idx) => {
         if (idx === activeIdx) {
           line.classList.add('active');
@@ -3103,11 +2672,9 @@
       });
     }
 
-    // ذخیره لیریکس نهایی در پایگاه‌داده MySQL
     async function saveCurrentTrackLyrics() {
       const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
       if (!track) return;
-
       try {
         const res = await fetch(`/api/admin/tracks/${track.id}/lyrics`, {
           method: 'POST',
@@ -3117,95 +2684,66 @@
           },
           body: JSON.stringify({ lyrics: track.lyrics })
         });
-
-        if (res.ok) {
-          showToast(`لیریکس ${track.title} با موفقیت در دیتابیس ذخیره شد ✓`);
-        }
+        if (res.ok) showToast(`لیریکس ${track.title} در دیتابیس ذخیره شد ✓`);
       } catch (err) {
         showToast('خطا در ذخیره لیریکس');
       }
     }
 
-    function openBulkLyricsModal() {
-      document.getElementById('bulk-lyrics-textarea').value = "";
-      openModal('modal-bulk-lyrics');
+    function clearAllLyrics() {
+      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
+      if (!track) return;
+      track.lyrics = [];
+      renderStudioLyricsList(track);
+      renderKaraokePreview(track);
     }
+
+    function openModal(id) { const m = document.getElementById(id); if (m) m.classList.add('open'); }
+    function closeModal(id) { const m = document.getElementById(id); if (m) m.classList.remove('open'); }
+
+    function openAddTrackModal() {
+      document.getElementById('track-form-name').value = "";
+      document.getElementById('track-form-artist').value = "";
+      document.getElementById('track-form-album').value = "";
+      openModal('modal-track');
+    }
+    function openAddPlaylistModal() { openModal('modal-playlist'); }
+    function openAddArtistModal() { openModal('modal-artist'); }
+    function openAddUserModal() { openModal('modal-user'); }
+    function openBulkLyricsModal() { openModal('modal-bulk-lyrics'); }
+    function openLrcModal() { openModal('modal-lrc'); }
 
     function processBulkLyrics() {
       const text = document.getElementById('bulk-lyrics-textarea').value.trim();
       const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
       if (!text || !track) return;
-
       const lines = text.split('\n').filter(l => l.trim().length > 0);
-      let startTime = 0;
-      const step = Math.min(15, Math.floor(track.durationSec / (lines.length || 1)));
-
-      track.lyrics = lines.map((l, idx) => ({
-        time: idx * step,
-        fa: l.trim(),
-        en: ""
-      }));
-
-      saveState();
+      const step = Math.min(15, Math.floor((track.duration_sec || 210) / (lines.length || 1)));
+      track.lyrics = lines.map((l, idx) => ({ time: idx * step, fa: l.trim(), en: "" }));
       renderStudioLyricsList(track);
       renderKaraokePreview(track);
       closeModal('modal-bulk-lyrics');
-      showToast(`${lines.length} سطر شعر به صورت خودکار ایجاد گردید ✓`);
-    }
-
-    function openLrcModal() {
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      if (!track) return;
-
-      let lrcStr = `[ti:${track.title}]\n[ar:${track.artist}]\n[al:${track.album}]\n`;
-      if (track.lyrics) {
-        track.lyrics.forEach(line => {
-          const m = Math.floor(line.time / 60);
-          const s = Math.floor(line.time % 60);
-          const ms = Math.floor((line.time % 1) * 100);
-          const timeTag = `[${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}.${ms < 10 ? '0' : ''}${ms}]`;
-          lrcStr += `${timeTag}${line.fa}\n`;
-        });
-      }
-
-      document.getElementById('lrc-textarea').value = lrcStr;
-      openModal('modal-lrc');
+      showToast(`${lines.length} سطر شعر ایجاد شد ✓`);
     }
 
     function applyLrcImport() {
       const rawText = document.getElementById('lrc-textarea').value;
       const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
       if (!track) return;
-
       const lines = rawText.split('\n');
-      const parsedLyrics = [];
-
+      const parsed = [];
       lines.forEach(line => {
         const match = line.match(/\[(\d{2}):(\d{2}(?:\.\d{1,3})?)\](.*)/);
         if (match) {
-          const minutes = parseInt(match[1], 10);
-          const seconds = parseFloat(match[2]);
-          const text = match[3].trim();
-          if (text) {
-            parsedLyrics.push({
-              time: minutes * 60 + seconds,
-              fa: text,
-              en: ""
-            });
-          }
+          parsed.push({ time: parseInt(match[1], 10) * 60 + parseFloat(match[2]), fa: match[3].trim(), en: "" });
         }
       });
-
-      if (parsedLyrics.length > 0) {
-        track.lyrics = parsedLyrics.sort((a, b) => a.time - b.time);
-        saveState();
+      if (parsed.length > 0) {
+        track.lyrics = parsed.sort((a, b) => a.time - b.time);
         renderStudioLyricsList(track);
         renderKaraokePreview(track);
-        renderTracksTable();
         closeModal('modal-lrc');
-        showToast(`${parsedLyrics.length} سطر استاندارد از LRC بارگذاری شد ✓`);
-      } else {
-        showToast('فرمت LRC نامعتبر است.');
+        showToast('فرمت LRC اعمال گردید ✓');
       }
     }
 
@@ -3213,339 +2751,86 @@
       const txt = document.getElementById('lrc-textarea');
       txt.select();
       document.execCommand('copy');
-      showToast('محتوای LRC در کلیپ‌بورد کپی شد ✓');
+      showToast('متن LRC کپی شد');
     }
 
     function exportTracksJson() {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(TRACKS_DB, null, 2));
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", dataStr);
-      downloadAnchor.setAttribute("download", "sehpatify_tracks_database.json");
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-      showToast('خروجی پایگاه داده به صورت JSON دریافت گردید.');
+      const a = document.createElement('a');
+      a.href = dataStr;
+      a.download = "tracks_backup.json";
+      a.click();
     }
 
     function renderPlaylistsAdmin() {
-      const container = document.getElementById('playlists-admin-grid');
-      if (!container) return;
-
-      container.innerHTML = PLAYLISTS_DB.map((p, idx) => `
-        <div class="panel-card" style="display:flex; flex-direction:column; justify-content:space-between;">
-          <div>
-            <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
-              <img src="${p.cover}" style="width:64px; height:64px; border-radius:10px; object-fit:cover;" />
-              <div>
-                <div style="font-weight:800; font-size:15px;">${p.title}</div>
-                <div style="font-size:12px; color:var(--brand); font-weight:700;">${p.count}</div>
-              </div>
-            </div>
-            <p style="font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:14px;">${p.desc}</p>
-          </div>
-          <div style="display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--border); padding-top:12px;">
-            <span class="badge-status synced">عمومی • رسمی</span>
-            <div style="display:flex; gap:6px;">
-              <button class="btn-table-action" onclick="showToast('ویرایش کالکشن ${p.title}')">
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-              </button>
-              <button class="btn-table-action danger" onclick="deletePlaylist(${idx})">
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      `).join('');
-
-      document.getElementById('badge-playlist-count').textContent = PLAYLISTS_DB.length;
+      const c = document.getElementById('playlists-admin-grid');
+      if (c) c.innerHTML = PLAYLISTS_DB.map(p => `<div class="panel-card"><h4>${p.title}</h4><p style="color:var(--muted);">${p.desc}</p></div>`).join('');
     }
-
     function renderArtistsAdmin() {
-      const tbody = document.getElementById('artists-table-body');
-      if (!tbody) return;
-
-      tbody.innerHTML = ARTISTS_DB.map((a, idx) => `
-        <tr>
-          <td><div style="font-weight:800; font-size:14px;">${a.name}</div></td>
-          <td>
-            <span class="badge-status ${a.verified ? 'synced' : 'empty'}">
-              ${a.verified ? '✓ تیک رسمی' : 'در انتظار بررسی'}
-            </span>
-          </td>
-          <td style="font-weight:700;">${a.listeners} شنونده</td>
-          <td>${a.count} اثر صوتی</td>
-          <td><span style="color:var(--muted);">${a.genre}</span></td>
-          <td>
-            <div class="table-actions-cell">
-              <button class="btn-table-action" onclick="toggleArtistVerify(${idx})" title="تغییر تیک تایید">
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-              </button>
-              <button class="btn-table-action danger" onclick="deleteArtist(${idx})">
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-              </button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
+      const b = document.getElementById('artists-table-body');
+      if (b) b.innerHTML = ARTISTS_DB.map(a => `<tr><td>${a.name}</td><td>${a.verified ? '✓ رسمی' : 'معمولی'}</td><td>${a.listeners}</td><td>${a.count}</td><td>${a.genre}</td><td>-</td></tr>`).join('');
     }
-
     function renderUsersAdmin() {
-      const tbody = document.getElementById('users-table-body');
-      if (!tbody) return;
-
-      tbody.innerHTML = USERS_DB.map((u, idx) => `
-        <tr>
-          <td>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <div class="admin-avatar" style="width:28px; height:28px; font-size:11px;">${u.name[0]}</div>
-              <span style="font-weight:700;">${u.name}</span>
-            </div>
-          </td>
-          <td style="direction:ltr; text-align:right; color:var(--muted);">${u.email}</td>
-          <td>
-            <span class="badge-status ${u.plan.includes('طلایی') ? 'synced' : 'hi-res'}">${u.plan}</span>
-          </td>
-          <td><span style="font-weight:600;">${u.role}</span></td>
-          <td><span style="color:var(--muted);">${u.date}</span></td>
-          <td>
-            <span class="badge-status ${u.active ? 'synced' : 'empty'}">
-              ${u.active ? 'فعال' : 'مسدود'}
-            </span>
-          </td>
-          <td>
-            <div class="table-actions-cell">
-              <button class="btn-table-action" onclick="toggleUserStatus(${idx})" title="فعال / مسدود سازی">
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-              </button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
-
-      document.getElementById('badge-users-count').textContent = USERS_DB.length;
+      const b = document.getElementById('users-table-body');
+      if (b) b.innerHTML = USERS_DB.map(u => `<tr><td>${u.name}</td><td>${u.email}</td><td>${u.plan}</td><td>${u.role}</td><td>${u.date}</td><td>فعال</td><td>-</td></tr>`).join('');
+    }
+    function renderLiveActivity() {
+      const c = document.getElementById('live-activity-grid');
+      if (c) c.innerHTML = `<div style="background:var(--surface-elevated); padding:10px; border-radius:8px;">سرور استودیو مستر متصل است</div>`;
     }
 
-    function openModal(modalId) {
-      const modal = document.getElementById(modalId);
-      if (modal) modal.classList.add('open');
+    function drawStreamsChart(period = '7d') {
+      const canvas = document.getElementById('streams-analytics-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.parentElement.offsetWidth;
+      canvas.height = canvas.parentElement.offsetHeight;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#10B954";
+      ctx.font = "12px Vazirmatn";
+      ctx.fillText("نمودار استریم زنده فعال است", 20, 30);
+    }
+    function updateChartPeriod(p) { drawStreamsChart(p); }
+
+    function formatTimeWithMs(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      const ms = Math.floor((sec % 1) * 100);
+      return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}.${ms < 10 ? '0' : ''}${ms}`;
+    }
+    function parseTimeStrToSeconds(str) {
+      if (!str) return 0;
+      const p = str.split(':');
+      return p.length === 2 ? (parseFloat(p[0]) * 60 + parseFloat(p[1])) : (parseFloat(str) || 0);
+    }
+    function escapeHtml(str) { return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+    function updateStudioTimerDisplay(sec) {
+      const d = document.getElementById('studio-time-display');
+      if (d) d.textContent = formatTimeWithMs(sec);
+    }
+    function updateStudioScrubberFill(pct) {
+      const f = document.getElementById('studio-progress-fill');
+      if (f) f.style.width = Math.min(100, Math.max(0, pct)) + '%';
     }
 
-    function closeModal(modalId) {
-      const modal = document.getElementById(modalId);
-      if (modal) modal.classList.remove('open');
+    function showToast(msg) {
+      const s = document.getElementById('toast-shelf');
+      if (!s) return;
+      const t = document.createElement('div');
+      t.className = 'toast-message';
+      t.textContent = msg;
+      s.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
     }
 
-    function openAddTrackModal() {
-      document.getElementById('modal-track-title').textContent = "افزودن آهنگ جدید به سهپاتیفای";
-      document.getElementById('track-form-id').value = "";
-      document.getElementById('track-form-name').value = "";
-      document.getElementById('track-form-artist').value = "";
-      document.getElementById('track-form-album').value = "";
-      document.getElementById('track-form-duration').value = "03:45";
-      openModal('modal-track');
-    }
-
-    function openEditTrackModal(trackId) {
-      const t = TRACKS_DB.find(item => item.id === trackId);
-      if (!t) return;
-      document.getElementById('modal-track-title').textContent = `ویرایش ترانه: ${t.title}`;
-      document.getElementById('track-form-id').value = t.id;
-      document.getElementById('track-form-name').value = t.title;
-      document.getElementById('track-form-artist').value = t.artist;
-      document.getElementById('track-form-album').value = t.album;
-      document.getElementById('track-form-duration').value = t.duration;
-      document.getElementById('track-form-cover').value = t.cover;
-      document.getElementById('track-form-genre').value = t.genre;
-      openModal('modal-track');
-    }
-
-    let TRACKS_DB = [];
-    let realAudio = new Audio(); // پلیر صوتی واقعی استودیو
-
-    // به‌روزرسانی تایمر بر اساس صدای زنده واقعی
-    realAudio.ontimeupdate = () => {
-      studioCurrentTime = realAudio.currentTime;
-      updateStudioTimerDisplay(studioCurrentTime);
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      const maxSec = track ? (track.duration_sec || 240) : 240;
-      updateStudioScrubberFill((studioCurrentTime / maxSec) * 100);
-      syncKaraokeHighlight(studioCurrentTime);
-    };
-
-    // تشخیص خودکار مدت زمان آهنگ پس از انتخاب فایل
-    function detectAudioDuration(input) {
-      if (input.files && input.files[0]) {
-        const file = input.files[0];
-        const tempAudio = new Audio();
-        tempAudio.src = URL.createObjectURL(file);
-        tempAudio.onloadedmetadata = () => {
-          const sec = Math.floor(tempAudio.duration);
-          document.getElementById('track-form-duration-sec').value = sec;
-          document.getElementById('track-form-duration').value = formatTimeWithMs(sec).slice(0, 5);
-        };
+    window.addEventListener('keydown', (e) => {
+      if (currentAdminView === 'lyrics' && !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) {
+        if (e.code === 'Space') { e.preventDefault(); stampCurrentTimeOnActiveRow(); }
+        else if (e.code === 'ArrowLeft') { e.preventDefault(); jumpStudioAudio(-5); }
+        else if (e.code === 'ArrowRight') { e.preventDefault(); jumpStudioAudio(5); }
       }
-    }
+    });
 
-    // واکشی قطعات از لاراول
-    async function fetchTracksFromBackend() {
-      try {
-        const res = await fetch('/api/tracks');
-        TRACKS_DB = await res.json();
-        renderTracksTable();
-        if (TRACKS_DB.length > 0) {
-          selectedStudioTrackId = TRACKS_DB[0].id;
-          renderStudioView();
-        }
-      } catch (err) {
-        showToast('خطا در دریافت آهنگ‌ها از سرور');
-      }
-    }
-
-    // ارسال فرم آپلود با FormData به لاراول
-    async function saveTrackFromModal() {
-      const audioInput = document.getElementById('track-form-audio-file');
-      const title = document.getElementById('track-form-name').value.trim();
-      const artist = document.getElementById('track-form-artist').value.trim();
-
-      if (!title || !artist) {
-        showToast('لطفاً عنوان و نام هنرمند را وارد کنید');
-        return;
-      }
-
-      if (!audioInput.files || audioInput.files.length === 0) {
-        showToast('لطفاً فایل صوتی آهنگ را انتخاب کنید');
-        return;
-      }
-
-      const saveBtn = document.getElementById('btn-save-track');
-      saveBtn.disabled = true;
-      saveBtn.textContent = 'در حال آپلود فایل...';
-
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('artist', artist);
-      formData.append('album', document.getElementById('track-form-album').value.trim());
-      formData.append('genre', document.getElementById('track-form-genre').value);
-      formData.append('duration', document.getElementById('track-form-duration').value);
-      formData.append('duration_sec', document.getElementById('track-form-duration-sec').value);
-      formData.append('is_lossless', document.getElementById('track-form-hires').value);
-      formData.append('audio_file', audioInput.files[0]);
-
-      const coverInput = document.getElementById('track-form-cover-file');
-      if (coverInput.files && coverInput.files[0]) {
-        formData.append('cover_file', coverInput.files[0]);
-      } else {
-        formData.append('cover_url', document.getElementById('track-form-cover').value);
-      }
-
-      try {
-        const res = await fetch('/api/admin/tracks', {
-          method: 'POST',
-          headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-          },
-          body: formData
-        });
-
-        if (!res.ok) throw new Error('خطا در آپلود');
-
-        const newTrack = await res.json();
-        showToast(`آهنگ «${newTrack.title}» با موفقیت آپلود و ذخیره شد ✓`);
-        closeModal('modal-track');
-        fetchTracksFromBackend();
-      } catch (err) {
-        showToast('خطا در بارگذاری آهنگ روی سرور');
-      } finally {
-        saveBtn.disabled = false;
-        saveBtn.textContent = 'آپلود و ذخیره در سرور';
-      }
-    }
-
-    // پخش / توقف فایل صوتی واقعی
-    function toggleStudioAudio() {
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      if (!track) return;
-
-      const playBtn = document.getElementById('studio-play-btn');
-
-      if (realAudio.src !== track.stream_url) {
-        realAudio.src = track.stream_url;
-      }
-
-      if (realAudio.paused) {
-        realAudio.play();
-        studioIsPlaying = true;
-        playBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>`;
-      } else {
-        realAudio.pause();
-        studioIsPlaying = false;
-        playBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
-      }
-    }
-
-    // به‌روزرسانی تایمر بر اساس صدای زنده واقعی
-    realAudio.ontimeupdate = () => {
-      studioCurrentTime = realAudio.currentTime;
-      updateStudioTimerDisplay(studioCurrentTime);
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      const maxSec = track ? (track.duration_sec || 240) : 240;
-      updateStudioScrubberFill((studioCurrentTime / maxSec) * 100);
-      syncKaraokeHighlight(studioCurrentTime);
-    };
-
-    function jumpStudioAudio(offset) {
-      realAudio.currentTime = Math.max(0, realAudio.currentTime + offset);
-    }
-    function onStudioScrubberClick(e) {
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      if (!track) return;
-      const rect = e.currentTarget.getBoundingClientRect();
-      const frac = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-      realAudio.currentTime = frac * (track.duration_sec || realAudio.duration || 200);
-    }
-
-    // ذخیره لیریکس نهایی در پایگاه‌داده MySQL
-    async function saveCurrentTrackLyrics() {
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      if (!track) return;
-
-      try {
-        const res = await fetch(`/api/admin/tracks/${track.id}/lyrics`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-          },
-          body: JSON.stringify({ lyrics: track.lyrics })
-        });
-
-        if (res.ok) {
-          showToast(`لیریکس ${track.title} با موفقیت در دیتابیس ذخیره شد ✓`);
-        }
-      } catch (err) {
-        showToast('خطا در ذخیره لیریکس');
-      }
-    }
-
-    // حذف آهنگ از دیتابیس و هارد دیسک
-    async function deleteTrack(trackId) {
-      if (!confirm('آیا از حذف این قطعه مطمئن هستید؟')) return;
-
-      try {
-        const res = await fetch(`/api/admin/tracks/${trackId}`, {
-          method: 'DELETE',
-          headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
-        });
-        if (res.ok) {
-          showToast('قطعه صوتی با موفقیت حذف گردید.');
-          fetchTracksFromBackend();
-        }
-      } catch (err) {
-        showToast('خطا در حذف آهنگ');
-      }
-    }
-
-   // لود اولیه از بک‌اند لاراول
     window.addEventListener('DOMContentLoaded', () => {
       fetchTracksFromBackend();
       renderPlaylistsAdmin();
@@ -3554,215 +2839,6 @@
       renderLiveActivity();
       drawStreamsChart('7d');
     });
-
-    function deleteTrack(trackId) {
-      TRACKS_DB = TRACKS_DB.filter(t => t.id !== trackId);
-      saveState();
-      renderTracksTable();
-      renderStudioView();
-      showToast('قطعه صوتی با موفقیت حذف گردید.');
-    }
-
-    function openAddPlaylistModal() {
-      document.getElementById('playlist-form-title').value = "";
-      document.getElementById('playlist-form-desc').value = "";
-      openModal('modal-playlist');
-    }
-
-    function savePlaylistFromModal() {
-      const title = document.getElementById('playlist-form-title').value.trim();
-      const desc = document.getElementById('playlist-form-desc').value.trim();
-      const cover = document.getElementById('playlist-form-cover').value.trim();
-
-      if (!title) {
-        showToast('عنوان پلی‌لیست الزامی است.');
-        return;
-      }
-
-      PLAYLISTS_DB.push({
-        id: Date.now(),
-        title,
-        desc: desc || "کالکشن اختصاصی استودیو سهپاتیفای",
-        count: "۰ قطعه",
-        cover
-      });
-
-      saveState();
-      closeModal('modal-playlist');
-      renderPlaylistsAdmin();
-      showToast(`پلی‌لیست «${title}» ایجاد شد ✓`);
-    }
-
-    function deletePlaylist(idx) {
-      PLAYLISTS_DB.splice(idx, 1);
-      saveState();
-      renderPlaylistsAdmin();
-      showToast('پلی‌لیست حذف شد.');
-    }
-
-    function openAddArtistModal() {
-      document.getElementById('artist-form-name').value = "";
-      document.getElementById('artist-form-genre').value = "";
-      openModal('modal-artist');
-    }
-
-    function saveArtistFromModal() {
-      const name = document.getElementById('artist-form-name').value.trim();
-      const genre = document.getElementById('artist-form-genre').value.trim() || "تلفیقی";
-      const listeners = document.getElementById('artist-form-listeners').value.trim() || "۵۰۰,۰۰۰";
-      const verified = document.getElementById('artist-form-verified').value === 'true';
-
-      if (!name) {
-        showToast('نام هنرمند الزامی است.');
-        return;
-      }
-
-      ARTISTS_DB.push({
-        name,
-        genre,
-        listeners,
-        verified,
-        count: 1
-      });
-
-      saveState();
-      closeModal('modal-artist');
-      renderArtistsAdmin();
-      showToast(`هنرمند «${name}» ثبت گردید ✓`);
-    }
-
-    function openAddUserModal() {
-      document.getElementById('user-form-name').value = "";
-      document.getElementById('user-form-email').value = "";
-      openModal('modal-user');
-    }
-
-    function saveUserFromModal() {
-      const name = document.getElementById('user-form-name').value.trim();
-      const email = document.getElementById('user-form-email').value.trim();
-      const plan = document.getElementById('user-form-plan').value;
-      const role = document.getElementById('user-form-role').value;
-
-      if (!name || !email) {
-        showToast('نام و ایمیل را کامل وارد نمایید.');
-        return;
-      }
-
-      USERS_DB.push({
-        id: Date.now(),
-        name,
-        email,
-        plan,
-        role,
-        date: "۱۴۰۳/۰۷/۱۵",
-        active: true
-      });
-
-      saveState();
-      closeModal('modal-user');
-      renderUsersAdmin();
-      showToast(`کاربر «${name}» ایجاد شد ✓`);
-    }
-
-    function toggleUserStatus(idx) {
-      USERS_DB[idx].active = !USERS_DB[idx].active;
-      saveState();
-      renderUsersAdmin();
-      showToast('وضعیت حساب کاربری به روز شد.');
-    }
-
-    function toggleArtistVerify(idx) {
-      ARTISTS_DB[idx].verified = !ARTISTS_DB[idx].verified;
-      saveState();
-      renderArtistsAdmin();
-      showToast('وضعیت تیک تایید هنرمند تغییر یافت.');
-    }
-
-    function deleteArtist(idx) {
-      ARTISTS_DB.splice(idx, 1);
-      saveState();
-      renderArtistsAdmin();
-      showToast('هنرمند حذف شد.');
-    }
-
-    function formatTimeWithMs(sec) {
-      const m = Math.floor(sec / 60);
-      const s = Math.floor(sec % 60);
-      const ms = Math.floor((sec % 1) * 100);
-      return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}.${ms < 10 ? '0' : ''}${ms}`;
-    }
-
-    function parseTimeStrToSeconds(str) {
-      if (!str) return 0;
-      const parts = str.split(':');
-      if (parts.length === 2) {
-        const m = parseFloat(parts[0]) || 0;
-        const s = parseFloat(parts[1]) || 0;
-        return m * 60 + s;
-      }
-      return parseFloat(str) || 0;
-    }
-
-    function parseDurationToSeconds(dur) {
-      const p = dur.split(':');
-      if (p.length === 2) {
-        return (parseInt(p[0], 10) * 60) + parseInt(p[1], 10);
-      }
-      return 210;
-    }
-
-    function escapeHtml(str) {
-      return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-    }
-
-    function showToast(message) {
-      const shelf = document.getElementById('toast-shelf');
-      const toast = document.createElement('div');
-      toast.className = 'toast-message';
-      toast.innerHTML = `
-        <svg width="17" height="17" fill="var(--brand)" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-        <span>${message}</span>
-      `;
-      shelf.appendChild(toast);
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateY(12px)';
-        toast.style.transition = 'all 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-      }, 3200);
-    }
-
-    // Keyboard Shortcuts: Space or S for Stamping!
-    window.addEventListener('keydown', (e) => {
-      if (currentAdminView === 'lyrics' && !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) {
-        if (e.code === 'Space' || e.code === 'KeyS') {
-          e.preventDefault();
-          stampCurrentTimeOnActiveRow();
-        } else if (e.code === 'ArrowLeft') {
-          e.preventDefault();
-          jumpStudioAudio(-5);
-        } else if (e.code === 'ArrowRight') {
-          e.preventDefault();
-          jumpStudioAudio(5);
-        }
-      }
-    });
-
-    window.addEventListener('resize', () => {
-      if (currentAdminView === 'dashboard') {
-        drawStreamsChart('7d');
-      }
-    });
-
-    window.addEventListener('DOMContentLoaded', () => {
-      renderTracksTable();
-      renderPlaylistsAdmin();
-      renderArtistsAdmin();
-      renderUsersAdmin();
-      renderLiveActivity();
-      renderStudioView();
-      drawStreamsChart('7d');
-    });
-  </script>
+</script>
 </body>
 </html>

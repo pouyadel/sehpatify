@@ -5,23 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Track;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class TrackController extends Controller
 {
-    // دریافت لیست همه آهنگ‌ها از دیتابیس
     public function index()
     {
         $tracks = Track::latest()->get()->map(function ($track) {
-            // ساخت آدرس مستقیم استریم موزیک برای فرانت
-            $track->stream_url = url("/api/tracks/{$track->id}/stream");
+            $track->stream_url = $track->audio_path ? url("/api/tracks/{$track->id}/stream") : null;
             return $track;
         });
 
         return response()->json($tracks);
     }
 
-    // آپلود و ذخیره آهنگ جدید
     public function store(Request $request)
     {
         $request->validate([
@@ -31,16 +27,14 @@ class TrackController extends Controller
             'genre'       => 'nullable|string|max:100',
             'duration'    => 'nullable|string',
             'duration_sec'=> 'nullable|numeric',
-            'audio_file'  => 'required|file|mimes:mp3,wav,ogg,flac|max:51200', // حداکثر ۵۰ مگابایت
+            'audio_file'  => 'required|file|mimes:mp3,wav,ogg,flac|max:51200',
             'cover_file'  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'cover_url'   => 'nullable|string',
             'is_lossless' => 'nullable|string',
         ]);
 
-        // ذخیره فایل موزیک
         $audioPath = $request->file('audio_file')->store('tracks', 'public');
 
-        // ذخیره کاور (یا از فایل آپلود شده یا از آدرس URL)
         $coverPath = $request->input('cover_url');
         if ($request->hasFile('cover_file')) {
             $coverPath = '/storage/' . $request->file('cover_file')->store('covers', 'public');
@@ -69,26 +63,28 @@ class TrackController extends Controller
         return response()->json($track, 201);
     }
 
-    // استریم فایل صوتی با پشتیبانی از Seek و بافرینگ استاندارد
     public function stream($id)
     {
         $track = Track::findOrFail($id);
-        $fullPath = storage_path('app/public/' . $track->audio_path);
 
-        if (!file_exists($fullPath)) {
-            return response()->json(['message' => 'فایل صوتی روی سرور یافت نشد'], 404);
+        if (empty($track->audio_path)) {
+            return response()->json(['message' => 'فایل صوتی برای این قطعه آپلود نشده است.'], 404);
         }
 
-        // افزایش شمارنده استریم
+        $fullPath = storage_path('app/public/' . $track->audio_path);
+
+        if (!is_file($fullPath) || !file_exists($fullPath)) {
+            return response()->json(['message' => 'فایل فیزیکی روی سرور یافت نشد.'], 404);
+        }
+
         $track->increment('streams');
 
-        $response = new BinaryFileResponse($fullPath);
-        BinaryFileResponse::trustXSendfileTypeHeader();
-
-        return $response;
+        return response()->file($fullPath, [
+            'Content-Type' => mime_content_type($fullPath) ?: 'audio/mpeg',
+            'Accept-Ranges' => 'bytes',
+        ]);
     }
 
-    // ذخیره لیریکس همگام‌سازی شده از استودیو
     public function saveLyrics(Request $request, $id)
     {
         $request->validate([
@@ -105,7 +101,15 @@ class TrackController extends Controller
         ]);
     }
 
-    // حذف آهنگ
+    public function toggleFavorite($id)
+    {
+        $track = Track::findOrFail($id);
+        $track->favorited = !$track->favorited;
+        $track->save();
+
+        return response()->json(['favorited' => $track->favorited]);
+    }
+
     public function destroy($id)
     {
         $track = Track::findOrFail($id);
@@ -116,6 +120,6 @@ class TrackController extends Controller
 
         $track->delete();
 
-        return response()->json(['message' => 'آهنگ حذف شد']);
+        return response()->json(['message' => 'آهنگ با موفقیت حذف شد']);
     }
 }
