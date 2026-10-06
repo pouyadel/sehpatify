@@ -14,7 +14,6 @@
 
   <style>
     :root {
-      /* Brand Color System (#10B954 Brand Neon Green) */
       --brand: #10B954;
       --brand-glow: rgba(16, 185, 84, 0.45);
       --brand-glow-lg: rgba(16, 185, 84, 0.22);
@@ -22,7 +21,6 @@
       --brand-hover: #15d261;
       --brand-active: #0d9643;
 
-      /* Deep Onyx Surfaces & Dark Themes */
       --bg: #0A0A0F;
       --surface: #12121A;
       --surface-card: #161622;
@@ -31,7 +29,6 @@
       --surface-glass: rgba(18, 18, 26, 0.88);
       --surface-glass-heavy: rgba(10, 10, 15, 0.95);
 
-      /* Typography & Neutral Colors */
       --text: #F5F5F7;
       --muted: #9696A3;
       --muted-dark: #636372;
@@ -39,18 +36,15 @@
       --border-light: rgba(255, 255, 255, 0.14);
       --border-brand: rgba(16, 185, 84, 0.45);
 
-      /* Status Badges */
       --accent-blue: #38bdf8;
       --accent-purple: #c084fc;
       --accent-amber: #fbbf24;
       --accent-red: #f87171;
 
-      /* Dimensions */
       --sidebar-w: 260px;
       --topbar-h: 70px;
       --mobile-bar-h: 64px;
 
-      /* Radii & Shadows */
       --radius-sm: 8px;
       --radius-md: 14px;
       --radius-lg: 20px;
@@ -100,7 +94,6 @@
       background: rgba(255, 255, 255, 0.28);
     }
 
-    /* Main Container Layout */
     #admin-app {
       display: flex;
       width: 100vw;
@@ -122,6 +115,19 @@
       padding: 16px 14px 20px;
       overflow-y: auto;
       transition: transform var(--transition-normal);
+    }
+
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 44;
+    }
+    .sidebar-backdrop.active {
+      display: block;
     }
 
     .brand-header {
@@ -277,7 +283,6 @@
       margin: 12px 8px;
     }
 
-    /* Live Studio Engine Status */
     .studio-status-box {
       margin-top: auto;
       background: rgba(255, 255, 255, 0.02);
@@ -336,8 +341,7 @@
       flex-direction: column;
       overflow: hidden;
       position: relative;
-      background: radial-gradient(circle at 90% 0%, rgba(16, 185, 84, 0.08) 0%, transparent 45%),
-                  var(--bg);
+      background: radial-gradient(circle at 90% 0%, rgba(16, 185, 84, 0.08) 0%, transparent 45%), var(--bg);
     }
 
     .topbar {
@@ -455,37 +459,6 @@
       transform: translateY(-1px);
     }
 
-    .action-circle-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border);
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all var(--transition-fast);
-      position: relative;
-    }
-
-    .action-circle-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: var(--border-light);
-    }
-
-    .badge-dot {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      width: 8px;
-      height: 8px;
-      background: var(--brand);
-      border-radius: 50%;
-      box-shadow: 0 0 6px var(--brand);
-    }
-
     .admin-profile-pill {
       display: flex;
       align-items: center;
@@ -496,11 +469,6 @@
       border: 1px solid var(--border);
       cursor: pointer;
       transition: all var(--transition-fast);
-    }
-
-    .admin-profile-pill:hover {
-      border-color: var(--border-brand);
-      box-shadow: 0 0 14px var(--brand-glow-lg);
     }
 
     .admin-avatar {
@@ -591,7 +559,6 @@
       margin-bottom: 20px;
     }
 
-    /* KPI Cards */
     .stats-kpi-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -677,6 +644,7 @@
       gap: 8px;
       overflow-x: auto;
       scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
     }
 
     .filter-chip {
@@ -690,6 +658,7 @@
       cursor: pointer;
       white-space: nowrap;
       transition: all var(--transition-fast);
+      flex-shrink: 0;
     }
 
     .filter-chip.active, .filter-chip:hover {
@@ -701,6 +670,7 @@
     .table-wrapper {
       width: 100%;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .admin-table {
@@ -708,6 +678,7 @@
       border-collapse: separate;
       border-spacing: 0;
       text-align: right;
+      min-width: 650px;
     }
 
     .admin-table th {
@@ -794,6 +765,7 @@
       justify-content: center;
       cursor: pointer;
       transition: all var(--transition-fast);
+      flex-shrink: 0;
     }
 
     .btn-table-action:hover {
@@ -824,12 +796,13 @@
       border-color: var(--accent-red);
     }
 
+    /* استودیو لیریکس */
     .lyrics-studio-container {
       display: grid;
-      grid-template-columns: 1fr 380px;
+      grid-template-columns: 1fr 360px;
       gap: 20px;
-      height: calc(100vh - 150px);
-      min-height: 600px;
+      height: calc(100vh - 160px);
+      min-height: 580px;
     }
 
     .studio-editor-card {
@@ -839,6 +812,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      min-width: 0;
     }
 
     .studio-header {
@@ -857,7 +831,8 @@
       align-items: center;
       gap: 10px;
       flex: 1;
-      max-width: 420px;
+      min-width: 200px;
+      max-width: 440px;
     }
 
     .select-styled {
@@ -871,7 +846,6 @@
       width: 100%;
     }
 
-    /* Audio Studio Player Toolbar */
     .studio-player-toolbar {
       padding: 14px 18px;
       background: rgba(10, 10, 15, 0.85);
@@ -889,24 +863,25 @@
       flex-wrap: wrap;
     }
 
+    .studio-playback-ctrls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
     .studio-timer-display {
-      font-size: 21px;
+      font-size: 19px;
       font-weight: 900;
       color: var(--brand);
       direction: ltr;
       letter-spacing: 1px;
       font-family: monospace !important;
       background: rgba(16, 185, 84, 0.08);
-      padding: 4px 12px;
+      padding: 4px 10px;
       border-radius: var(--radius-sm);
       border: 1px solid var(--border-brand);
       text-shadow: 0 0 10px var(--brand-glow);
-    }
-
-    .studio-playback-ctrls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
     }
 
     .btn-studio-ctrl {
@@ -921,6 +896,7 @@
       justify-content: center;
       cursor: pointer;
       transition: all var(--transition-fast);
+      flex-shrink: 0;
     }
 
     .btn-studio-ctrl:hover {
@@ -942,7 +918,6 @@
       transform: scale(1.05);
     }
 
-    /* Speed rate chips */
     .speed-selector-group {
       display: flex;
       align-items: center;
@@ -984,6 +959,7 @@
       box-shadow: 0 0 20px var(--brand-glow);
       transition: all var(--transition-fast);
       touch-action: manipulation;
+      white-space: nowrap;
     }
 
     .btn-stamp-live:hover, .btn-stamp-live:active {
@@ -1085,7 +1061,6 @@
       background: rgba(255, 255, 255, 0.1);
     }
 
-    /* Live Karaoke Preview Screen */
     .studio-preview-card {
       background: var(--surface-card);
       border: 1px solid var(--border);
@@ -1093,6 +1068,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      min-width: 0;
     }
 
     .preview-header {
@@ -1106,7 +1082,7 @@
     }
 
     .preview-cover-box {
-      padding: 16px;
+      padding: 14px 16px;
       display: flex;
       align-items: center;
       gap: 14px;
@@ -1115,11 +1091,12 @@
     }
 
     .preview-art {
-      width: 60px;
-      height: 60px;
+      width: 54px;
+      height: 54px;
       border-radius: 10px;
       object-fit: cover;
       box-shadow: var(--shadow-sm);
+      flex-shrink: 0;
     }
 
     .karaoke-stream-viewport {
@@ -1145,10 +1122,10 @@
 
     .karaoke-line.active {
       color: var(--brand);
-      font-size: 19px;
+      font-size: 18px;
       font-weight: 900;
       text-shadow: 0 0 20px var(--brand-glow);
-      transform: scale(1.06);
+      transform: scale(1.05);
     }
 
     .karaoke-line .karaoke-trans {
@@ -1180,7 +1157,7 @@
 
     @keyframes modalFadeIn {
       from { opacity: 0; transform: scale(0.96); }
-      to { opacity: 1; transform: scale(1); }
+      to { transform: scale(1); }
     }
 
     .modal-container {
@@ -1271,7 +1248,6 @@
       background: rgba(255, 255, 255, 0.09);
     }
 
-    /* Mobile Bottom Floating Navigation Bar */
     .mobile-bottom-bar {
       display: none;
       position: fixed;
@@ -1315,7 +1291,6 @@
       stroke-width: 2;
     }
 
-    /* Toast shelf */
     .toast-container {
       position: fixed;
       bottom: 24px;
@@ -1348,82 +1323,14 @@
       to { transform: translateY(0); opacity: 1; }
     }
 
-    @media (max-width: 1080px) {
+    /* واکنش‌گرایی در صفحات مختلف */
+    @media (max-width: 1024px) {
       .lyrics-studio-container {
         grid-template-columns: 1fr;
         height: auto;
       }
       .studio-preview-card {
-        height: 380px;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .admin-sidebar {
-        position: fixed;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        transform: translateX(100%);
-      }
-      .admin-sidebar.open {
-        transform: translateX(0);
-      }
-      .mobile-menu-toggle {
-        display: flex;
-      }
-      .mobile-bottom-bar {
-        display: flex;
-      }
-      .topbar {
-        padding: 0 14px;
-      }
-      .admin-info-col {
-        display: none;
-      }
-      .search-container {
-        display: none;
-      }
-      .content-viewport {
-        padding: 14px 14px calc(var(--mobile-bar-h) + 20px);
-      }
-      .form-row-2 {
-        grid-template-columns: 1fr;
-      }
-      .lyrics-row-card {
-        grid-template-columns: 78px 1fr 90px;
-      }
-      .lyrics-row-card .input-lyric-en {
-        display: none;
-      }
-      .toast-container {
-        bottom: calc(var(--mobile-bar-h) + 16px);
-        left: 12px;
-        right: 12px;
-      }
-    }
-    /* لایه تیره برای بستن سایدبار در موبایل با لمس بیرون */
-    .sidebar-backdrop {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      z-index: 44;
-    }
-    .sidebar-backdrop.active {
-      display: block;
-    }
-
-    /* واکنش‌گرایی پیشرفته داشبورد */
-    @media (max-width: 1080px) {
-      .lyrics-studio-container {
-        grid-template-columns: 1fr;
-        height: auto;
-      }
-      .studio-preview-card {
-        height: 380px;
+        height: 340px;
       }
       .stats-kpi-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -1473,12 +1380,6 @@
       .kpi-value {
         font-size: 20px;
       }
-      .kpi-title {
-        font-size: 11px;
-      }
-      .kpi-subtext {
-        font-size: 10px;
-      }
       .quick-banner {
         flex-direction: column;
         align-items: flex-start !important;
@@ -1489,23 +1390,18 @@
         width: 100%;
         justify-content: center;
       }
-      .section-title-row {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 8px !important;
-      }
-      .filter-chips-row {
-        width: 100%;
-        overflow-x: auto;
-        padding-bottom: 4px;
-      }
       .form-row-2 {
         grid-template-columns: 1fr;
       }
       .lyrics-row-card {
-        grid-template-columns: 78px 1fr 90px;
+        grid-template-columns: 78px 1fr auto;
+        gap: 6px;
+        padding: 6px 8px;
       }
       .lyrics-row-card .input-lyric-en {
+        display: none;
+      }
+      .nudge-btn {
         display: none;
       }
       .toast-container {
@@ -1519,6 +1415,10 @@
       .stats-kpi-grid {
         grid-template-columns: 1fr;
       }
+      .btn-stamp-live {
+        padding: 8px 14px;
+        font-size: 11.5px;
+      }
     }
   </style>
 </head>
@@ -1526,6 +1426,7 @@
 
   <div id="admin-app">
     <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleMobileSidebar()"></div>
+
     <!-- Sidebar Navigation -->
     <aside class="admin-sidebar" id="admin-sidebar">
       <a class="brand-header" onclick="switchAdminView('dashboard')" title="سهپاتیفای استودیو">
@@ -1553,7 +1454,6 @@
         </div>
       </a>
 
-      <!-- Menu Section: Overview -->
       <div class="nav-label">مدیریت و کنترل</div>
       <ul class="nav-list">
         <li>
@@ -1566,7 +1466,7 @@
           <a class="nav-link" id="nav-tracks" onclick="switchAdminView('tracks')">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
             <span>مدیریت آهنگ‌ها</span>
-            <span class="nav-badge-pill" id="badge-track-count">۵</span>
+            <span class="nav-badge-pill" id="badge-track-count">۰</span>
           </a>
         </li>
         <li>
@@ -1578,14 +1478,13 @@
         </li>
       </ul>
 
-      <!-- Menu Section: Collections -->
       <div class="nav-label">مجموعه‌ها و تعامل</div>
       <ul class="nav-list">
         <li>
           <a class="nav-link" id="nav-playlists" onclick="switchAdminView('playlists')">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
             <span>پلی‌لیست‌ها</span>
-            <span class="nav-badge-pill" id="badge-playlist-count">۴</span>
+            <span class="nav-badge-pill" id="badge-playlist-count">۰</span>
           </a>
         </li>
         <li>
@@ -1603,20 +1502,8 @@
         </li>
       </ul>
 
-      <!-- Menu Section: System -->
-      <div class="nav-label">سیستم و استودیو</div>
-      <ul class="nav-list">
-        <li>
-          <a class="nav-link" id="nav-settings" onclick="switchAdminView('settings')">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/></svg>
-            <span>تنظیمات استریم</span>
-          </a>
-        </li>
-      </ul>
-
       <div class="sidebar-divider"></div>
 
-      <!-- Studio engine status badge -->
       <div class="studio-status-box">
         <div class="studio-status-text">
           <span class="studio-status-title">سرور FLAC مستر</span>
@@ -1627,7 +1514,6 @@
     </aside>
 
     <main class="main-wrapper">
-      
       <header class="topbar">
         <div class="topbar-left-zone">
           <button class="mobile-menu-toggle" onclick="toggleMobileSidebar()" title="منو">
@@ -1652,13 +1538,7 @@
             <span>آهنگ جدید</span>
           </button>
 
-          <button class="action-circle-btn" onclick="showToast('۳ قطعه صوتی در صف استودیو برای همگام‌سازی لیریکس منتظر هستند')" title="اعلان‌ها">
-            <div class="badge-dot"></div>
-            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
-          </button>
-
-          <!-- Admin Profile Pill -->
-          <div class="admin-profile-pill" onclick="showToast('سهراب پارسا (مدیر ارشد پلتفرم سهپاتیفای)')">
+          <div class="admin-profile-pill">
             <div class="admin-avatar">س</div>
             <div class="admin-info-col">
               <span class="admin-name">سهراب پارسا</span>
@@ -1672,8 +1552,6 @@
 
         <!-- VIEW 1: DASHBOARD -->
         <section class="admin-panel-view active" id="view-dashboard">
-          
-          <!-- KPI Stats Grid -->
           <div class="stats-kpi-grid">
             <div class="kpi-card">
               <div class="kpi-card-header">
@@ -1693,7 +1571,7 @@
               <div class="kpi-card-header">
                 <span class="kpi-title">لیریکس‌های همگام‌‌سازی شده</span>
                 <div class="kpi-icon-box" style="color:var(--accent-purple);">
-                  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+                  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
                 </div>
               </div>
               <div class="kpi-value" id="kpi-synced-lyrics">۰ / ۰</div>
@@ -1732,7 +1610,6 @@
             </div>
           </div>
 
-          <!-- Interactive Streams Chart Section -->
           <div class="panel-card">
             <div class="section-title-row" style="margin-bottom:14px;">
               <div>
@@ -1751,7 +1628,6 @@
             </div>
           </div>
 
-          <!-- Quick Action Banner for Lyrics Studio -->
           <div class="quick-banner" style="background: linear-gradient(135deg, rgba(16, 185, 84, 0.16) 0%, rgba(22, 22, 34, 0.95) 100%); border:1px solid var(--border-brand); border-radius:var(--radius-md); padding:18px 22px; display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px;">
             <div>
               <div style="font-weight:800; font-size:15px; color:#fff; margin-bottom:4px;">استودیو فوق‌حرفه‌ای لیریکس همگام‌ساز (Timed Lyrics Studio)</div>
@@ -1763,16 +1639,16 @@
             </button>
           </div>
 
-          <!-- Real-time Listeners Activity -->
           <div class="panel-card">
             <div class="section-title-row">
               <h3 class="section-title">برترین قطعات در حال پخش (Live Activity)</h3>
-              <span class="badge-status synced">● زنده و متصل به دیتابیس</span>
+              <span class="badge-status synced">● متصل به دیتابیس</span>
             </div>
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px;" id="live-activity-grid"></div>
           </div>
         </section>
 
+        <!-- VIEW 2: TRACKS MANAGEMENT -->
         <section class="admin-panel-view" id="view-tracks">
           <div class="section-title-row">
             <div>
@@ -1789,13 +1665,12 @@
           </div>
 
           <div class="panel-card">
-            <!-- Filter & Search Toolbar -->
             <div class="table-controls-bar">
               <div class="filter-chips-row">
                 <button class="filter-chip active" onclick="filterTracksTable('all', this)">همه آهنگ‌ها</button>
-                <button class="filter-chip" onclick="filterTracksTable('synced', this)">دارای لیریکس همگام</button>
+                <button class="filter-chip" onclick="filterTracksTable('synced', this)">دارای لیریکس</button>
                 <button class="filter-chip" onclick="filterTracksTable('no-lyrics', this)">فاقد لیریکس</button>
-                <button class="filter-chip" onclick="filterTracksTable('lossless', this)">FLAC 24-bit Lossless</button>
+                <button class="filter-chip" onclick="filterTracksTable('lossless', this)">FLAC Lossless</button>
               </div>
 
               <div style="display:flex; align-items:center; gap:8px;">
@@ -1812,7 +1687,7 @@
                     <th>هنرمند</th>
                     <th>آلبوم</th>
                     <th>مدت زمان</th>
-                    <th>کیفیت صوتی</th>
+                    <th>کیفیت</th>
                     <th>وضعیت لیریکس</th>
                     <th>استریم</th>
                     <th>عملیات</th>
@@ -1824,11 +1699,12 @@
           </div>
         </section>
 
+        <!-- VIEW 3: LYRICS STUDIO -->
         <section class="admin-panel-view" id="view-lyrics">
           <div class="section-title-row">
             <div>
               <h2 class="section-title">استودیو پیشرفته همگام‌سازی لیریکس (Timed Lyrics Studio)</h2>
-              <p style="font-size:12px; color:var(--muted); margin-top:2px;">با فشردن دکمه ثبت تایم لحظه‌ای یا کلید Space زمان دقیق را ذخیره کنید</p>
+              <p style="font-size:12px; color:var(--muted); margin-top:2px;">با فشردن کلید Space یا دکمه لمسی، زمان سطرها را با خواننده نشانه بزنید</p>
             </div>
 
             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
@@ -1842,11 +1718,7 @@
           </div>
 
           <div class="lyrics-studio-container">
-            
-            <!-- Left: Lyrics Editor & Timestamp Controls -->
             <div class="studio-editor-card">
-              
-              <!-- Header with Track Selector -->
               <div class="studio-header">
                 <div class="studio-track-select-box">
                   <span style="font-size:12.5px; font-weight:700; color:var(--muted); white-space:nowrap;">آهنگ هدف:</span>
@@ -1854,12 +1726,11 @@
                 </div>
 
                 <div style="display:flex; align-items:center; gap:8px;">
-                  <button class="btn-secondary" style="padding:6px 12px; font-size:11.5px;" onclick="addNewLyricRow()">+ خط جدید</button>
+                  <button class="btn-secondary" style="padding:6px 12px; font-size:11.5px;" onclick="addNewLyricRow()">+ سطر جدید</button>
                   <button class="btn-secondary" style="padding:6px 12px; font-size:11.5px; color:var(--accent-red);" onclick="clearAllLyrics()">پاک‌سازی</button>
                 </div>
               </div>
 
-              <!-- Audio Player Toolbar with Realtime Stamping -->
               <div class="studio-player-toolbar">
                 <div class="player-upper-row">
                   <div class="studio-playback-ctrls">
@@ -1877,7 +1748,6 @@
 
                     <div class="studio-timer-display" id="studio-time-display">00:00.00</div>
 
-                    <!-- Speed Control -->
                     <div class="speed-selector-group">
                       <button class="speed-btn" onclick="setStudioSpeed(0.5, this)">0.5x</button>
                       <button class="speed-btn" onclick="setStudioSpeed(0.75, this)">0.75x</button>
@@ -1885,24 +1755,20 @@
                     </div>
                   </div>
 
-                  <!-- Magic LIVE STAMP BUTTON -->
-                  <button class="btn-stamp-live" onclick="stampCurrentTimeOnActiveRow()" title="ثبت زمان کنونی برای خط انتخابی (کلید Space)">
+                  <button class="btn-stamp-live" onclick="stampCurrentTimeOnActiveRow()" title="ثبت زمان کنونی برای سطر انتخاب‌شده (کلید Space)">
                     <svg width="17" height="17" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <span>ثبت تایم لحظه‌ای (Space)</span>
                   </button>
                 </div>
 
-                <!-- Studio Interactive Scrubber -->
                 <div class="studio-progress-track" id="studio-scrubber" onclick="onStudioScrubberClick(event)">
                   <div class="studio-progress-fill" id="studio-progress-fill"></div>
                 </div>
               </div>
 
-              <!-- Editable Lyrics Rows List -->
               <div class="studio-lines-scroll" id="studio-lyrics-list"></div>
             </div>
 
-            <!-- Right: Realtime Karaoke Preview -->
             <div class="studio-preview-card">
               <div class="preview-header">
                 <span>پیش‌نمایش زنده کارائوکه</span>
@@ -1911,19 +1777,18 @@
 
               <div class="preview-cover-box">
                 <img class="preview-art" id="preview-track-art" src="" alt="" />
-                <div>
-                  <div style="font-weight:800; font-size:14px;" id="preview-track-title">عنوان اثر</div>
-                  <div style="font-size:12px; color:var(--muted);" id="preview-track-artist">نام هنرمند</div>
+                <div style="min-width:0; overflow:hidden;">
+                  <div style="font-weight:800; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="preview-track-title">عنوان ترانه</div>
+                  <div style="font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" id="preview-track-artist">نام هنرمند</div>
                 </div>
               </div>
 
-              <!-- Stream Lines for Karaoke Highlight -->
               <div class="karaoke-stream-viewport" id="karaoke-preview-stream"></div>
             </div>
-
           </div>
         </section>
 
+        <!-- VIEW 4: PLAYLISTS -->
         <section class="admin-panel-view" id="view-playlists">
           <div class="section-title-row">
             <div>
@@ -1935,14 +1800,14 @@
               <span>پلی‌لیست جدید</span>
             </button>
           </div>
-
           <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:18px;" id="playlists-admin-grid"></div>
         </section>
 
+        <!-- VIEW 5: ARTISTS -->
         <section class="admin-panel-view" id="view-artists">
           <div class="section-title-row">
             <div>
-              <h2 class="section-title">مدیریت هنرمندان، خوانندگان و آرتیست‌های رسمی</h2>
+              <h2 class="section-title">مدیریت هنرمندان</h2>
               <p style="font-size:12px; color:var(--muted); margin-top:2px;">اعطای نشان تاییدیه، پایش شنوندگان و آلبوم‌ها</p>
             </div>
             <button class="btn-quick-action" onclick="openAddArtistModal()">
@@ -1950,7 +1815,6 @@
               <span>افزودن آرتیست رسمی</span>
             </button>
           </div>
-
           <div class="panel-card">
             <div class="table-wrapper">
               <table class="admin-table">
@@ -1970,10 +1834,11 @@
           </div>
         </section>
 
+        <!-- VIEW 6: USERS -->
         <section class="admin-panel-view" id="view-users">
           <div class="section-title-row">
             <div>
-              <h2 class="section-title">مدیریت کاربران و اشتراک‌های طلایی Lossless</h2>
+              <h2 class="section-title">مدیریت کاربران</h2>
               <p style="font-size:12px; color:var(--muted); margin-top:2px;">کنترل دسترسی‌ها، ارتقای سطح اشتراک و مانیتورینگ فعالیت</p>
             </div>
             <button class="btn-quick-action" onclick="openAddUserModal()">
@@ -1981,7 +1846,6 @@
               <span>ثبت کاربر جدید</span>
             </button>
           </div>
-
           <div class="panel-card">
             <div class="table-wrapper">
               <table class="admin-table">
@@ -1998,60 +1862,6 @@
                 </thead>
                 <tbody id="users-table-body"></tbody>
               </table>
-            </div>
-          </div>
-        </section>
-
-        <section class="admin-panel-view" id="view-settings">
-          <div class="section-title-row">
-            <div>
-              <h2 class="section-title">تنظیمات سرور و فرکانس‌های استریم سهپاتیفای</h2>
-              <p style="font-size:12px; color:var(--muted); margin-top:2px;">پیکربندی مستر Lossless، کش CDN و امنیت DRM صوتی</p>
-            </div>
-          </div>
-
-          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:20px;">
-            <div class="panel-card">
-              <h3 style="font-size:15px; font-weight:800; margin-bottom:14px;">پیکربندی استودیو مستر صوتی</h3>
-              
-              <div class="form-group">
-                <label class="form-label">فرمت پیش‌فرض استریم کاربران طلایی</label>
-                <select class="form-control">
-                  <option selected>FLAC Studio Master (24-bit / 96kHz) Lossless</option>
-                  <option>ALAC Apple Lossless (24-bit / 48kHz)</option>
-                  <option>MP3 320 kbps (High Quality)</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label">اندازه بافر استریم زنده</label>
-                <input type="text" class="form-control" value="512 KB (بدون وقفه و بافرینگ صفر)" />
-              </div>
-
-              <div class="form-group" style="display:flex; justify-content:space-between; align-items:center; margin-top:14px;">
-                <div>
-                  <div style="font-weight:700;">رمزنگاری ضدکپی آهنگ‌ها (DRM Audio Shield)</div>
-                  <div style="font-size:11px; color:var(--muted);">حفاظت از کپی غیرمجاز فایل اصلی استودیو</div>
-                </div>
-                <input type="checkbox" checked style="accent-color:var(--brand); width:20px; height:20px; cursor:pointer;" />
-              </div>
-            </div>
-
-            <div class="panel-card">
-              <h3 style="font-size:15px; font-weight:800; margin-bottom:14px;">فضای دیتاسنتر و CDN</h3>
-
-              <div class="form-group">
-                <label class="form-label">حجم اشغال‌شده توسط فایل‌های FLAC</label>
-                <div style="font-size:20px; font-weight:900; color:var(--brand); margin-bottom:6px;">214.6 GB / 1000 GB</div>
-                <div style="width:100%; height:8px; background:rgba(255,255,255,0.06); border-radius:10px; overflow:hidden;">
-                  <div style="width:21.4%; height:100%; background:var(--brand);"></div>
-                </div>
-              </div>
-
-              <div style="margin-top:20px; display:flex; flex-direction:column; gap:10px;">
-                <button class="btn-secondary" onclick="showToast('حافظه موقت شبکه توزیع محتوا (CDN) تخلیه گردید.')">پاک‌سازی کش شبکه توزیع محتوا (Purge CDN)</button>
-                <button class="btn-secondary" onclick="showToast('نسخه پشتیبان از تمامی متادیتاها و لیریکس‌ها ذخیره شد.')">پشتیبان‌گیری ابری فوری (Backup)</button>
-              </div>
             </div>
           </div>
         </section>
@@ -2076,10 +1886,6 @@
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
         <span>پلی‌‌لیست</span>
       </div>
-      <div class="mobile-bar-btn" id="mob-users" onclick="switchAdminView('users')">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-        <span>کاربران</span>
-      </div>
     </nav>
 
     <!-- MODAL 1: ADD / EDIT TRACK -->
@@ -2092,7 +1898,6 @@
 
         <input type="hidden" id="track-form-id" />
 
-        <!-- فیلد فایل صوتی -->
         <div class="form-group" style="background: rgba(16, 185, 84, 0.08); padding: 12px; border-radius: var(--radius-sm); border: 1px dashed var(--border-brand);">
           <label class="form-label" style="color: var(--brand); font-weight: 800;">فایل صوتی ترانه (MP3, FLAC, WAV) *</label>
           <input type="file" class="form-control" id="track-form-audio-file" accept="audio/*" onchange="detectAudioDuration(this)" />
@@ -2190,7 +1995,6 @@
           </div>
         </div>
 
-        <!-- لیست آهنگ‌های دیتابیس با چک‌باکس -->
         <div class="form-group" style="margin-top: 10px;">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
             <label class="form-label" style="font-weight: 800; color: var(--brand);">انتخاب آهنگ‌های این پلی‌لیست:</label>
@@ -2224,19 +2028,6 @@
             <input type="text" class="form-control" id="artist-form-genre" placeholder="مثال: سنتی معاصر" />
           </div>
         </div>
-        <div class="form-row-2">
-          <div class="form-group">
-            <label class="form-label">تعداد شنوندگان تخمینی</label>
-            <input type="text" class="form-control" id="artist-form-listeners" placeholder="مثال: ۱,۲۰۰,۰۰۰" value="۸۵۰,۰۰۰" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">نشان رسمی تایید (Verified)</label>
-            <select class="form-control" id="artist-form-verified">
-              <option value="true">دارای تیک رسمی</option>
-              <option value="false">در انتظار تایید</option>
-            </select>
-          </div>
-        </div>
         <div class="modal-actions">
           <button class="btn-secondary" onclick="closeModal('modal-artist')">انصراف</button>
           <button class="btn-quick-action" onclick="saveArtistFromModal()">ثبت هنرمند</button>
@@ -2259,24 +2050,6 @@
           <div class="form-group">
             <label class="form-label">ایمیل *</label>
             <input type="email" class="form-control" id="user-form-email" placeholder="negin@example.com" />
-          </div>
-        </div>
-        <div class="form-row-2">
-          <div class="form-group">
-            <label class="form-label">سطح اشتراک</label>
-            <select class="form-control" id="user-form-plan">
-              <option value="طلایی Hi-Res (یک ساله)">طلایی Hi-Res (یک ساله)</option>
-              <option value="پرمیوم استاندارد">پرمیوم استاندارد</option>
-              <option value="رایگان">رایگان</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label class="form-label">نقش دسترسی</label>
-            <select class="form-control" id="user-form-role">
-              <option value="کاربر">کاربر</option>
-              <option value="آرتیست رسمی">آرتیست رسمی</option>
-              <option value="مدیر ارشد">مدیر ارشد</option>
-            </select>
           </div>
         </div>
         <div class="modal-actions">
@@ -2325,21 +2098,19 @@
       </div>
     </div>
 
-    <!-- Toast Notifications Shelf -->
     <div class="toast-container" id="toast-shelf"></div>
 
   </div>
 
-<script>
-    // متغیرهای وضعیت آمار و چارت
+  <script>
+    // پاک‌سازی دیتای فیک قدیمی و شروع با آرایه‌های واقعی
+    localStorage.removeItem('sehpatify_playlists');
+
     let DASHBOARD_STATS = null;
     let currentChartPeriod = '7d';
 
-    const FALLBACK_TRACKS = [];
     let TRACKS_DB = [];
-    let PLAYLISTS_DB = JSON.parse(localStorage.getItem('sehpatify_playlists')) || [
-      { id: 101, title: "شب‌های تهران", count: "۲۴ قطعه", cover: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500", desc: "نواهای دلنشین برای رانندگی شبانه" }
-    ];
+    let PLAYLISTS_DB = [];
     let ARTISTS_DB = JSON.parse(localStorage.getItem('sehpatify_artists')) || [
       { name: "چارتار", listeners: "۱,۸۴۰,۳۲۰", verified: true, count: 18, genre: "تلفیقی الکترونیک" }
     ];
@@ -2354,6 +2125,16 @@
     let studioPlaybackRate = 1.0;
     let activeEditingLineIndex = 0;
     let realAudio = new Audio();
+
+    // محاسبه حداکثر زمان مجاز آهنگ جاری
+    function getSelectedTrackMaxDuration() {
+      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
+      if (!track) return 300;
+      if (realAudio.duration && !isNaN(realAudio.duration) && isFinite(realAudio.duration) && realAudio.duration > 0) {
+        return Math.floor(realAudio.duration);
+      }
+      return track.duration_sec || parseDurationToSeconds(track.duration || '03:30');
+    }
 
     function switchAdminView(viewKey) {
       currentAdminView = viewKey;
@@ -2376,8 +2157,7 @@
         lyrics: { title: "استودیو همگام‌ساز لیریکس", crumb: "سهپاتیفای استودیو / ویرایشگر زنده کارائوکه" },
         playlists: { title: "مدیریت پلی‌لیست‌ها", crumb: "سهپاتیفای استودیو / کالکشن‌های عمومی و VIP" },
         artists: { title: "مدیریت هنرمندان", crumb: "سهپاتیفای استودیو / آرتیست‌های تایید شده" },
-        users: { title: "مدیریت کاربران و VIP", crumb: "سهپاتیفای استودیو / اعضای فعال" },
-        settings: { title: "تنظیمات استریم صوتی", crumb: "سهپاتیفای استودیو / پیکربندی Lossless" }
+        users: { title: "مدیریت کاربران و VIP", crumb: "سهپاتیفای استودیو / اعضای فعال" }
       };
 
       if (titles[viewKey]) {
@@ -2386,11 +2166,12 @@
       }
 
       document.getElementById('admin-sidebar').classList.remove('open');
+      document.getElementById('sidebar-backdrop').classList.remove('active');
       const viewport = document.getElementById('viewport');
       if (viewport) viewport.scrollTo({ top: 0, behavior: 'smooth' });
 
       if (viewKey === 'lyrics') renderStudioView();
-      if (viewKey === 'dashboard') drawStreamsChart('7d');
+      if (viewKey === 'dashboard') drawStreamsChart(currentChartPeriod);
     }
 
     function toggleMobileSidebar() {
@@ -2406,7 +2187,7 @@
         if (!res.ok) throw new Error();
         TRACKS_DB = await res.json();
       } catch (err) {
-        TRACKS_DB = FALLBACK_TRACKS;
+        TRACKS_DB = [];
       }
       renderTracksTable();
       if (TRACKS_DB.length > 0) {
@@ -2417,14 +2198,32 @@
       }
     }
 
+    async function fetchDashboardStats() {
+      try {
+        const res = await fetch('/api/admin/dashboard-stats');
+        if (!res.ok) throw new Error();
+        DASHBOARD_STATS = await res.json();
+
+        document.getElementById('kpi-total-tracks').textContent = DASHBOARD_STATS.total_tracks.toLocaleString('fa-IR');
+        document.getElementById('kpi-synced-lyrics').textContent = `${DASHBOARD_STATS.synced_lyrics.toLocaleString('fa-IR')} / ${DASHBOARD_STATS.total_tracks.toLocaleString('fa-IR')}`;
+        document.getElementById('kpi-synced-percent').textContent = `${DASHBOARD_STATS.lyrics_coverage.toLocaleString('fa-IR')}٪ پوشش`;
+        document.getElementById('kpi-total-streams').textContent = DASHBOARD_STATS.total_streams.toLocaleString('fa-IR');
+        document.getElementById('kpi-total-artists').textContent = `${DASHBOARD_STATS.total_artists.toLocaleString('fa-IR')} آرتیست`;
+        document.getElementById('kpi-total-playlists').textContent = `${DASHBOARD_STATS.total_playlists.toLocaleString('fa-IR')} پلی‌لیست`;
+
+        renderLiveActivity(DASHBOARD_STATS.live_tracks);
+        drawStreamsChart(currentChartPeriod);
+      } catch (err) {
+        console.warn('امکان دریافت آمار زنده داشبورد وجود نداشت.');
+      }
+    }
+
     function renderTracksTable(tracksToRender = TRACKS_DB) {
       const tbody = document.getElementById('tracks-table-body');
       if (!tbody) return;
 
       if (!tracksToRender || tracksToRender.length === 0) {
         tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:30px; color:var(--muted);">هیچ قطعه‌ای ثبت نشده است. روی دکمه «آهنگ جدید» کلیک کنید.</td></tr>`;
-        document.getElementById('kpi-total-tracks').textContent = '۰';
-        document.getElementById('kpi-synced-lyrics').textContent = '۰';
         document.getElementById('badge-track-count').textContent = '۰';
         return;
       }
@@ -2435,8 +2234,8 @@
           <td>
             <div class="track-meta-cell">
               <img class="track-cover-thumb" src="${t.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=100'}" alt="${t.title}" />
-              <div>
-                <div style="font-weight:800; font-size:13.5px;">${t.title}</div>
+              <div style="min-width:0;">
+                <div style="font-weight:800; font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.title}</div>
                 <div style="font-size:11px; color:var(--muted);">${t.genre || 'پاپ'}</div>
               </div>
             </div>
@@ -2459,9 +2258,6 @@
         </tr>
       `).join('');
 
-      document.getElementById('kpi-total-tracks').textContent = TRACKS_DB.length;
-      const syncedCount = TRACKS_DB.filter(t => t.lyrics && t.lyrics.length > 0).length;
-      document.getElementById('kpi-synced-lyrics').textContent = `${syncedCount} / ${TRACKS_DB.length}`;
       document.getElementById('badge-track-count').textContent = TRACKS_DB.length;
     }
 
@@ -2555,7 +2351,6 @@
         return;
       }
 
-      // فایل صوتی فقط در حالت افزودن اجباری است، در حالت ویرایش اختیاری است
       if (!trackId && (!audioInput.files || audioInput.files.length === 0)) {
         showToast('لطفاً فایل صوتی آهنگ را انتخاب کنید.');
         return;
@@ -2604,9 +2399,10 @@
           throw new Error(errMsg);
         }
 
-        showToast(trackId ? 'تغییرات با موفقیت ثبت شد ✓' : `آهنگ «${data.title}» ذخیره شد ✓`);
+        showToast(trackId ? 'تغییرات با موفقیت ذخیره شد ✓' : `آهنگ «${data.title}» افزوده شد ✓`);
         closeModal('modal-track');
         fetchTracksFromBackend();
+        fetchDashboardStats();
       } catch (err) {
         showToast(err.message || 'خطا در ارتباط با سرور');
       } finally {
@@ -2627,13 +2423,11 @@
         });
 
         const data = await res.json().catch(() => null);
-
-        if (!res.ok) {
-          throw new Error(data?.message || 'خطا در حذف اثر');
-        }
+        if (!res.ok) throw new Error(data?.message || 'خطا در حذف اثر');
 
         showToast('قطعه صوتی با موفقیت حذف گردید.');
         fetchTracksFromBackend();
+        fetchDashboardStats();
       } catch (err) {
         showToast(err.message || 'خطا در حذف قطعه');
       }
@@ -2675,7 +2469,7 @@
       if (!track) return;
 
       selectedStudioTrackId = track.id;
-      document.getElementById('preview-track-art').src = track.cover || '';
+      document.getElementById('preview-track-art').src = track.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=100';
       document.getElementById('preview-track-title').textContent = track.title;
       document.getElementById('preview-track-artist').textContent = track.artist;
 
@@ -2730,15 +2524,21 @@
     realAudio.ontimeupdate = () => {
       studioCurrentTime = realAudio.currentTime;
       updateStudioTimerDisplay(studioCurrentTime);
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      const maxSec = track ? (track.duration_sec || 240) : 240;
+      const maxSec = getSelectedTrackMaxDuration();
       updateStudioScrubberFill((studioCurrentTime / maxSec) * 100);
       syncKaraokeHighlight(studioCurrentTime);
     };
 
+    realAudio.onended = () => {
+      studioIsPlaying = false;
+      const playBtn = document.getElementById('studio-play-btn');
+      if (playBtn) playBtn.innerHTML = `<svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>`;
+    };
+
     function jumpStudioAudio(secOffset) {
       if (realAudio.src) {
-        realAudio.currentTime = Math.max(0, realAudio.currentTime + secOffset);
+        const maxSec = getSelectedTrackMaxDuration();
+        realAudio.currentTime = Math.max(0, Math.min(maxSec, realAudio.currentTime + secOffset));
       }
     }
 
@@ -2754,7 +2554,8 @@
       if (!track || !realAudio.src) return;
       const rect = e.currentTarget.getBoundingClientRect();
       const fraction = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-      realAudio.currentTime = fraction * (track.duration_sec || realAudio.duration || 210);
+      const maxSec = getSelectedTrackMaxDuration();
+      realAudio.currentTime = fraction * maxSec;
     }
 
     function renderStudioLyricsList(track) {
@@ -2766,7 +2567,7 @@
 
       listContainer.innerHTML = track.lyrics.map((line, idx) => `
         <div class="lyrics-row-card ${idx === activeEditingLineIndex ? 'active-line' : ''}" id="lyrics-row-${idx}" onclick="selectLyricLineForEdit(${idx})">
-          <input type="text" class="input-timestamp" value="${formatTimeWithMs(line.time)}" onchange="updateLineTime(${idx}, this.value)" />
+          <input type="text" class="input-timestamp" value="${formatTimeWithMs(line.time)}" onchange="updateLineTime(${idx}, this.value)" title="زمان سطر (mm:ss.ms)" />
           <input type="text" class="input-lyric-txt" value="${escapeHtml(line.fa || '')}" oninput="updateLineFa(${idx}, this.value)" placeholder="متن فارسی..." />
           <input type="text" class="input-lyric-txt input-lyric-en" value="${escapeHtml(line.en || '')}" oninput="updateLineEn(${idx}, this.value)" placeholder="ترجمه انگلیسی..." />
           <div style="display:flex; align-items:center; gap:4px; justify-content:flex-end;">
@@ -2797,24 +2598,41 @@
       activeEditingLineIndex = idx;
       document.querySelectorAll('.lyrics-row-card').forEach(r => r.classList.remove('active-line'));
       const activeRow = document.getElementById(`lyrics-row-${idx}`);
-      if (activeRow) activeRow.classList.add('active-line');
+      if (activeRow) {
+        activeRow.classList.add('active-line');
+        activeRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
     }
 
     function addNewLyricRow() {
       const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
       if (!track) return;
       if (!track.lyrics) track.lyrics = [];
-      const newTime = Math.round(studioCurrentTime * 10) / 10;
+
+      const maxSec = getSelectedTrackMaxDuration();
+      let newTime = Math.round(studioCurrentTime * 10) / 10;
+
+      if (newTime >= maxSec) {
+        showToast(`پخش موسیقی به پایان رسیده است. حداکثر زمان مجاز: ${formatTimeWithMs(maxSec)}`);
+        newTime = Math.max(0, maxSec - 1);
+      }
+
       track.lyrics.push({ time: newTime, fa: "متن سطر جدید...", en: "" });
       track.lyrics.sort((a, b) => a.time - b.time);
+      activeEditingLineIndex = track.lyrics.findIndex(l => l.time === newTime);
+
       renderStudioLyricsList(track);
       renderKaraokePreview(track);
+      selectLyricLineForEdit(activeEditingLineIndex);
     }
 
     function deleteLyricLine(idx) {
       const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
       if (!track || !track.lyrics) return;
       track.lyrics.splice(idx, 1);
+      if (activeEditingLineIndex >= track.lyrics.length) {
+        activeEditingLineIndex = Math.max(0, track.lyrics.length - 1);
+      }
       renderStudioLyricsList(track);
       renderKaraokePreview(track);
     }
@@ -2832,7 +2650,18 @@
     function updateLineTime(idx, timeStr) {
       const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
       if (!track || !track.lyrics[idx]) return;
-      track.lyrics[idx].time = parseTimeStrToSeconds(timeStr);
+
+      const maxSec = getSelectedTrackMaxDuration();
+      let parsedSec = parseTimeStrToSeconds(timeStr);
+
+      if (parsedSec > maxSec) {
+        showToast(`زمان وارد شده (${formatTimeWithMs(parsedSec)}) از طول آهنگ بیشتر است. روی ${formatTimeWithMs(maxSec)} تنظیم شد.`);
+        parsedSec = maxSec;
+      } else if (parsedSec < 0 || isNaN(parsedSec)) {
+        parsedSec = 0;
+      }
+
+      track.lyrics[idx].time = parsedSec;
       track.lyrics.sort((a, b) => a.time - b.time);
       renderStudioLyricsList(track);
       renderKaraokePreview(track);
@@ -2841,7 +2670,18 @@
     function nudgeLineTime(idx, delta) {
       const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
       if (!track || !track.lyrics[idx]) return;
-      track.lyrics[idx].time = Math.max(0, Math.round((track.lyrics[idx].time + delta) * 10) / 10);
+
+      const maxSec = getSelectedTrackMaxDuration();
+      let newTime = Math.round((track.lyrics[idx].time + delta) * 10) / 10;
+
+      if (newTime > maxSec) {
+        showToast(`حداکثر زمان مجاز ${formatTimeWithMs(maxSec)} است.`);
+        newTime = maxSec;
+      } else if (newTime < 0) {
+        newTime = 0;
+      }
+
+      track.lyrics[idx].time = newTime;
       track.lyrics.sort((a, b) => a.time - b.time);
       renderStudioLyricsList(track);
       renderKaraokePreview(track);
@@ -2853,25 +2693,44 @@
 
     function stampCurrentTimeOnLine(idx) {
       const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      if (!track || !track.lyrics || track.lyrics.length === 0) {
+      if (!track) return;
+
+      if (!track.lyrics || track.lyrics.length === 0) {
         addNewLyricRow();
         return;
       }
       if (!track.lyrics[idx]) return;
-      track.lyrics[idx].time = Math.round(studioCurrentTime * 10) / 10;
-      if (idx < track.lyrics.length - 1) activeEditingLineIndex = idx + 1;
+
+      const maxSec = getSelectedTrackMaxDuration();
+      let stampedSec = Math.round(studioCurrentTime * 10) / 10;
+
+      if (stampedSec > maxSec) {
+        showToast(`زمان ثبت شده فراتر از طول کل اثر است. روی ${formatTimeWithMs(maxSec)} قفل شد.`);
+        stampedSec = maxSec;
+      }
+
+      track.lyrics[idx].time = stampedSec;
+      track.lyrics.sort((a, b) => a.time - b.time);
+
+      if (idx < track.lyrics.length - 1) {
+        activeEditingLineIndex = idx + 1;
+      }
+
       renderStudioLyricsList(track);
       renderKaraokePreview(track);
-      showToast(`زمان خط به ${formatTimeWithMs(track.lyrics[idx].time)} متصل گردید ✓`);
+      selectLyricLineForEdit(activeEditingLineIndex);
+      showToast(`زمان سطر به ${formatTimeWithMs(stampedSec)} متصل شد ✓`);
     }
 
     function syncKaraokeHighlight(currentSec) {
       const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
       if (!track || !track.lyrics || track.lyrics.length === 0) return;
+
       let activeIdx = 0;
       for (let i = 0; i < track.lyrics.length; i++) {
         if (currentSec >= track.lyrics[i].time) activeIdx = i;
       }
+
       document.querySelectorAll('.karaoke-line').forEach((line, idx) => {
         if (idx === activeIdx) {
           line.classList.add('active');
@@ -2885,6 +2744,9 @@
     async function saveCurrentTrackLyrics() {
       const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
       if (!track) return;
+
+      track.lyrics.sort((a, b) => a.time - b.time);
+
       try {
         const res = await fetch(`/api/admin/tracks/${track.id}/lyrics`, {
           method: 'POST',
@@ -2898,6 +2760,8 @@
         const data = await res.json().catch(() => null);
         if (res.ok) {
           showToast(`لیریکس ${track.title} با موفقیت در دیتابیس ثبت شد ✓`);
+          fetchTracksFromBackend();
+          fetchDashboardStats();
         } else {
           throw new Error(data?.message || 'خطا در ثبت لیریکس');
         }
@@ -2909,324 +2773,17 @@
     function clearAllLyrics() {
       const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
       if (!track) return;
+      if (!confirm('آیا از پاک‌سازی تمام خطوط لیریکس این اثر اطمینان دارید؟')) return;
       track.lyrics = [];
       renderStudioLyricsList(track);
       renderKaraokePreview(track);
+      showToast('خطوط لیریکس پاک‌سازی شدند.');
     }
 
     function openModal(id) { const m = document.getElementById(id); if (m) m.classList.add('open'); }
     function closeModal(id) { const m = document.getElementById(id); if (m) m.classList.remove('open'); }
 
-    function openAddPlaylistModal() { openModal('modal-playlist'); }
-    function openAddArtistModal() { openModal('modal-artist'); }
-    function openAddUserModal() { openModal('modal-user'); }
-    function openBulkLyricsModal() { openModal('modal-bulk-lyrics'); }
-    function openLrcModal() { openModal('modal-lrc'); }
-
-    function processBulkLyrics() {
-      const text = document.getElementById('bulk-lyrics-textarea').value.trim();
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      if (!text || !track) return;
-      const lines = text.split('\n').filter(l => l.trim().length > 0);
-      const step = Math.min(15, Math.floor((track.duration_sec || 210) / (lines.length || 1)));
-      track.lyrics = lines.map((l, idx) => ({ time: idx * step, fa: l.trim(), en: "" }));
-      renderStudioLyricsList(track);
-      renderKaraokePreview(track);
-      closeModal('modal-bulk-lyrics');
-      showToast(`${lines.length} سطر شعر ایجاد شد ✓`);
-    }
-
-    function applyLrcImport() {
-      const rawText = document.getElementById('lrc-textarea').value;
-      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
-      if (!track) return;
-      const lines = rawText.split('\n');
-      const parsed = [];
-      lines.forEach(line => {
-        const match = line.match(/\[(\d{2}):(\d{2}(?:\.\d{1,3})?)\](.*)/);
-        if (match) {
-          parsed.push({ time: parseInt(match[1], 10) * 60 + parseFloat(match[2]), fa: match[3].trim(), en: "" });
-        }
-      });
-      if (parsed.length > 0) {
-        track.lyrics = parsed.sort((a, b) => a.time - b.time);
-        renderStudioLyricsList(track);
-        renderKaraokePreview(track);
-        closeModal('modal-lrc');
-        showToast('فرمت LRC اعمال گردید ✓');
-      }
-    }
-
-    function copyLrcText() {
-      const txt = document.getElementById('lrc-textarea');
-      txt.select();
-      document.execCommand('copy');
-      showToast('متن LRC کپی شد');
-    }
-
-    function exportTracksJson() {
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(TRACKS_DB, null, 2));
-      const a = document.createElement('a');
-      a.href = dataStr;
-      a.download = "tracks_backup.json";
-      a.click();
-    }
-
-    function renderPlaylistsAdmin() {
-      const c = document.getElementById('playlists-admin-grid');
-      if (c) c.innerHTML = PLAYLISTS_DB.map(p => `<div class="panel-card"><h4>${p.title}</h4><p style="color:var(--muted);">${p.desc}</p></div>`).join('');
-    }
-    function renderArtistsAdmin() {
-      const b = document.getElementById('artists-table-body');
-      if (b) b.innerHTML = ARTISTS_DB.map(a => `<tr><td>${a.name}</td><td>${a.verified ? '✓ رسمی' : 'معمولی'}</td><td>${a.listeners}</td><td>${a.count}</td><td>${a.genre}</td><td>-</td></tr>`).join('');
-    }
-    function renderUsersAdmin() {
-      const b = document.getElementById('users-table-body');
-      if (b) b.innerHTML = USERS_DB.map(u => `<tr><td>${u.name}</td><td>${u.email}</td><td>${u.plan}</td><td>${u.role}</td><td>${u.date}</td><td>فعال</td><td>-</td></tr>`).join('');
-    }
-    // نمایش قطعات زنده در حال استریم
-    function renderLiveActivity(liveTracks) {
-      const container = document.getElementById('live-activity-grid');
-      if (!container) return;
-
-      if (!liveTracks || liveTracks.length === 0) {
-        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:20px; color:var(--muted);">هنوز استریمی ثبت نشده است.</div>`;
-        return;
-      }
-
-      container.innerHTML = liveTracks.map(item => `
-        <div style="background:var(--surface-elevated); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
-          <div style="display:flex; align-items:center; gap:10px; min-width:0;">
-            <img src="${item.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=80'}" style="width:38px; height:38px; border-radius:6px; object-fit:cover; flex-shrink:0;" />
-            <div style="min-width:0;">
-              <div style="font-weight:700; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.title}</div>
-              <div style="font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.artist}</div>
-            </div>
-          </div>
-          <div style="text-align:left; flex-shrink:0;">
-            <span style="font-size:10px; color:var(--brand); font-weight:700; background:rgba(16,185,84,0.1); padding:2px 8px; border-radius:var(--radius-full); display:block; margin-bottom:2px;">
-              ${item.is_lossless ? 'FLAC 24-bit' : 'MP3 320k'}
-            </span>
-            <span style="font-size:10px; color:var(--muted);">${(item.streams || 0).toLocaleString('fa-IR')} پخش</span>
-          </div>
-        </div>
-      `).join('');
-    }
-    // رسم نمودار فوق‌العاده باکیفیت و رتینا (بدون تاری روی موبایل و مانیتور با DPI بالا)
-    function drawStreamsChart(period = '7d') {
-      const canvas = document.getElementById('streams-analytics-canvas');
-      const wrapper = document.getElementById('chart-wrapper');
-      if (!canvas || !wrapper) return;
-
-      const ctx = canvas.getContext('2d');
-      const dpr = window.devicePixelRatio || 1;
-      const rect = wrapper.getBoundingClientRect();
-
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
-
-      let labels = ["شنبه", "۱شنبه", "۲شنبه", "۳شنبه", "۴شنبه", "۵شنبه", "جمعه"];
-      const baseStreams = (DASHBOARD_STATS?.total_streams || 120000);
-      let values = [
-        Math.round(baseStreams * 0.08),
-        Math.round(baseStreams * 0.12),
-        Math.round(baseStreams * 0.10),
-        Math.round(baseStreams * 0.16),
-        Math.round(baseStreams * 0.19),
-        Math.round(baseStreams * 0.23),
-        Math.round(baseStreams * 0.28)
-      ];
-
-      if (period === '30d') {
-        labels = ["هفته ۱", "هفته ۲", "هفته ۳", "هفته ۴"];
-        values = [
-          Math.round(baseStreams * 0.18),
-          Math.round(baseStreams * 0.24),
-          Math.round(baseStreams * 0.27),
-          Math.round(baseStreams * 0.31)
-        ];
-      } else if (period === '12m') {
-        labels = ["بهار", "تابستان", "پاییز", "زمستان"];
-        values = [
-          Math.round(baseStreams * 0.15),
-          Math.round(baseStreams * 0.25),
-          Math.round(baseStreams * 0.28),
-          Math.round(baseStreams * 0.32)
-        ];
-      }
-
-      ctx.clearRect(0, 0, rect.width, rect.height);
-
-      const maxVal = Math.max(...values, 100) * 1.25;
-      const paddingX = rect.width < 500 ? 25 : 45;
-      const paddingY = 25;
-      const graphW = rect.width - paddingX * 2;
-      const graphH = rect.height - paddingY * 2;
-
-      // خطوط گرید افقی
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.06)";
-      ctx.lineWidth = 1;
-      for (let i = 0; i <= 3; i++) {
-        const y = paddingY + (graphH / 3) * i;
-        ctx.beginPath();
-        ctx.moveTo(paddingX, y);
-        ctx.lineTo(rect.width - paddingX, y);
-        ctx.stroke();
-      }
-
-      // محاسبه نقاط روی نمودار
-      const points = values.map((val, idx) => {
-        const x = paddingX + (graphW / (values.length - 1)) * idx;
-        const y = paddingY + graphH - (val / maxVal) * graphH;
-        return { x, y, val, label: labels[idx] };
-      });
-
-      // گرادینت پرکننده زیر نمودار
-      const grad = ctx.createLinearGradient(0, paddingY, 0, rect.height - paddingY);
-      grad.addColorStop(0, "rgba(16, 185, 84, 0.38)");
-      grad.addColorStop(1, "rgba(16, 185, 84, 0.0)");
-
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, rect.height - paddingY);
-      ctx.lineTo(points[0].x, points[0].y);
-
-      // رسم منحنی نرم بزیه (Bezier)
-      for (let i = 0; i < points.length - 1; i++) {
-        const xc = (points[i].x + points[i + 1].x) / 2;
-        const yc = (points[i].y + points[i + 1].y) / 2;
-        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
-      }
-      ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
-      ctx.lineTo(points[points.length - 1].x, rect.height - paddingY);
-      ctx.closePath();
-      ctx.fillStyle = grad;
-      ctx.fill();
-
-      // رسم خط اصلی نئونی
-      ctx.beginPath();
-      ctx.strokeStyle = "#10B954";
-      ctx.lineWidth = 3;
-      ctx.shadowColor = "rgba(16, 185, 84, 0.6)";
-      ctx.shadowBlur = 10;
-      ctx.moveTo(points[0].x, points[0].y);
-
-      for (let i = 0; i < points.length - 1; i++) {
-        const xc = (points[i].x + points[i + 1].x) / 2;
-        const yc = (points[i].y + points[i + 1].y) / 2;
-        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
-      }
-      ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
-      ctx.stroke();
-
-      ctx.shadowColor = "transparent";
-      ctx.shadowBlur = 0;
-
-      // رسم دایره‌ها و برچسب‌های متنی
-      ctx.font = "11px Vazirmatn";
-      ctx.fillStyle = "#9696A3";
-      ctx.textAlign = "center";
-
-      points.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
-        ctx.fillStyle = "#FFFFFF";
-        ctx.fill();
-        ctx.strokeStyle = "#10B954";
-        ctx.lineWidth = 2;
-        ctx.stroke();
-
-        ctx.fillStyle = "#9696A3";
-        ctx.fillText(p.label, p.x, rect.height - 6);
-      });
-    }
-
-    function updateChartPeriod(period) {
-      currentChartPeriod = period;
-      document.querySelectorAll('#chart-btn-7d, #chart-btn-30d, #chart-btn-12m').forEach(b => b.classList.remove('active'));
-      const activeBtn = document.getElementById(`chart-btn-${period}`);
-      if (activeBtn) activeBtn.classList.add('active');
-      drawStreamsChart(period);
-    }
-
-    function formatTimeWithMs(sec) {
-      const m = Math.floor(sec / 60);
-      const s = Math.floor(sec % 60);
-      const ms = Math.floor((sec % 1) * 100);
-      return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}.${ms < 10 ? '0' : ''}${ms}`;
-    }
-    function parseTimeStrToSeconds(str) {
-      if (!str) return 0;
-      const p = str.split(':');
-      return p.length === 2 ? (parseFloat(p[0]) * 60 + parseFloat(p[1])) : (parseFloat(str) || 0);
-    }
-    function escapeHtml(str) { return str.replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
-    function updateStudioTimerDisplay(sec) {
-      const d = document.getElementById('studio-time-display');
-      if (d) d.textContent = formatTimeWithMs(sec);
-    }
-    function updateStudioScrubberFill(pct) {
-      const f = document.getElementById('studio-progress-fill');
-      if (f) f.style.width = Math.min(100, Math.max(0, pct)) + '%';
-    }
-
-    function showToast(msg) {
-      const s = document.getElementById('toast-shelf');
-      if (!s) return;
-      const t = document.createElement('div');
-      t.className = 'toast-message';
-      t.textContent = msg;
-      s.appendChild(t);
-      setTimeout(() => t.remove(), 3000);
-    }
-
-    window.addEventListener('keydown', (e) => {
-      if (currentAdminView === 'lyrics' && !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) {
-        if (e.code === 'Space') { e.preventDefault(); stampCurrentTimeOnActiveRow(); }
-        else if (e.code === 'ArrowLeft') { e.preventDefault(); jumpStudioAudio(-5); }
-        else if (e.code === 'ArrowRight') { e.preventDefault(); jumpStudioAudio(5); }
-      }
-    });
-
-    // لیسنر تغییر اندازه صفحه برای بازطراحی دقیق چارت
-    window.addEventListener('resize', () => {
-      if (currentAdminView === 'dashboard') {
-        drawStreamsChart(currentChartPeriod);
-      }
-    });
-
-    // فراخوانی در بارگذاری اولیه
-    window.addEventListener('DOMContentLoaded', () => {
-      fetchTracksFromBackend();
-      fetchDashboardStats();
-      renderPlaylistsAdmin();
-      renderArtistsAdmin();
-      renderUsersAdmin();
-    });
-
-    
-    // دریافت آمار زنده دیتابیس از لاراول
-    async function fetchDashboardStats() {
-      try {
-        const res = await fetch('/api/admin/dashboard-stats');
-        if (!res.ok) throw new Error();
-        DASHBOARD_STATS = await res.json();
-
-        // به‌روزرسانی کارت‌های KPI
-        document.getElementById('kpi-total-tracks').textContent = DASHBOARD_STATS.total_tracks.toLocaleString('fa-IR');
-        document.getElementById('kpi-synced-lyrics').textContent = `${DASHBOARD_STATS.synced_lyrics.toLocaleString('fa-IR')} / ${DASHBOARD_STATS.total_tracks.toLocaleString('fa-IR')}`;
-        document.getElementById('kpi-synced-percent').textContent = `${DASHBOARD_STATS.lyrics_coverage.toLocaleString('fa-IR')}٪ پوشش`;
-        document.getElementById('kpi-total-streams').textContent = DASHBOARD_STATS.total_streams.toLocaleString('fa-IR');
-        document.getElementById('kpi-total-artists').textContent = `${DASHBOARD_STATS.total_artists.toLocaleString('fa-IR')} آرتیست`;
-        document.getElementById('kpi-total-playlists').textContent = `${DASHBOARD_STATS.total_playlists.toLocaleString('fa-IR')} پلی‌لیست`;
-
-        renderLiveActivity(DASHBOARD_STATS.live_tracks);
-        drawStreamsChart(currentChartPeriod);
-      } catch (err) {
-        console.warn('امکان دریافت آمار زنده داشبورد وجود نداشت.');
-      }
-    }
-    // دریافت پلی‌لیست‌ها از دیتابیس لاراول
+    // توابع پلی‌لیست
     async function fetchPlaylistsFromBackend() {
       try {
         const res = await fetch('/api/playlists');
@@ -3238,233 +2795,6 @@
       renderPlaylistsAdmin();
     }
 
-    // رندر کارت‌های پلی‌لیست با لیست قطعات داخل آن و دکمه‌های ویرایش/حذف
-    function renderPlaylistsAdmin() {
-      const container = document.getElementById('playlists-admin-grid');
-      if (!container) return;
-
-      if (!PLAYLISTS_DB || PLAYLISTS_DB.length === 0) {
-        container.innerHTML = `
-          <div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--muted); background:var(--surface-card); border-radius:var(--radius-md); border:1px dashed var(--border);">
-            هنوز پلی‌لیستی ثبت نشده است. روی دکمه «پلی‌لیست جدید» کلیک کنید.
-          </div>
-        `;
-        document.getElementById('badge-playlist-count').textContent = '۰';
-        return;
-      }
-
-      container.innerHTML = PLAYLISTS_DB.map(p => {
-        const trackCount = p.tracks ? p.tracks.length : 0;
-        // پیش‌نمایش ۳ آهنگ اول داخل پلی‌لیست
-        const tracksPreview = p.tracks && p.tracks.length > 0
-          ? p.tracks.slice(0, 3).map(t => `<span style="font-size:11px; color:var(--text); background:rgba(255,255,255,0.05); padding:2px 8px; border-radius:4px; margin-left:4px; display:inline-block; margin-top:4px;">♫ ${t.title}</span>`).join('')
-          : '<span style="font-size:11px; color:var(--muted);">هنوز آهنگی افزوده نشده</span>';
-
-        return `
-          <div class="panel-card" style="display:flex; flex-direction:column; justify-content:space-between; min-width:0;">
-            <div>
-              <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
-                <img src="${p.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500'}" style="width:64px; height:64px; border-radius:10px; object-fit:cover; flex-shrink:0;" />
-                <div style="min-width:0;">
-                  <div style="font-weight:800; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.title}</div>
-                  <div style="font-size:12px; color:var(--brand); font-weight:700;">${trackCount} قطعه صوتی</div>
-                </div>
-              </div>
-              <p style="font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:10px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.desc || ''}</p>
-              <div style="margin-bottom:14px; padding-top:6px; border-top:1px dashed var(--border);">
-                <div style="font-size:11px; color:var(--muted); margin-bottom:4px;">قطعات این مجموعه:</div>
-                <div style="display:flex; flex-wrap:wrap;">${tracksPreview}</div>
-              </div>
-            </div>
-            <div style="display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--border); padding-top:12px;">
-              <span class="badge-status synced">عمومی • رسمی</span>
-              <div style="display:flex; gap:6px;">
-                <button class="btn-table-action" onclick="openEditPlaylistModal(${p.id})" title="ویرایش پلی‌لیست و آهنگ‌ها">
-                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-                </button>
-                <button class="btn-table-action danger" onclick="deletePlaylist(${p.id})" title="حذف پلی‌لیست">
-                  ✕
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      document.getElementById('badge-playlist-count').textContent = PLAYLISTS_DB.length;
-    }
-
-    // آماده‌سازی چک‌باکس‌های آهنگ داخل مودال پلی‌لیست
-    function renderTracksSelectorInsideModal(selectedTrackIds = []) {
-      const container = document.getElementById('playlist-tracks-selector');
-      if (!container) return;
-
-      if (!TRACKS_DB || TRACKS_DB.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--muted); font-size:12px;">ابتدا از بخش «مدیریت آهنگ‌ها» قطعه صوتی آپلود کنید.</div>`;
-        return;
-      }
-
-      container.innerHTML = TRACKS_DB.map(t => {
-        const isChecked = selectedTrackIds.includes(t.id) ? 'checked' : '';
-        return `
-          <label style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 8px; border-radius:6px; background:rgba(255,255,255,0.02); cursor:pointer; transition:background var(--transition-fast);" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'">
-            <div style="display:flex; align-items:center; gap:8px; min-width:0;">
-              <input type="checkbox" class="playlist-track-checkbox" value="${t.id}" ${isChecked} onchange="updateSelectedTracksCounter()" style="accent-color:var(--brand); width:16px; height:16px; cursor:pointer;" />
-              <img src="${t.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=80'}" style="width:30px; height:30px; border-radius:4px; object-fit:cover;" />
-              <div style="min-width:0;">
-                <div style="font-size:12.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.title}</div>
-                <div style="font-size:10.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.artist}</div>
-              </div>
-            </div>
-            <span style="font-size:11px; color:var(--muted); direction:ltr;">${t.duration || '03:30'}</span>
-          </label>
-        `;
-      }).join('');
-
-      updateSelectedTracksCounter();
-    }
-
-    function updateSelectedTracksCounter() {
-      const checkedCount = document.querySelectorAll('.playlist-track-checkbox:checked').length;
-      const counter = document.getElementById('playlist-selected-count');
-      if (counter) {
-        counter.textContent = `${checkedCount} قطعه انتخاب شده`;
-      }
-    }
-
-    // باز کردن مودال برای ایجاد پلی‌لیست جدید
-    function openAddPlaylistModal() {
-      document.getElementById('modal-playlist-title').textContent = "ساخت پلی‌لیست جدید";
-      document.getElementById('playlist-form-id').value = "";
-      document.getElementById('playlist-form-title').value = "";
-      document.getElementById('playlist-form-desc').value = "";
-      document.getElementById('playlist-form-cover').value = "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500";
-      document.getElementById('playlist-form-cover-file').value = "";
-      document.getElementById('btn-save-playlist').textContent = "ساخت پلی‌لیست";
-      renderTracksSelectorInsideModal([]);
-      openModal('modal-playlist');
-    }
-
-    // باز کردن مودال برای ویرایش پلی‌لیست قبلی
-    function openEditPlaylistModal(playlistId) {
-      const p = PLAYLISTS_DB.find(item => item.id === playlistId);
-      if (!p) return;
-
-      document.getElementById('modal-playlist-title').textContent = `ویرایش پلی‌لیست: ${p.title}`;
-      document.getElementById('playlist-form-id').value = p.id;
-      document.getElementById('playlist-form-title').value = p.title || "";
-      document.getElementById('playlist-form-desc').value = p.desc || "";
-      document.getElementById('playlist-form-cover').value = p.cover || "";
-      document.getElementById('playlist-form-cover-file').value = "";
-      document.getElementById('btn-save-playlist').textContent = "ذخیره تغییرات";
-
-      const selectedIds = p.tracks ? p.tracks.map(t => t.id) : [];
-      renderTracksSelectorInsideModal(selectedIds);
-      openModal('modal-playlist');
-    }
-
-    // ذخیره یا ویرایش پلی‌لیست با ارسال اطلاعات به لاراول
-    async function savePlaylistFromModal() {
-      const playlistId = document.getElementById('playlist-form-id').value;
-      const title = document.getElementById('playlist-form-title').value.trim();
-      const desc = document.getElementById('playlist-form-desc').value.trim();
-
-      if (!title) {
-        showToast('عنوان پلی‌لیست الزامی است.');
-        return;
-      }
-
-      const saveBtn = document.getElementById('btn-save-playlist');
-      saveBtn.disabled = true;
-      saveBtn.textContent = 'در حال ذخیره‌سازی...';
-
-      const formData = new FormData();
-      formData.append('title', title);
-      formData.append('desc', desc);
-
-      const coverInput = document.getElementById('playlist-form-cover-file');
-      if (coverInput.files && coverInput.files[0]) {
-        formData.append('cover_file', coverInput.files[0]);
-      } else {
-        formData.append('cover_url', document.getElementById('playlist-form-cover').value);
-      }
-
-      // جمع‌آوری شناسه آهنگ‌های انتخاب شده
-      const checkedBoxes = document.querySelectorAll('.playlist-track-checkbox:checked');
-      checkedBoxes.forEach(box => {
-        formData.append('track_ids[]', box.value);
-      });
-
-      const endpoint = playlistId ? `/api/admin/playlists/${playlistId}` : '/api/admin/playlists';
-
-      try {
-        const res = await fetch(endpoint, {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-          },
-          body: formData
-        });
-
-        const data = await res.json().catch(() => null);
-
-        if (!res.ok) {
-          throw new Error(data?.message || 'خطا در ذخیره‌سازی پلی‌لیست');
-        }
-
-        showToast(playlistId ? 'پلی‌لیست با موفقیت ویرایش شد ✓' : `پلی‌لیست «${data.title}» ساخته شد ✓`);
-        closeModal('modal-playlist');
-        fetchPlaylistsFromBackend();
-        fetchDashboardStats();
-      } catch (err) {
-        showToast(err.message || 'خطا در برقراری ارتباط با سرور');
-      } finally {
-        saveBtn.disabled = false;
-        saveBtn.textContent = playlistId ? 'ذخیره تغییرات' : 'ساخت پلی‌لیست';
-      }
-    }
-
-    // حذف پلی‌لیست از دیتابیس
-    async function deletePlaylist(playlistId) {
-      if (!confirm('آیا از حذف این پلی‌لیست اطمینان دارید؟ (آهنگ‌های داخل آن پاک نخواهند شد)')) return;
-
-      try {
-        const res = await fetch(`/api/admin/playlists/${playlistId}`, {
-          method: 'DELETE',
-          headers: {
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-          }
-        });
-
-        const data = await res.json().catch(() => null);
-        if (!res.ok) throw new Error(data?.message || 'خطا در حذف پلی‌لیست');
-
-        showToast('پلی‌لیست با موفقیت حذف شد.');
-        fetchPlaylistsFromBackend();
-        fetchDashboardStats();
-      } catch (err) {
-        showToast(err.message || 'خطا در حذف پلی‌لیست');
-      }
-    }
-    // حذف دیتای فیک قدیمی از مرورگر و شروع با آرایه خالی
-    localStorage.removeItem('sehpatify_playlists');
-    let PLAYLISTS_DB = [];
-
-    // واکشی پلی‌لیست‌های دیتابیس لاراول
-    async function fetchPlaylistsFromBackend() {
-      try {
-        const res = await fetch('/api/playlists');
-        if (!res.ok) throw new Error();
-        PLAYLISTS_DB = await res.json();
-      } catch (err) {
-        PLAYLISTS_DB = [];
-      }
-      renderPlaylistsAdmin();
-    }
-
-    // رندر کارت‌های پلی‌لیست
     function renderPlaylistsAdmin() {
       const container = document.getElementById('playlists-admin-grid');
       if (!container) return;
@@ -3519,13 +2849,12 @@
       document.getElementById('badge-playlist-count').textContent = PLAYLISTS_DB.length;
     }
 
-    // رندر چک‌باکس‌های آهنگ داخل مودال
     function renderTracksSelectorInsideModal(selectedTrackIds = []) {
       const container = document.getElementById('playlist-tracks-selector');
       if (!container) return;
 
       if (!TRACKS_DB || TRACKS_DB.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--muted); font-size:12px;">ابتدا از بخش مدیریت، آهنگ آپلود کنید.</div>`;
+        container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--muted); font-size:12px;">ابتدا از بخش «مدیریت آهنگ‌ها» قطعه صوتی آپلود کنید.</div>`;
         return;
       }
 
@@ -3556,18 +2885,13 @@
     }
 
     function openAddPlaylistModal() {
-      const titleElem = document.getElementById('modal-playlist-title');
-      if (titleElem) titleElem.textContent = "ساخت پلی‌لیست جدید";
-      
+      document.getElementById('modal-playlist-title').textContent = "ساخت پلی‌لیست جدید";
       document.getElementById('playlist-form-id').value = "";
       document.getElementById('playlist-form-title').value = "";
       document.getElementById('playlist-form-desc').value = "";
       document.getElementById('playlist-form-cover').value = "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500";
       document.getElementById('playlist-form-cover-file').value = "";
-      
-      const btnSave = document.getElementById('btn-save-playlist');
-      if (btnSave) btnSave.textContent = "ساخت پلی‌لیست";
-
+      document.getElementById('btn-save-playlist').textContent = "ساخت پلی‌لیست";
       renderTracksSelectorInsideModal([]);
       openModal('modal-playlist');
     }
@@ -3576,17 +2900,13 @@
       const p = PLAYLISTS_DB.find(item => item.id === playlistId);
       if (!p) return;
 
-      const titleElem = document.getElementById('modal-playlist-title');
-      if (titleElem) titleElem.textContent = `ویرایش پلی‌لیست: ${p.title}`;
-
+      document.getElementById('modal-playlist-title').textContent = `ویرایش پلی‌لیست: ${p.title}`;
       document.getElementById('playlist-form-id').value = p.id;
       document.getElementById('playlist-form-title').value = p.title || "";
       document.getElementById('playlist-form-desc').value = p.desc || "";
       document.getElementById('playlist-form-cover').value = p.cover || "";
       document.getElementById('playlist-form-cover-file').value = "";
-
-      const btnSave = document.getElementById('btn-save-playlist');
-      if (btnSave) btnSave.textContent = "ذخیره تغییرات";
+      document.getElementById('btn-save-playlist').textContent = "ذخیره تغییرات";
 
       const selectedIds = p.tracks ? p.tracks.map(t => t.id) : [];
       renderTracksSelectorInsideModal(selectedIds);
@@ -3646,7 +2966,7 @@
         fetchPlaylistsFromBackend();
         fetchDashboardStats();
       } catch (err) {
-        showToast(err.message || 'خطا در برقراری ارتباط با سرور');
+        showToast(err.message || 'خطا در ارتباط با سرور');
       } finally {
         saveBtn.disabled = false;
         saveBtn.textContent = playlistId ? 'ذخیره تغییرات' : 'ساخت پلی‌لیست';
@@ -3654,7 +2974,7 @@
     }
 
     async function deletePlaylist(playlistId) {
-      if (!confirm('آیا از حذف این پلی‌لیست اطمینان دارید؟')) return;
+      if (!confirm('آیا از حذف این پلی‌لیست اطمینان دارید؟ (آهنگ‌های داخل آن پاک نخواهند شد)')) return;
 
       try {
         const res = await fetch(`/api/admin/playlists/${playlistId}`, {
@@ -3675,6 +2995,309 @@
         showToast(err.message || 'خطا در حذف پلی‌لیست');
       }
     }
-</script>
+
+    function openAddArtistModal() { openModal('modal-artist'); }
+    function openAddUserModal() { openModal('modal-user'); }
+    function openBulkLyricsModal() { openModal('modal-bulk-lyrics'); }
+    function openLrcModal() { openModal('modal-lrc'); }
+
+    function processBulkLyrics() {
+      const text = document.getElementById('bulk-lyrics-textarea').value.trim();
+      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
+      if (!text || !track) return;
+
+      const lines = text.split('\n').filter(l => l.trim().length > 0);
+      const maxSec = getSelectedTrackMaxDuration();
+      const step = Math.min(10, Math.max(1, Math.floor(maxSec / (lines.length + 1))));
+
+      track.lyrics = lines.map((l, idx) => ({
+        time: Math.min(maxSec, idx * step),
+        fa: l.trim(),
+        en: ""
+      }));
+
+      track.lyrics.sort((a, b) => a.time - b.time);
+      renderStudioLyricsList(track);
+      renderKaraokePreview(track);
+      closeModal('modal-bulk-lyrics');
+      showToast(`${lines.length} سطر شعر در محدوده زمانی اثر ایجاد شد ✓`);
+    }
+
+    function applyLrcImport() {
+      const rawText = document.getElementById('lrc-textarea').value;
+      const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
+      if (!track) return;
+
+      const maxSec = getSelectedTrackMaxDuration();
+      const lines = rawText.split('\n');
+      const parsed = [];
+
+      lines.forEach(line => {
+        const match = line.match(/\[(\d{2}):(\d{2}(?:\.\d{1,3})?)\](.*)/);
+        if (match) {
+          let timeVal = parseInt(match[1], 10) * 60 + parseFloat(match[2]);
+          if (timeVal <= maxSec) {
+            parsed.push({ time: timeVal, fa: match[3].trim(), en: "" });
+          }
+        }
+      });
+
+      if (parsed.length > 0) {
+        track.lyrics = parsed.sort((a, b) => a.time - b.time);
+        renderStudioLyricsList(track);
+        renderKaraokePreview(track);
+        closeModal('modal-lrc');
+        showToast('فرمت LRC با موفقیت اعمال گردید ✓');
+      } else {
+        showToast('هیچ سطری در محدوده زمانی این قطعه یافت نشد.');
+      }
+    }
+
+    function copyLrcText() {
+      const txt = document.getElementById('lrc-textarea');
+      txt.select();
+      document.execCommand('copy');
+      showToast('متن LRC کپی شد');
+    }
+
+    function exportTracksJson() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(TRACKS_DB, null, 2));
+      const a = document.createElement('a');
+      a.href = dataStr;
+      a.download = "tracks_backup.json";
+      a.click();
+    }
+
+    function renderArtistsAdmin() {
+      const b = document.getElementById('artists-table-body');
+      if (b) b.innerHTML = ARTISTS_DB.map(a => `<tr><td>${a.name}</td><td>${a.verified ? '✓ رسمی' : 'معمولی'}</td><td>${a.listeners}</td><td>${a.count}</td><td>${a.genre}</td><td>-</td></tr>`).join('');
+    }
+
+    function renderUsersAdmin() {
+      const b = document.getElementById('users-table-body');
+      if (b) b.innerHTML = USERS_DB.map(u => `<tr><td>${u.name}</td><td>${u.email}</td><td>${u.plan}</td><td>${u.role}</td><td>${u.date}</td><td>فعال</td><td>-</td></tr>`).join('');
+    }
+
+    function renderLiveActivity(liveTracks) {
+      const container = document.getElementById('live-activity-grid');
+      if (!container) return;
+
+      if (!liveTracks || liveTracks.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:20px; color:var(--muted);">هنوز استریمی ثبت نشده است.</div>`;
+        return;
+      }
+
+      container.innerHTML = liveTracks.map(item => `
+        <div style="background:var(--surface-elevated); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+            <img src="${item.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=80'}" style="width:38px; height:38px; border-radius:6px; object-fit:cover; flex-shrink:0;" />
+            <div style="min-width:0;">
+              <div style="font-weight:700; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.title}</div>
+              <div style="font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.artist}</div>
+            </div>
+          </div>
+          <div style="text-align:left; flex-shrink:0;">
+            <span style="font-size:10px; color:var(--brand); font-weight:700; background:rgba(16,185,84,0.1); padding:2px 8px; border-radius:var(--radius-full); display:block; margin-bottom:2px;">
+              ${item.is_lossless ? 'FLAC 24-bit' : 'MP3 320k'}
+            </span>
+            <span style="font-size:10px; color:var(--muted);">${(item.streams || 0).toLocaleString('fa-IR')} پخش</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function drawStreamsChart(period = '7d') {
+      const canvas = document.getElementById('streams-analytics-canvas');
+      const wrapper = document.getElementById('chart-wrapper');
+      if (!canvas || !wrapper) return;
+
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = wrapper.getBoundingClientRect();
+
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      let labels = ["شنبه", "۱شنبه", "۲شنبه", "۳شنبه", "۴شنبه", "۵شنبه", "جمعه"];
+      const baseStreams = (DASHBOARD_STATS?.total_streams || 120000);
+      let values = [
+        Math.round(baseStreams * 0.08),
+        Math.round(baseStreams * 0.12),
+        Math.round(baseStreams * 0.10),
+        Math.round(baseStreams * 0.16),
+        Math.round(baseStreams * 0.19),
+        Math.round(baseStreams * 0.23),
+        Math.round(baseStreams * 0.28)
+      ];
+
+      if (period === '30d') {
+        labels = ["هفته ۱", "هفته ۲", "هفته ۳", "هفته ۴"];
+        values = [
+          Math.round(baseStreams * 0.18),
+          Math.round(baseStreams * 0.24),
+          Math.round(baseStreams * 0.27),
+          Math.round(baseStreams * 0.31)
+        ];
+      } else if (period === '12m') {
+        labels = ["بهار", "تابستان", "پاییز", "زمستان"];
+        values = [
+          Math.round(baseStreams * 0.15),
+          Math.round(baseStreams * 0.25),
+          Math.round(baseStreams * 0.28),
+          Math.round(baseStreams * 0.32)
+        ];
+      }
+
+      ctx.clearRect(0, 0, rect.width, rect.height);
+
+      const maxVal = Math.max(...values, 100) * 1.25;
+      const paddingX = rect.width < 500 ? 25 : 45;
+      const paddingY = 25;
+      const graphW = rect.width - paddingX * 2;
+      const graphH = rect.height - paddingY * 2;
+
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.06)";
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 3; i++) {
+        const y = paddingY + (graphH / 3) * i;
+        ctx.beginPath();
+        ctx.moveTo(paddingX, y);
+        ctx.lineTo(rect.width - paddingX, y);
+        ctx.stroke();
+      }
+
+      const points = values.map((val, idx) => {
+        const x = paddingX + (graphW / (values.length - 1)) * idx;
+        const y = paddingY + graphH - (val / maxVal) * graphH;
+        return { x, y, val, label: labels[idx] };
+      });
+
+      const grad = ctx.createLinearGradient(0, paddingY, 0, rect.height - paddingY);
+      grad.addColorStop(0, "rgba(16, 185, 84, 0.38)");
+      grad.addColorStop(1, "rgba(16, 185, 84, 0.0)");
+
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, rect.height - paddingY);
+      ctx.lineTo(points[0].x, points[0].y);
+
+      for (let i = 0; i < points.length - 1; i++) {
+        const xc = (points[i].x + points[i + 1].x) / 2;
+        const yc = (points[i].y + points[i + 1].y) / 2;
+        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+      }
+      ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+      ctx.lineTo(points[points.length - 1].x, rect.height - paddingY);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.strokeStyle = "#10B954";
+      ctx.lineWidth = 3;
+      ctx.shadowColor = "rgba(16, 185, 84, 0.6)";
+      ctx.shadowBlur = 10;
+      for (let i = 0; i < points.length - 1; i++) {
+        const xc = (points[i].x + points[i + 1].x) / 2;
+        const yc = (points[i].y + points[i + 1].y) / 2;
+        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+      }
+      ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+      ctx.stroke();
+
+      ctx.shadowColor = "transparent";
+      ctx.shadowBlur = 0;
+
+      ctx.font = "11px Vazirmatn";
+      ctx.fillStyle = "#9696A3";
+      ctx.textAlign = "center";
+
+      points.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fill();
+        ctx.strokeStyle = "#10B954";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = "#9696A3";
+        ctx.fillText(p.label, p.x, rect.height - 6);
+      });
+    }
+
+    function updateChartPeriod(period) {
+      currentChartPeriod = period;
+      document.querySelectorAll('#chart-btn-7d, #chart-btn-30d, #chart-btn-12m').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.getElementById(`chart-btn-${period}`);
+      if (activeBtn) activeBtn.classList.add('active');
+      drawStreamsChart(period);
+    }
+
+    function formatTimeWithMs(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      const ms = Math.floor((sec % 1) * 100);
+      return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}.${ms < 10 ? '0' : ''}${ms}`;
+    }
+
+    function parseTimeStrToSeconds(str) {
+      if (!str) return 0;
+      const p = str.split(':');
+      return p.length === 2 ? (parseFloat(p[0]) * 60 + parseFloat(p[1])) : (parseFloat(str) || 0);
+    }
+
+    function parseDurationToSeconds(dur) {
+      const p = (dur || '').split(':');
+      if (p.length === 2) {
+        return (parseInt(p[0], 10) * 60) + parseInt(p[1], 10);
+      }
+      return 210;
+    }
+
+    function escapeHtml(str) { return (str || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+
+    function updateStudioTimerDisplay(sec) {
+      const d = document.getElementById('studio-time-display');
+      if (d) d.textContent = formatTimeWithMs(sec);
+    }
+
+    function updateStudioScrubberFill(pct) {
+      const f = document.getElementById('studio-progress-fill');
+      if (f) f.style.width = Math.min(100, Math.max(0, pct)) + '%';
+    }
+
+    function showToast(msg) {
+      const s = document.getElementById('toast-shelf');
+      if (!s) return;
+      const t = document.createElement('div');
+      t.className = 'toast-message';
+      t.textContent = msg;
+      s.appendChild(t);
+      setTimeout(() => t.remove(), 3200);
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (currentAdminView === 'lyrics' && !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) {
+        if (e.code === 'Space') { e.preventDefault(); stampCurrentTimeOnActiveRow(); }
+        else if (e.code === 'ArrowLeft') { e.preventDefault(); jumpStudioAudio(-5); }
+        else if (e.code === 'ArrowRight') { e.preventDefault(); jumpStudioAudio(5); }
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (currentAdminView === 'dashboard') {
+        drawStreamsChart(currentChartPeriod);
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchTracksFromBackend();
+      fetchDashboardStats();
+      fetchPlaylistsFromBackend();
+      renderArtistsAdmin();
+      renderUsersAdmin();
+    });
+  </script>
 </body>
 </html>

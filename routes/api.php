@@ -12,7 +12,7 @@ Route::post('/tracks/{id}/favorite', [TrackController::class, 'toggleFavorite'])
 Route::get('/playlists', [PlaylistController::class, 'index']);
 Route::get('/artists', fn() => response()->json(Artist::all()));
 
-// استودیو و پنل ادمین
+// استودیو و مدیریت ادمین
 Route::prefix('admin')->group(function () {
     // آمار داشبورد
     Route::get('/dashboard-stats', [TrackController::class, 'dashboardStats']);

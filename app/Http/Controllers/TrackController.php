@@ -187,7 +187,6 @@ class TrackController extends Controller
     {
         $totalTracks = Track::count();
 
-        // تعداد آهنگ‌هایی که حداقل یک خط لیریکس ثبت‌شده دارند
         $syncedLyrics = Track::whereNotNull('lyrics')
             ->where('lyrics', '!=', '[]')
             ->where('lyrics', '!=', '')
@@ -198,10 +197,8 @@ class TrackController extends Controller
         $totalPlaylists = \App\Models\Playlist::count();
         $totalUsers = \App\Models\User::count();
 
-        // درصد پوشش لیریکس
         $lyricsCoverage = $totalTracks > 0 ? round(($syncedLyrics / $totalTracks) * 100) : 0;
 
-        // ۴ قطعه پرطرفدار/جدید برای نمایش در مانیتورینگ زنده
         $liveTracks = Track::orderBy('streams', 'desc')->take(4)->get([
             'id', 'title', 'artist', 'cover', 'genre', 'streams', 'is_lossless'
         ]);
