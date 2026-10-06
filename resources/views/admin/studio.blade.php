@@ -2071,30 +2071,39 @@
       </div>
     </div>
 
-    <!-- MODAL 4: ADD USER -->
+    <!-- MODAL 4: ADD / EDIT USER -->
     <div class="modal-backdrop" id="modal-user">
       <div class="modal-container">
         <div class="modal-head">
-          <h3 class="modal-title">تعریف کاربر جدید</h3>
+          <h3 class="modal-title" id="modal-user-title">تعریف کاربر جدید</h3>
           <button class="btn-table-action" onclick="closeModal('modal-user')">✕</button>
         </div>
+
+        <input type="hidden" id="user-form-id" />
+
         <div class="form-row-2">
           <div class="form-group">
             <label class="form-label">نام و نام خانوادگی *</label>
-            <input type="text" class="form-control" id="user-form-name" placeholder="نگین خسروی" />
+            <input type="text" class="form-control" id="user-form-name" placeholder="مثال: نگین خسروی" />
           </div>
           <div class="form-group">
             <label class="form-label">ایمیل *</label>
             <input type="email" class="form-control" id="user-form-email" placeholder="negin@example.com" />
           </div>
         </div>
+
+        <div class="form-group">
+          <label class="form-label">کلمه عبور</label>
+          <input type="password" class="form-control" id="user-form-password" placeholder="حداقل ۶ کاراکتر (در حالت ویرایش اختیاری است)" />
+        </div>
+
         <div class="form-row-2">
           <div class="form-group">
             <label class="form-label">سطح اشتراک</label>
             <select class="form-control" id="user-form-plan">
-              <option value="طلایی Hi-Res (یک ساله)">طلایی Hi-Res (یک ساله)</option>
-              <option value="پرمیوم استاندارد">پرمیوم استاندارد</option>
               <option value="رایگان">رایگان</option>
+              <option value="پرمیوم استاندارد">پرمیوم استاندارد</option>
+              <option value="طلایی Hi-Res (یک ساله)">طلایی Hi-Res (یک ساله)</option>
             </select>
           </div>
           <div class="form-group">
@@ -2106,9 +2115,10 @@
             </select>
           </div>
         </div>
+
         <div class="modal-actions">
           <button class="btn-secondary" onclick="closeModal('modal-user')">انصراف</button>
-          <button class="btn-quick-action" onclick="saveUserFromModal()">افزودن کاربر</button>
+          <button class="btn-quick-action" id="btn-save-user" onclick="saveUserFromModal()">ثبت اطلاعات</button>
         </div>
       </div>
     </div>
@@ -2233,7 +2243,193 @@
       sidebar.classList.toggle('open');
       backdrop.classList.toggle('active');
     }
+    // دریافت کاربران زنده از دیتابیس MySQL
+    async function fetchUsersFromBackend() {
+      try {
+        const res = await fetch('/api/admin/users');
+        if (!res.ok) throw new Error();
+        USERS_DB = await res.json();
+      } catch (err) {
+        USERS_DB = [];
+      }
+      renderUsersAdmin();
+    }
 
+    // رندر جدول کاربران با دکمه‌های مسدودسازی، ویرایش و حذف
+    function renderUsersAdmin() {
+      const tbody = document.getElementById('users-table-body');
+      if (!tbody) return;
+
+      const badge = document.getElementById('badge-users-count');
+      if (badge) badge.textContent = USERS_DB.length;
+
+      if (!USERS_DB || USERS_DB.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--muted);">هیچ کاربری در دیتابیس یافت نشد.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = USERS_DB.map(u => `
+        <tr>
+          <td>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <div class="admin-avatar" style="width:30px; height:30px; font-size:11px;">${(u.name || 'ک')[0]}</div>
+              <span style="font-weight:700;">${u.name}</span>
+            </div>
+          </td>
+          <td style="direction:ltr; text-align:right; color:var(--muted);">${u.email}</td>
+          <td>
+            <span class="badge-status ${u.plan && u.plan.includes('طلایی') ? 'synced' : 'hi-res'}">${u.plan}</span>
+          </td>
+          <td><span style="font-weight:600;">${u.role}</span></td>
+          <td><span style="color:var(--muted); font-size:12px;">${u.date}</span></td>
+          <td>
+            <span class="badge-status ${u.is_active ? 'synced' : 'empty'}">
+              ${u.is_active ? '● فعال' : '✕ مسدود'}
+            </span>
+          </td>
+          <td>
+            <div class="table-actions-cell">
+              <!-- دکمه مسدودسازی / فعال‌سازی لحظه‌ای -->
+              <button class="btn-table-action" onclick="toggleUserStatus(${u.id})" title="${u.is_active ? 'مسدود کردن کاربر' : 'فعال‌سازی حساب'}">
+                ${u.is_active 
+                  ? `<svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>`
+                  : `<svg width="15" height="15" fill="none" stroke="var(--brand)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`
+                }
+              </button>
+              <!-- دکمه ویرایش اطلاعات کاربر -->
+              <button class="btn-table-action" onclick="openEditUserModal(${u.id})" title="ویرایش اطلاعات">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+              </button>
+              <!-- دکمه حذف -->
+              <button class="btn-table-action danger" onclick="deleteUser(${u.id})" title="حذف کاربر">✕</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openAddUserModal() {
+      document.getElementById('modal-user-title').textContent = "تعریف کاربر جدید";
+      document.getElementById('user-form-id').value = "";
+      document.getElementById('user-form-name').value = "";
+      document.getElementById('user-form-email').value = "";
+      document.getElementById('user-form-password').value = "";
+      document.getElementById('user-form-plan').value = "رایگان";
+      document.getElementById('user-form-role').value = "کاربر";
+      document.getElementById('btn-save-user').textContent = "افزودن کاربر";
+      openModal('modal-user');
+    }
+
+    function openEditUserModal(userId) {
+      const u = USERS_DB.find(item => item.id === userId);
+      if (!u) return;
+
+      document.getElementById('modal-user-title').textContent = `ویرایش کاربر: ${u.name}`;
+      document.getElementById('user-form-id').value = u.id;
+      document.getElementById('user-form-name').value = u.name;
+      document.getElementById('user-form-email').value = u.email;
+      document.getElementById('user-form-password').value = "";
+      document.getElementById('user-form-plan').value = u.plan || "رایگان";
+      document.getElementById('user-form-role').value = u.role || "کاربر";
+      document.getElementById('btn-save-user').textContent = "ذخیره تغییرات";
+      openModal('modal-user');
+    }
+
+    async function saveUserFromModal() {
+      const userId = document.getElementById('user-form-id').value;
+      const name = document.getElementById('user-form-name').value.trim();
+      const email = document.getElementById('user-form-email').value.trim();
+      const password = document.getElementById('user-form-password').value;
+      const plan = document.getElementById('user-form-plan').value;
+      const role = document.getElementById('user-form-role').value;
+
+      if (!name || !email) {
+        showToast('نام و ایمیل را کامل وارد نمایید.');
+        return;
+      }
+
+      const saveBtn = document.getElementById('btn-save-user');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'در حال ذخیره‌‌سازی...';
+
+      const payload = { name, email, plan, role };
+      if (password) payload.password = password;
+
+      const endpoint = userId ? `/api/admin/users/${userId}` : '/api/admin/users';
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json().catch(() => null);
+
+        if (!res.ok) {
+          throw new Error(data?.message || 'خطا در ذخیره‌سازی اطلاعات کاربر');
+        }
+
+        showToast(userId ? 'مشخصات کاربر با موفقیت ویرایش شد ✓' : 'کاربر جدید به سیستم اضافه شد ✓');
+        closeModal('modal-user');
+        await fetchUsersFromBackend();
+        await fetchDashboardStats();
+      } catch (err) {
+        showToast(err.message || 'خطا در ذخیره‌سازی');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = userId ? 'ذخیره تغییرات' : 'افزودن کاربر';
+      }
+    }
+
+    // تغییر وضعیت فعال / مسدود
+    async function toggleUserStatus(userId) {
+      try {
+        const res = await fetch(`/api/admin/users/${userId}/toggle-status`, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          }
+        });
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok) throw new Error(data?.message || 'خطا در تغییر وضعیت');
+
+        showToast(data.message);
+        await fetchUsersFromBackend();
+      } catch (err) {
+        showToast(err.message || 'خطا در تغییر وضعیت کاربر');
+      }
+    }
+
+    // حذف کاربر
+    async function deleteUser(userId) {
+      if (!confirm('آیا از حذف این حساب کاربری اطمینان دارید؟')) return;
+
+      try {
+        const res = await fetch(`/api/admin/users/${userId}`, {
+          method: 'DELETE',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          }
+        });
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok) throw new Error(data?.message || 'خطا در حذف کاربر');
+
+        showToast('حساب کاربری حذف گردید.');
+        await fetchUsersFromBackend();
+        await fetchDashboardStats();
+      } catch (err) {
+        showToast(err.message || 'خطا در حذف کاربر');
+      }
+    }
     // واکشی خوانندگان و سبک‌ها مستقیماً از MySQL
     async function fetchGenresAndArtists() {
       try {

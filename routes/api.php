@@ -4,14 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\UserController;
 
 // روت‌های عمومی دریافت اطلاعات
 Route::get('/tracks', [TrackController::class, 'index']);
 Route::get('/tracks/{id}/stream', [TrackController::class, 'stream']);
 Route::post('/tracks/{id}/favorite', [TrackController::class, 'toggleFavorite']);
 Route::get('/playlists', [PlaylistController::class, 'index']);
-
-// روت‌های هنرمندان و سبک‌ها
 Route::get('/artists', [ArtistController::class, 'index']);
 Route::get('/artists/{id}', [ArtistController::class, 'show']);
 Route::get('/genres', [ArtistController::class, 'genres']);
@@ -35,4 +34,11 @@ Route::prefix('admin')->group(function () {
     Route::post('/artists', [ArtistController::class, 'store']);
     Route::post('/artists/{id}', [ArtistController::class, 'update']);
     Route::delete('/artists/{id}', [ArtistController::class, 'destroy']);
+
+    // مدیریت کاربران
+    Route::get('/users', [UserController::class, 'index']);
+    Route::post('/users', [UserController::class, 'store']);
+    Route::post('/users/{id}', [UserController::class, 'update']);
+    Route::post('/users/{id}/toggle-status', [UserController::class, 'toggleStatus']);
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
 });
