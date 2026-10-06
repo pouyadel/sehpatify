@@ -2243,7 +2243,8 @@
       sidebar.classList.toggle('open');
       backdrop.classList.toggle('active');
     }
-    // دریافت کاربران زنده از دیتابیس MySQL
+
+    // ۱. دریافت کاربران از سرور
     async function fetchUsersFromBackend() {
       try {
         const res = await fetch('/api/admin/users');
@@ -2255,7 +2256,7 @@
       renderUsersAdmin();
     }
 
-    // رندر جدول کاربران با دکمه‌های مسدودسازی، ویرایش و حذف
+    // ۲. نمایش لیست کاربران در جدول با دکمه‌های مسدودسازی، ویرایش و حذف
     function renderUsersAdmin() {
       const tbody = document.getElementById('users-table-body');
       if (!tbody) return;
@@ -2264,12 +2265,13 @@
       if (badge) badge.textContent = USERS_DB.length;
 
       if (!USERS_DB || USERS_DB.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--muted);">هیچ کاربری در دیتابیس یافت نشد.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:30px; color:var(--muted);">هیچ کاربری در دیتابیس یافت نشد. روی دکمه «ثبت کاربر جدید» کلیک کنید.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = USERS_DB.map(u => `
+      tbody.innerHTML = USERS_DB.map((u, idx) => `
         <tr>
+          <td><span style="color:var(--muted); font-weight:700;">${idx + 1}</span></td>
           <td>
             <div style="display:flex; align-items:center; gap:8px;">
               <div class="admin-avatar" style="width:30px; height:30px; font-size:11px;">${(u.name || 'ک')[0]}</div>
@@ -2278,9 +2280,10 @@
           </td>
           <td style="direction:ltr; text-align:right; color:var(--muted);">${u.email}</td>
           <td>
-            <span class="badge-status ${u.plan && u.plan.includes('طلایی') ? 'synced' : 'hi-res'}">${u.plan}</span>
+            <span class="badge-status ${u.role === 'مدیر' ? 'synced' : 'hi-res'}">
+              ${u.role === 'مدیر' ? 'مدیر سیستم' : 'کاربر عادی'}
+            </span>
           </td>
-          <td><span style="font-weight:600;">${u.role}</span></td>
           <td><span style="color:var(--muted); font-size:12px;">${u.date}</span></td>
           <td>
             <span class="badge-status ${u.is_active ? 'synced' : 'empty'}">
@@ -2289,14 +2292,14 @@
           </td>
           <td>
             <div class="table-actions-cell">
-              <!-- دکمه مسدودسازی / فعال‌سازی لحظه‌ای -->
-              <button class="btn-table-action" onclick="toggleUserStatus(${u.id})" title="${u.is_active ? 'مسدود کردن کاربر' : 'فعال‌سازی حساب'}">
+              <!-- دکمه مسدودسازی / فعال‌سازی -->
+              <button class="btn-table-action" onclick="toggleUserStatus(${u.id})" title="${u.is_active ? 'مسدود کردن کاربر' : 'فعال‌سازی کاربر'}">
                 ${u.is_active 
                   ? `<svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>`
                   : `<svg width="15" height="15" fill="none" stroke="var(--brand)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`
                 }
               </button>
-              <!-- دکمه ویرایش اطلاعات کاربر -->
+              <!-- دکمه ویرایش اطلاعات -->
               <button class="btn-table-action" onclick="openEditUserModal(${u.id})" title="ویرایش اطلاعات">
                 <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
               </button>
@@ -2308,18 +2311,20 @@
       `).join('');
     }
 
+    // ۳. باز کردن مودال افزودن کاربر جدید
     function openAddUserModal() {
       document.getElementById('modal-user-title').textContent = "تعریف کاربر جدید";
       document.getElementById('user-form-id').value = "";
       document.getElementById('user-form-name').value = "";
       document.getElementById('user-form-email').value = "";
       document.getElementById('user-form-password').value = "";
-      document.getElementById('user-form-plan').value = "رایگان";
-      document.getElementById('user-form-role').value = "کاربر";
-      document.getElementById('btn-save-user').textContent = "افزودن کاربر";
+      document.getElementById('user-password-label').textContent = "کلمه عبور *";
+      document.getElementById('user-form-role').value = "کاربر عادی";
+      document.getElementById('btn-save-user').textContent = "ثبت اطلاعات";
       openModal('modal-user');
     }
 
+    // ۴. باز کردن مودال ویرایش کاربر
     function openEditUserModal(userId) {
       const u = USERS_DB.find(item => item.id === userId);
       if (!u) return;
@@ -2329,30 +2334,35 @@
       document.getElementById('user-form-name').value = u.name;
       document.getElementById('user-form-email').value = u.email;
       document.getElementById('user-form-password').value = "";
-      document.getElementById('user-form-plan').value = u.plan || "رایگان";
-      document.getElementById('user-form-role').value = u.role || "کاربر";
+      document.getElementById('user-password-label').textContent = "کلمه عبور جدید (اختیاری)";
+      document.getElementById('user-form-role').value = u.role === 'مدیر' ? 'مدیر' : 'کاربر عادی';
       document.getElementById('btn-save-user').textContent = "ذخیره تغییرات";
       openModal('modal-user');
     }
 
+    // ۵. ذخیره و ویرایش کاربر در دیتابیس
     async function saveUserFromModal() {
       const userId = document.getElementById('user-form-id').value;
       const name = document.getElementById('user-form-name').value.trim();
       const email = document.getElementById('user-form-email').value.trim();
       const password = document.getElementById('user-form-password').value;
-      const plan = document.getElementById('user-form-plan').value;
       const role = document.getElementById('user-form-role').value;
 
       if (!name || !email) {
-        showToast('نام و ایمیل را کامل وارد نمایید.');
+        showToast('نام و ایمیل الزامی است.');
+        return;
+      }
+
+      if (!userId && !password) {
+        showToast('تعیین کلمه عبور برای کاربر جدید الزامی است.');
         return;
       }
 
       const saveBtn = document.getElementById('btn-save-user');
       saveBtn.disabled = true;
-      saveBtn.textContent = 'در حال ذخیره‌‌سازی...';
+      saveBtn.textContent = 'در حال ذخیره‌سازی...';
 
-      const payload = { name, email, plan, role };
+      const payload = { name, email, role };
       if (password) payload.password = password;
 
       const endpoint = userId ? `/api/admin/users/${userId}` : '/api/admin/users';
@@ -2363,7 +2373,7 @@
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
           },
           body: JSON.stringify(payload)
         });
@@ -2371,29 +2381,29 @@
         const data = await res.json().catch(() => null);
 
         if (!res.ok) {
-          throw new Error(data?.message || 'خطا در ذخیره‌سازی اطلاعات کاربر');
+          throw new Error(data?.message || (data?.errors ? Object.values(data.errors)[0][0] : 'خطا در ثبت کاربر'));
         }
 
-        showToast(userId ? 'مشخصات کاربر با موفقیت ویرایش شد ✓' : 'کاربر جدید به سیستم اضافه شد ✓');
+        showToast(userId ? 'اطلاعات کاربر به‌روزرسانی شد ✓' : `کاربر «${data.user?.name || name}» افزوده شد ✓`);
         closeModal('modal-user');
         await fetchUsersFromBackend();
         await fetchDashboardStats();
       } catch (err) {
-        showToast(err.message || 'خطا در ذخیره‌سازی');
+        showToast(err.message || 'خطا در ارتباط با سرور');
       } finally {
         saveBtn.disabled = false;
-        saveBtn.textContent = userId ? 'ذخیره تغییرات' : 'افزودن کاربر';
+        saveBtn.textContent = userId ? 'ذخیره تغییرات' : 'ثبت اطلاعات';
       }
     }
 
-    // تغییر وضعیت فعال / مسدود
+    // ۶. تغییر آنی وضعیت مسدود / فعال کاربر
     async function toggleUserStatus(userId) {
       try {
         const res = await fetch(`/api/admin/users/${userId}/toggle-status`, {
           method: 'POST',
           headers: {
             'Accept': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
           }
         });
 
@@ -2407,7 +2417,7 @@
       }
     }
 
-    // حذف کاربر
+    // ۷. حذف کاربر
     async function deleteUser(userId) {
       if (!confirm('آیا از حذف این حساب کاربری اطمینان دارید؟')) return;
 
@@ -2416,14 +2426,14 @@
           method: 'DELETE',
           headers: {
             'Accept': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
           }
         });
 
         const data = await res.json().catch(() => null);
         if (!res.ok) throw new Error(data?.message || 'خطا در حذف کاربر');
 
-        showToast('حساب کاربری حذف گردید.');
+        showToast('کاربر با موفقیت حذف گردید.');
         await fetchUsersFromBackend();
         await fetchDashboardStats();
       } catch (err) {

@@ -6,7 +6,7 @@ use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\UserController;
 
-// روت‌های عمومی دریافت اطلاعات
+// روت‌های عمومی
 Route::get('/tracks', [TrackController::class, 'index']);
 Route::get('/tracks/{id}/stream', [TrackController::class, 'stream']);
 Route::post('/tracks/{id}/favorite', [TrackController::class, 'toggleFavorite']);
@@ -35,7 +35,7 @@ Route::prefix('admin')->group(function () {
     Route::post('/artists/{id}', [ArtistController::class, 'update']);
     Route::delete('/artists/{id}', [ArtistController::class, 'destroy']);
 
-    // مدیریت کاربران
+    // مدیریت کاربران (بدون اشتراک پرمیوم - فقط کاربر عادی و مدیر)
     Route::get('/users', [UserController::class, 'index']);
     Route::post('/users', [UserController::class, 'store']);
     Route::post('/users/{id}', [UserController::class, 'update']);

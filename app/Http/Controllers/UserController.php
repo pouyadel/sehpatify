@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    // دریافت لیست کاربران دیتابیس
+    // دریافت لیست زنده کاربران دیتابیس
     public function index()
     {
         $users = User::latest()->get()->map(function ($user) {
@@ -16,9 +16,8 @@ class UserController extends Controller
                 'id'        => $user->id,
                 'name'      => $user->name,
                 'email'     => $user->email,
-                'role'      => $user->role ?? 'کاربر',
-                'plan'      => $user->plan ?? 'رایگان',
-                'is_active' => (bool) $user->is_active,
+                'role'      => ($user->role === 'مدیر' || $user->role === 'مدیر ارشد') ? 'مدیر' : 'کاربر عادی',
+                'is_active' => (bool) ($user->is_active ?? true),
                 'date'      => $user->created_at ? $user->created_at->format('Y/m/d') : '---',
             ];
         });
@@ -32,26 +31,26 @@ class UserController extends Controller
         $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users,email',
-            'password' => 'nullable|string|min:6',
+            'password' => 'required|string|min:6',
             'role'     => 'nullable|string',
-            'plan'     => 'nullable|string',
         ], [
-            'name.required'  => 'نام و نام خانوادگی الزامی است.',
-            'email.required' => 'ایمیل الزامی است.',
-            'email.unique'   => 'این ایمیل قبلاً در سیستم ثبت شده است.',
+            'name.required'     => 'نام و نام خانوادگی الزامی است.',
+            'email.required'    => 'ایمیل الزامی است.',
+            'email.unique'      => 'این ایمیل قبلاً در سیستم ثبت شده است.',
+            'password.required' => 'کلمه عبور الزامی است.',
+            'password.min'      => 'کلمه عبور باید حداقل ۶ کاراکتر باشد.',
         ]);
 
         $user = User::create([
             'name'      => $request->input('name'),
             'email'     => $request->input('email'),
-            'password'  => Hash::make($request->input('password') ?: '12345678'),
-            'role'      => $request->input('role') ?: 'کاربر',
-            'plan'      => $request->input('plan') ?: 'رایگان',
+            'password'  => Hash::make($request->input('password')),
+            'role'      => $request->input('role') === 'مدیر' ? 'مدیر' : 'کاربر عادی',
             'is_active' => true,
         ]);
 
         return response()->json([
-            'message' => 'کاربر با موفقیت ثبت شد.',
+            'message' => 'کاربر جدید با موفقیت ایجاد شد.',
             'user'    => $user
         ], 201);
     }
@@ -66,13 +65,16 @@ class UserController extends Controller
             'email'    => 'required|email|unique:users,email,' . $id,
             'password' => 'nullable|string|min:6',
             'role'     => 'nullable|string',
-            'plan'     => 'nullable|string',
+        ], [
+            'name.required'  => 'نام و نام خانوادگی الزامی است.',
+            'email.required' => 'ایمیل الزامی است.',
+            'email.unique'   => 'این ایمیل برای کاربر دیگری ثبت شده است.',
+            'password.min'   => 'کلمه عبور باید حداقل ۶ کاراکتر باشد.',
         ]);
 
         $user->name = $request->input('name');
         $user->email = $request->input('email');
-        $user->role = $request->input('role') ?: $user->role;
-        $user->plan = $request->input('plan') ?: $user->plan;
+        $user->role = $request->input('role') === 'مدیر' ? 'مدیر' : 'کاربر عادی';
 
         if ($request->filled('password')) {
             $user->password = Hash::make($request->input('password'));
@@ -81,12 +83,12 @@ class UserController extends Controller
         $user->save();
 
         return response()->json([
-            'message' => 'اطلاعات کاربر به‌روزرسانی شد.',
+            'message' => 'اطلاعات کاربر با موفقیت به‌روزرسانی شد.',
             'user'    => $user
         ]);
     }
 
-    // مسدودسازی یا فعال‌سازی کاربر (Toggle Status)
+    // تغییر وضعیت مسدود / فعال
     public function toggleStatus($id)
     {
         $user = User::findOrFail($id);
@@ -96,7 +98,7 @@ class UserController extends Controller
         $statusText = $user->is_active ? 'فعال' : 'مسدود';
 
         return response()->json([
-            'message'   => "حساب کاربری {$user->name} اکنون {$statusText} است.",
+            'message'   => "وضعیت حساب کاربری «{$user->name}» به {$statusText} تغییر یافت.",
             'is_active' => $user->is_active
         ]);
     }
@@ -107,6 +109,6 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return response()->json(['message' => 'کاربر با موفقیت حذف شد.']);
+        return response()->json(['message' => 'کاربر با موفقیت حذف گردید.']);
     }
 }
