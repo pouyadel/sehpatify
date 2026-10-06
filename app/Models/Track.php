@@ -13,4 +13,8 @@ class Track extends Model
         'favorited' => 'boolean',
         'lyrics' => 'array',
     ];
+    public function playlists()
+    {
+        return $this->belongsToMany(Playlist::class, 'playlist_track');
+    }
 }

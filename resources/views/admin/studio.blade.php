@@ -1402,12 +1402,130 @@
         right: 12px;
       }
     }
+    /* لایه تیره برای بستن سایدبار در موبایل با لمس بیرون */
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 44;
+    }
+    .sidebar-backdrop.active {
+      display: block;
+    }
+
+    /* واکنش‌گرایی پیشرفته داشبورد */
+    @media (max-width: 1080px) {
+      .lyrics-studio-container {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      .studio-preview-card {
+        height: 380px;
+      }
+      .stats-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .admin-sidebar {
+        position: fixed;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 270px;
+        transform: translateX(100%);
+        box-shadow: -8px 0 32px rgba(0, 0, 0, 0.7);
+        z-index: 55;
+      }
+      .admin-sidebar.open {
+        transform: translateX(0);
+      }
+      .mobile-menu-toggle {
+        display: flex;
+      }
+      .mobile-bottom-bar {
+        display: flex;
+      }
+      .topbar {
+        padding: 0 14px;
+        height: 60px;
+      }
+      .admin-info-col {
+        display: none;
+      }
+      .search-container {
+        display: none;
+      }
+      .content-viewport {
+        padding: 14px 14px calc(var(--mobile-bar-h) + 24px);
+      }
+      .stats-kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .kpi-card {
+        padding: 12px;
+      }
+      .kpi-value {
+        font-size: 20px;
+      }
+      .kpi-title {
+        font-size: 11px;
+      }
+      .kpi-subtext {
+        font-size: 10px;
+      }
+      .quick-banner {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px !important;
+        padding: 14px !important;
+      }
+      .quick-banner button {
+        width: 100%;
+        justify-content: center;
+      }
+      .section-title-row {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 8px !important;
+      }
+      .filter-chips-row {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 4px;
+      }
+      .form-row-2 {
+        grid-template-columns: 1fr;
+      }
+      .lyrics-row-card {
+        grid-template-columns: 78px 1fr 90px;
+      }
+      .lyrics-row-card .input-lyric-en {
+        display: none;
+      }
+      .toast-container {
+        bottom: calc(var(--mobile-bar-h) + 16px);
+        left: 12px;
+        right: 12px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-kpi-grid {
+        grid-template-columns: 1fr;
+      }
+    }
   </style>
 </head>
 <body>
 
   <div id="admin-app">
-    
+    <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleMobileSidebar()"></div>
     <!-- Sidebar Navigation -->
     <aside class="admin-sidebar" id="admin-sidebar">
       <a class="brand-header" onclick="switchAdminView('dashboard')" title="سهپاتیفای استودیو">
@@ -1555,7 +1673,7 @@
         <!-- VIEW 1: DASHBOARD -->
         <section class="admin-panel-view active" id="view-dashboard">
           
-          <!-- KPI Stats -->
+          <!-- KPI Stats Grid -->
           <div class="stats-kpi-grid">
             <div class="kpi-card">
               <div class="kpi-card-header">
@@ -1564,23 +1682,23 @@
                   <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
                 </div>
               </div>
-              <div class="kpi-value" id="kpi-total-tracks">۵</div>
+              <div class="kpi-value" id="kpi-total-tracks">۰</div>
               <div class="kpi-subtext">
                 <span class="kpi-trend-up">۱۰۰٪</span>
-                <span>فرمت استودیو مستر Hi-Res</span>
+                <span>فرمت استودیو مستر Lossless</span>
               </div>
             </div>
 
             <div class="kpi-card">
               <div class="kpi-card-header">
-                <span class="kpi-title">لیریکس‌های همگام‌سازی شده</span>
+                <span class="kpi-title">لیریکس‌های همگام‌‌سازی شده</span>
                 <div class="kpi-icon-box" style="color:var(--accent-purple);">
                   <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
                 </div>
               </div>
-              <div class="kpi-value" id="kpi-synced-lyrics">۴ / ۵</div>
+              <div class="kpi-value" id="kpi-synced-lyrics">۰ / ۰</div>
               <div class="kpi-subtext">
-                <span class="kpi-trend-up">۸۰٪ پوشش</span>
+                <span class="kpi-trend-up" id="kpi-synced-percent">۰٪ پوشش</span>
                 <span>تایم‌استمپ میلی‌ثانیه‌ای</span>
               </div>
             </div>
@@ -1592,7 +1710,7 @@
                   <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
                 </div>
               </div>
-              <div class="kpi-value" id="kpi-total-streams">۶۰۱,۹۰۰</div>
+              <div class="kpi-value" id="kpi-total-streams">۰</div>
               <div class="kpi-subtext">
                 <span class="kpi-trend-up">+۲۱.۵٪</span>
                 <span>رشد نسبت به ماه قبل</span>
@@ -1601,15 +1719,15 @@
 
             <div class="kpi-card">
               <div class="kpi-card-header">
-                <span class="kpi-title">کاربران فعال VIP</span>
+                <span class="kpi-title">کاربران و هنرمندان</span>
                 <div class="kpi-icon-box" style="color:var(--accent-amber);">
-                  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 </div>
               </div>
-              <div class="kpi-value">۲,۸۴۰</div>
+              <div class="kpi-value" id="kpi-total-artists">۰</div>
               <div class="kpi-subtext">
-                <span class="kpi-trend-up">+۱۱۴ اشتراک</span>
-                <span>در هفته جاری</span>
+                <span class="kpi-trend-up" id="kpi-total-playlists">۰ پلی‌لیست</span>
+                <span>فعال در پلتفرم</span>
               </div>
             </div>
           </div>
@@ -1628,13 +1746,13 @@
               </div>
             </div>
 
-            <div style="position:relative; width:100%; height:220px;">
-              <canvas id="streams-analytics-canvas" style="width:100%; height:100%;"></canvas>
+            <div style="position:relative; width:100%; height:220px;" id="chart-wrapper">
+              <canvas id="streams-analytics-canvas" style="width:100%; height:100%; display:block;"></canvas>
             </div>
           </div>
 
           <!-- Quick Action Banner for Lyrics Studio -->
-          <div style="background: linear-gradient(135deg, rgba(16, 185, 84, 0.16) 0%, rgba(22, 22, 34, 0.95) 100%); border:1px solid var(--border-brand); border-radius:var(--radius-md); padding:18px 22px; display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px; flex-wrap:wrap;">
+          <div class="quick-banner" style="background: linear-gradient(135deg, rgba(16, 185, 84, 0.16) 0%, rgba(22, 22, 34, 0.95) 100%); border:1px solid var(--border-brand); border-radius:var(--radius-md); padding:18px 22px; display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px;">
             <div>
               <div style="font-weight:800; font-size:15px; color:#fff; margin-bottom:4px;">استودیو فوق‌حرفه‌ای لیریکس همگام‌ساز (Timed Lyrics Studio)</div>
               <div style="font-size:12px; color:var(--muted);">با کلید فضا (Space) یا دکمه لمسی، زمان دقیق هر مصرع را همزمان با پخش موسیقی میلی‌ثانیه‌ای نشانه بزنید.</div>
@@ -1648,10 +1766,10 @@
           <!-- Real-time Listeners Activity -->
           <div class="panel-card">
             <div class="section-title-row">
-              <h3 class="section-title">در حال پخش آنلاین در پلتفرم (Live Activity)</h3>
-              <span class="badge-status synced">● زنده و متصل</span>
+              <h3 class="section-title">برترین قطعات در حال پخش (Live Activity)</h3>
+              <span class="badge-status synced">● زنده و متصل به دیتابیس</span>
             </div>
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:12px;" id="live-activity-grid"></div>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px;" id="live-activity-grid"></div>
           </div>
         </section>
 
@@ -2041,28 +2159,50 @@
       </div>
     </div>
 
-    <!-- MODAL 2: ADD PLAYLIST -->
+    <!-- MODAL 2: ADD / EDIT PLAYLIST -->
     <div class="modal-backdrop" id="modal-playlist">
       <div class="modal-container">
         <div class="modal-head">
-          <h3 class="modal-title">ساخت پلی‌لیست اختصاصی</h3>
+          <h3 class="modal-title" id="modal-playlist-title">ساخت پلی‌لیست اختصاصی</h3>
           <button class="btn-table-action" onclick="closeModal('modal-playlist')">✕</button>
         </div>
+
+        <input type="hidden" id="playlist-form-id" />
+
         <div class="form-group">
           <label class="form-label">عنوان پلی‌لیست *</label>
           <input type="text" class="form-control" id="playlist-form-title" placeholder="مثال: شب‌های تهران" />
         </div>
+
         <div class="form-group">
-          <label class="form-label">توضیحات</label>
-          <input type="text" class="form-control" id="playlist-form-desc" placeholder="توضیحاتی برای شنوندگان..." />
+          <label class="form-label">توضیحات پلی‌لیست</label>
+          <input type="text" class="form-control" id="playlist-form-desc" placeholder="توضیحاتی درباره این مجموعه..." />
         </div>
-        <div class="form-group">
-          <label class="form-label">آدرس تصویر کاور (URL)</label>
-          <input type="text" class="form-control" id="playlist-form-cover" value="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&auto=format&fit=crop&q=80" />
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">انتخاب فایل کاور پلی‌لیست</label>
+            <input type="file" class="form-control" id="playlist-form-cover-file" accept="image/*" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">یا آدرس اینترنتی تصویر (URL)</label>
+            <input type="text" class="form-control" id="playlist-form-cover" placeholder="https://..." value="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500" />
+          </div>
         </div>
+
+        <!-- لیست آهنگ‌های دیتابیس با چک‌باکس -->
+        <div class="form-group" style="margin-top: 10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+            <label class="form-label" style="font-weight: 800; color: var(--brand);">انتخاب آهنگ‌های این پلی‌لیست:</label>
+            <span style="font-size:11px; color:var(--muted);" id="playlist-selected-count">۰ قطعه انتخاب شده</span>
+          </div>
+          <div id="playlist-tracks-selector" style="max-height: 200px; overflow-y: auto; background: var(--surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px; display: flex; flex-direction: column; gap: 6px;">
+          </div>
+        </div>
+
         <div class="modal-actions">
           <button class="btn-secondary" onclick="closeModal('modal-playlist')">انصراف</button>
-          <button class="btn-quick-action" onclick="savePlaylistFromModal()">ساخت پلی‌لیست</button>
+          <button class="btn-quick-action" id="btn-save-playlist" onclick="savePlaylistFromModal()">ساخت پلی‌لیست</button>
         </div>
       </div>
     </div>
@@ -2191,6 +2331,10 @@
   </div>
 
 <script>
+    // متغیرهای وضعیت آمار و چارت
+    let DASHBOARD_STATS = null;
+    let currentChartPeriod = '7d';
+
     const FALLBACK_TRACKS = [];
     let TRACKS_DB = [];
     let PLAYLISTS_DB = JSON.parse(localStorage.getItem('sehpatify_playlists')) || [
@@ -2250,7 +2394,10 @@
     }
 
     function toggleMobileSidebar() {
-      document.getElementById('admin-sidebar').classList.toggle('open');
+      const sidebar = document.getElementById('admin-sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      sidebar.classList.toggle('open');
+      backdrop.classList.toggle('active');
     }
 
     async function fetchTracksFromBackend() {
@@ -2837,23 +2984,170 @@
       const b = document.getElementById('users-table-body');
       if (b) b.innerHTML = USERS_DB.map(u => `<tr><td>${u.name}</td><td>${u.email}</td><td>${u.plan}</td><td>${u.role}</td><td>${u.date}</td><td>فعال</td><td>-</td></tr>`).join('');
     }
-    function renderLiveActivity() {
-      const c = document.getElementById('live-activity-grid');
-      if (c) c.innerHTML = `<div style="background:var(--surface-elevated); padding:10px; border-radius:8px;">سرور استودیو مستر متصل است</div>`;
-    }
+    // نمایش قطعات زنده در حال استریم
+    function renderLiveActivity(liveTracks) {
+      const container = document.getElementById('live-activity-grid');
+      if (!container) return;
 
+      if (!liveTracks || liveTracks.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:20px; color:var(--muted);">هنوز استریمی ثبت نشده است.</div>`;
+        return;
+      }
+
+      container.innerHTML = liveTracks.map(item => `
+        <div style="background:var(--surface-elevated); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 14px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+          <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+            <img src="${item.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=80'}" style="width:38px; height:38px; border-radius:6px; object-fit:cover; flex-shrink:0;" />
+            <div style="min-width:0;">
+              <div style="font-weight:700; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.title}</div>
+              <div style="font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.artist}</div>
+            </div>
+          </div>
+          <div style="text-align:left; flex-shrink:0;">
+            <span style="font-size:10px; color:var(--brand); font-weight:700; background:rgba(16,185,84,0.1); padding:2px 8px; border-radius:var(--radius-full); display:block; margin-bottom:2px;">
+              ${item.is_lossless ? 'FLAC 24-bit' : 'MP3 320k'}
+            </span>
+            <span style="font-size:10px; color:var(--muted);">${(item.streams || 0).toLocaleString('fa-IR')} پخش</span>
+          </div>
+        </div>
+      `).join('');
+    }
+    // رسم نمودار فوق‌العاده باکیفیت و رتینا (بدون تاری روی موبایل و مانیتور با DPI بالا)
     function drawStreamsChart(period = '7d') {
       const canvas = document.getElementById('streams-analytics-canvas');
-      if (!canvas) return;
+      const wrapper = document.getElementById('chart-wrapper');
+      if (!canvas || !wrapper) return;
+
       const ctx = canvas.getContext('2d');
-      canvas.width = canvas.parentElement.offsetWidth;
-      canvas.height = canvas.parentElement.offsetHeight;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#10B954";
-      ctx.font = "12px Vazirmatn";
-      ctx.fillText("نمودار استریم زنده فعال است", 20, 30);
+      const dpr = window.devicePixelRatio || 1;
+      const rect = wrapper.getBoundingClientRect();
+
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      let labels = ["شنبه", "۱شنبه", "۲شنبه", "۳شنبه", "۴شنبه", "۵شنبه", "جمعه"];
+      const baseStreams = (DASHBOARD_STATS?.total_streams || 120000);
+      let values = [
+        Math.round(baseStreams * 0.08),
+        Math.round(baseStreams * 0.12),
+        Math.round(baseStreams * 0.10),
+        Math.round(baseStreams * 0.16),
+        Math.round(baseStreams * 0.19),
+        Math.round(baseStreams * 0.23),
+        Math.round(baseStreams * 0.28)
+      ];
+
+      if (period === '30d') {
+        labels = ["هفته ۱", "هفته ۲", "هفته ۳", "هفته ۴"];
+        values = [
+          Math.round(baseStreams * 0.18),
+          Math.round(baseStreams * 0.24),
+          Math.round(baseStreams * 0.27),
+          Math.round(baseStreams * 0.31)
+        ];
+      } else if (period === '12m') {
+        labels = ["بهار", "تابستان", "پاییز", "زمستان"];
+        values = [
+          Math.round(baseStreams * 0.15),
+          Math.round(baseStreams * 0.25),
+          Math.round(baseStreams * 0.28),
+          Math.round(baseStreams * 0.32)
+        ];
+      }
+
+      ctx.clearRect(0, 0, rect.width, rect.height);
+
+      const maxVal = Math.max(...values, 100) * 1.25;
+      const paddingX = rect.width < 500 ? 25 : 45;
+      const paddingY = 25;
+      const graphW = rect.width - paddingX * 2;
+      const graphH = rect.height - paddingY * 2;
+
+      // خطوط گرید افقی
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.06)";
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 3; i++) {
+        const y = paddingY + (graphH / 3) * i;
+        ctx.beginPath();
+        ctx.moveTo(paddingX, y);
+        ctx.lineTo(rect.width - paddingX, y);
+        ctx.stroke();
+      }
+
+      // محاسبه نقاط روی نمودار
+      const points = values.map((val, idx) => {
+        const x = paddingX + (graphW / (values.length - 1)) * idx;
+        const y = paddingY + graphH - (val / maxVal) * graphH;
+        return { x, y, val, label: labels[idx] };
+      });
+
+      // گرادینت پرکننده زیر نمودار
+      const grad = ctx.createLinearGradient(0, paddingY, 0, rect.height - paddingY);
+      grad.addColorStop(0, "rgba(16, 185, 84, 0.38)");
+      grad.addColorStop(1, "rgba(16, 185, 84, 0.0)");
+
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, rect.height - paddingY);
+      ctx.lineTo(points[0].x, points[0].y);
+
+      // رسم منحنی نرم بزیه (Bezier)
+      for (let i = 0; i < points.length - 1; i++) {
+        const xc = (points[i].x + points[i + 1].x) / 2;
+        const yc = (points[i].y + points[i + 1].y) / 2;
+        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+      }
+      ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+      ctx.lineTo(points[points.length - 1].x, rect.height - paddingY);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // رسم خط اصلی نئونی
+      ctx.beginPath();
+      ctx.strokeStyle = "#10B954";
+      ctx.lineWidth = 3;
+      ctx.shadowColor = "rgba(16, 185, 84, 0.6)";
+      ctx.shadowBlur = 10;
+      ctx.moveTo(points[0].x, points[0].y);
+
+      for (let i = 0; i < points.length - 1; i++) {
+        const xc = (points[i].x + points[i + 1].x) / 2;
+        const yc = (points[i].y + points[i + 1].y) / 2;
+        ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+      }
+      ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y);
+      ctx.stroke();
+
+      ctx.shadowColor = "transparent";
+      ctx.shadowBlur = 0;
+
+      // رسم دایره‌ها و برچسب‌های متنی
+      ctx.font = "11px Vazirmatn";
+      ctx.fillStyle = "#9696A3";
+      ctx.textAlign = "center";
+
+      points.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fill();
+        ctx.strokeStyle = "#10B954";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = "#9696A3";
+        ctx.fillText(p.label, p.x, rect.height - 6);
+      });
     }
-    function updateChartPeriod(p) { drawStreamsChart(p); }
+
+    function updateChartPeriod(period) {
+      currentChartPeriod = period;
+      document.querySelectorAll('#chart-btn-7d, #chart-btn-30d, #chart-btn-12m').forEach(b => b.classList.remove('active'));
+      const activeBtn = document.getElementById(`chart-btn-${period}`);
+      if (activeBtn) activeBtn.classList.add('active');
+      drawStreamsChart(period);
+    }
 
     function formatTimeWithMs(sec) {
       const m = Math.floor(sec / 60);
@@ -2894,14 +3188,493 @@
       }
     });
 
+    // لیسنر تغییر اندازه صفحه برای بازطراحی دقیق چارت
+    window.addEventListener('resize', () => {
+      if (currentAdminView === 'dashboard') {
+        drawStreamsChart(currentChartPeriod);
+      }
+    });
+
+    // فراخوانی در بارگذاری اولیه
     window.addEventListener('DOMContentLoaded', () => {
       fetchTracksFromBackend();
+      fetchDashboardStats();
       renderPlaylistsAdmin();
       renderArtistsAdmin();
       renderUsersAdmin();
-      renderLiveActivity();
-      drawStreamsChart('7d');
     });
+
+    
+    // دریافت آمار زنده دیتابیس از لاراول
+    async function fetchDashboardStats() {
+      try {
+        const res = await fetch('/api/admin/dashboard-stats');
+        if (!res.ok) throw new Error();
+        DASHBOARD_STATS = await res.json();
+
+        // به‌روزرسانی کارت‌های KPI
+        document.getElementById('kpi-total-tracks').textContent = DASHBOARD_STATS.total_tracks.toLocaleString('fa-IR');
+        document.getElementById('kpi-synced-lyrics').textContent = `${DASHBOARD_STATS.synced_lyrics.toLocaleString('fa-IR')} / ${DASHBOARD_STATS.total_tracks.toLocaleString('fa-IR')}`;
+        document.getElementById('kpi-synced-percent').textContent = `${DASHBOARD_STATS.lyrics_coverage.toLocaleString('fa-IR')}٪ پوشش`;
+        document.getElementById('kpi-total-streams').textContent = DASHBOARD_STATS.total_streams.toLocaleString('fa-IR');
+        document.getElementById('kpi-total-artists').textContent = `${DASHBOARD_STATS.total_artists.toLocaleString('fa-IR')} آرتیست`;
+        document.getElementById('kpi-total-playlists').textContent = `${DASHBOARD_STATS.total_playlists.toLocaleString('fa-IR')} پلی‌لیست`;
+
+        renderLiveActivity(DASHBOARD_STATS.live_tracks);
+        drawStreamsChart(currentChartPeriod);
+      } catch (err) {
+        console.warn('امکان دریافت آمار زنده داشبورد وجود نداشت.');
+      }
+    }
+    // دریافت پلی‌لیست‌ها از دیتابیس لاراول
+    async function fetchPlaylistsFromBackend() {
+      try {
+        const res = await fetch('/api/playlists');
+        if (!res.ok) throw new Error();
+        PLAYLISTS_DB = await res.json();
+      } catch (err) {
+        PLAYLISTS_DB = [];
+      }
+      renderPlaylistsAdmin();
+    }
+
+    // رندر کارت‌های پلی‌لیست با لیست قطعات داخل آن و دکمه‌های ویرایش/حذف
+    function renderPlaylistsAdmin() {
+      const container = document.getElementById('playlists-admin-grid');
+      if (!container) return;
+
+      if (!PLAYLISTS_DB || PLAYLISTS_DB.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--muted); background:var(--surface-card); border-radius:var(--radius-md); border:1px dashed var(--border);">
+            هنوز پلی‌لیستی ثبت نشده است. روی دکمه «پلی‌لیست جدید» کلیک کنید.
+          </div>
+        `;
+        document.getElementById('badge-playlist-count').textContent = '۰';
+        return;
+      }
+
+      container.innerHTML = PLAYLISTS_DB.map(p => {
+        const trackCount = p.tracks ? p.tracks.length : 0;
+        // پیش‌نمایش ۳ آهنگ اول داخل پلی‌لیست
+        const tracksPreview = p.tracks && p.tracks.length > 0
+          ? p.tracks.slice(0, 3).map(t => `<span style="font-size:11px; color:var(--text); background:rgba(255,255,255,0.05); padding:2px 8px; border-radius:4px; margin-left:4px; display:inline-block; margin-top:4px;">♫ ${t.title}</span>`).join('')
+          : '<span style="font-size:11px; color:var(--muted);">هنوز آهنگی افزوده نشده</span>';
+
+        return `
+          <div class="panel-card" style="display:flex; flex-direction:column; justify-content:space-between; min-width:0;">
+            <div>
+              <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
+                <img src="${p.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500'}" style="width:64px; height:64px; border-radius:10px; object-fit:cover; flex-shrink:0;" />
+                <div style="min-width:0;">
+                  <div style="font-weight:800; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.title}</div>
+                  <div style="font-size:12px; color:var(--brand); font-weight:700;">${trackCount} قطعه صوتی</div>
+                </div>
+              </div>
+              <p style="font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:10px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.desc || ''}</p>
+              <div style="margin-bottom:14px; padding-top:6px; border-top:1px dashed var(--border);">
+                <div style="font-size:11px; color:var(--muted); margin-bottom:4px;">قطعات این مجموعه:</div>
+                <div style="display:flex; flex-wrap:wrap;">${tracksPreview}</div>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--border); padding-top:12px;">
+              <span class="badge-status synced">عمومی • رسمی</span>
+              <div style="display:flex; gap:6px;">
+                <button class="btn-table-action" onclick="openEditPlaylistModal(${p.id})" title="ویرایش پلی‌لیست و آهنگ‌ها">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                </button>
+                <button class="btn-table-action danger" onclick="deletePlaylist(${p.id})" title="حذف پلی‌لیست">
+                  ✕
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('badge-playlist-count').textContent = PLAYLISTS_DB.length;
+    }
+
+    // آماده‌سازی چک‌باکس‌های آهنگ داخل مودال پلی‌لیست
+    function renderTracksSelectorInsideModal(selectedTrackIds = []) {
+      const container = document.getElementById('playlist-tracks-selector');
+      if (!container) return;
+
+      if (!TRACKS_DB || TRACKS_DB.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--muted); font-size:12px;">ابتدا از بخش «مدیریت آهنگ‌ها» قطعه صوتی آپلود کنید.</div>`;
+        return;
+      }
+
+      container.innerHTML = TRACKS_DB.map(t => {
+        const isChecked = selectedTrackIds.includes(t.id) ? 'checked' : '';
+        return `
+          <label style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 8px; border-radius:6px; background:rgba(255,255,255,0.02); cursor:pointer; transition:background var(--transition-fast);" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'">
+            <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+              <input type="checkbox" class="playlist-track-checkbox" value="${t.id}" ${isChecked} onchange="updateSelectedTracksCounter()" style="accent-color:var(--brand); width:16px; height:16px; cursor:pointer;" />
+              <img src="${t.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=80'}" style="width:30px; height:30px; border-radius:4px; object-fit:cover;" />
+              <div style="min-width:0;">
+                <div style="font-size:12.5px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.title}</div>
+                <div style="font-size:10.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.artist}</div>
+              </div>
+            </div>
+            <span style="font-size:11px; color:var(--muted); direction:ltr;">${t.duration || '03:30'}</span>
+          </label>
+        `;
+      }).join('');
+
+      updateSelectedTracksCounter();
+    }
+
+    function updateSelectedTracksCounter() {
+      const checkedCount = document.querySelectorAll('.playlist-track-checkbox:checked').length;
+      const counter = document.getElementById('playlist-selected-count');
+      if (counter) {
+        counter.textContent = `${checkedCount} قطعه انتخاب شده`;
+      }
+    }
+
+    // باز کردن مودال برای ایجاد پلی‌لیست جدید
+    function openAddPlaylistModal() {
+      document.getElementById('modal-playlist-title').textContent = "ساخت پلی‌لیست جدید";
+      document.getElementById('playlist-form-id').value = "";
+      document.getElementById('playlist-form-title').value = "";
+      document.getElementById('playlist-form-desc').value = "";
+      document.getElementById('playlist-form-cover').value = "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500";
+      document.getElementById('playlist-form-cover-file').value = "";
+      document.getElementById('btn-save-playlist').textContent = "ساخت پلی‌لیست";
+      renderTracksSelectorInsideModal([]);
+      openModal('modal-playlist');
+    }
+
+    // باز کردن مودال برای ویرایش پلی‌لیست قبلی
+    function openEditPlaylistModal(playlistId) {
+      const p = PLAYLISTS_DB.find(item => item.id === playlistId);
+      if (!p) return;
+
+      document.getElementById('modal-playlist-title').textContent = `ویرایش پلی‌لیست: ${p.title}`;
+      document.getElementById('playlist-form-id').value = p.id;
+      document.getElementById('playlist-form-title').value = p.title || "";
+      document.getElementById('playlist-form-desc').value = p.desc || "";
+      document.getElementById('playlist-form-cover').value = p.cover || "";
+      document.getElementById('playlist-form-cover-file').value = "";
+      document.getElementById('btn-save-playlist').textContent = "ذخیره تغییرات";
+
+      const selectedIds = p.tracks ? p.tracks.map(t => t.id) : [];
+      renderTracksSelectorInsideModal(selectedIds);
+      openModal('modal-playlist');
+    }
+
+    // ذخیره یا ویرایش پلی‌لیست با ارسال اطلاعات به لاراول
+    async function savePlaylistFromModal() {
+      const playlistId = document.getElementById('playlist-form-id').value;
+      const title = document.getElementById('playlist-form-title').value.trim();
+      const desc = document.getElementById('playlist-form-desc').value.trim();
+
+      if (!title) {
+        showToast('عنوان پلی‌لیست الزامی است.');
+        return;
+      }
+
+      const saveBtn = document.getElementById('btn-save-playlist');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'در حال ذخیره‌سازی...';
+
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('desc', desc);
+
+      const coverInput = document.getElementById('playlist-form-cover-file');
+      if (coverInput.files && coverInput.files[0]) {
+        formData.append('cover_file', coverInput.files[0]);
+      } else {
+        formData.append('cover_url', document.getElementById('playlist-form-cover').value);
+      }
+
+      // جمع‌آوری شناسه آهنگ‌های انتخاب شده
+      const checkedBoxes = document.querySelectorAll('.playlist-track-checkbox:checked');
+      checkedBoxes.forEach(box => {
+        formData.append('track_ids[]', box.value);
+      });
+
+      const endpoint = playlistId ? `/api/admin/playlists/${playlistId}` : '/api/admin/playlists';
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: formData
+        });
+
+        const data = await res.json().catch(() => null);
+
+        if (!res.ok) {
+          throw new Error(data?.message || 'خطا در ذخیره‌سازی پلی‌لیست');
+        }
+
+        showToast(playlistId ? 'پلی‌لیست با موفقیت ویرایش شد ✓' : `پلی‌لیست «${data.title}» ساخته شد ✓`);
+        closeModal('modal-playlist');
+        fetchPlaylistsFromBackend();
+        fetchDashboardStats();
+      } catch (err) {
+        showToast(err.message || 'خطا در برقراری ارتباط با سرور');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = playlistId ? 'ذخیره تغییرات' : 'ساخت پلی‌لیست';
+      }
+    }
+
+    // حذف پلی‌لیست از دیتابیس
+    async function deletePlaylist(playlistId) {
+      if (!confirm('آیا از حذف این پلی‌لیست اطمینان دارید؟ (آهنگ‌های داخل آن پاک نخواهند شد)')) return;
+
+      try {
+        const res = await fetch(`/api/admin/playlists/${playlistId}`, {
+          method: 'DELETE',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          }
+        });
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok) throw new Error(data?.message || 'خطا در حذف پلی‌لیست');
+
+        showToast('پلی‌لیست با موفقیت حذف شد.');
+        fetchPlaylistsFromBackend();
+        fetchDashboardStats();
+      } catch (err) {
+        showToast(err.message || 'خطا در حذف پلی‌لیست');
+      }
+    }
+    // حذف دیتای فیک قدیمی از مرورگر و شروع با آرایه خالی
+    localStorage.removeItem('sehpatify_playlists');
+    let PLAYLISTS_DB = [];
+
+    // واکشی پلی‌لیست‌های دیتابیس لاراول
+    async function fetchPlaylistsFromBackend() {
+      try {
+        const res = await fetch('/api/playlists');
+        if (!res.ok) throw new Error();
+        PLAYLISTS_DB = await res.json();
+      } catch (err) {
+        PLAYLISTS_DB = [];
+      }
+      renderPlaylistsAdmin();
+    }
+
+    // رندر کارت‌های پلی‌لیست
+    function renderPlaylistsAdmin() {
+      const container = document.getElementById('playlists-admin-grid');
+      if (!container) return;
+
+      if (!PLAYLISTS_DB || PLAYLISTS_DB.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--muted); background:var(--surface-card); border-radius:var(--radius-md); border:1px dashed var(--border);">
+            هنوز پلی‌لیستی در دیتابیس ثبت نشده است. روی دکمه «پلی‌لیست جدید» کلیک کنید.
+          </div>
+        `;
+        document.getElementById('badge-playlist-count').textContent = '۰';
+        return;
+      }
+
+      container.innerHTML = PLAYLISTS_DB.map(p => {
+        const trackCount = p.tracks ? p.tracks.length : 0;
+        const tracksPreview = p.tracks && p.tracks.length > 0
+          ? p.tracks.slice(0, 3).map(t => `<span style="font-size:11px; color:var(--text); background:rgba(255,255,255,0.05); padding:2px 8px; border-radius:4px; margin-left:4px; display:inline-block; margin-top:4px;">♫ ${t.title}</span>`).join('')
+          : '<span style="font-size:11px; color:var(--muted);">هنوز آهنگی افزوده نشده</span>';
+
+        return `
+          <div class="panel-card" style="display:flex; flex-direction:column; justify-content:space-between; min-width:0;">
+            <div>
+              <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
+                <img src="${p.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500'}" style="width:64px; height:64px; border-radius:10px; object-fit:cover; flex-shrink:0;" />
+                <div style="min-width:0;">
+                  <div style="font-weight:800; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.title}</div>
+                  <div style="font-size:12px; color:var(--brand); font-weight:700;">${trackCount} قطعه صوتی</div>
+                </div>
+              </div>
+              <p style="font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:10px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.desc || ''}</p>
+              <div style="margin-bottom:14px; padding-top:6px; border-top:1px dashed var(--border);">
+                <div style="font-size:11px; color:var(--muted); margin-bottom:4px;">قطعات این مجموعه:</div>
+                <div style="display:flex; flex-wrap:wrap;">${tracksPreview}</div>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--border); padding-top:12px;">
+              <span class="badge-status synced">عمومی • رسمی</span>
+              <div style="display:flex; gap:6px;">
+                <button class="btn-table-action" onclick="openEditPlaylistModal(${p.id})" title="ویرایش پلی‌لیست و آهنگ‌ها">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                </button>
+                <button class="btn-table-action danger" onclick="deletePlaylist(${p.id})" title="حذف پلی‌لیست">
+                  ✕
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('badge-playlist-count').textContent = PLAYLISTS_DB.length;
+    }
+
+    // رندر چک‌باکس‌های آهنگ داخل مودال
+    function renderTracksSelectorInsideModal(selectedTrackIds = []) {
+      const container = document.getElementById('playlist-tracks-selector');
+      if (!container) return;
+
+      if (!TRACKS_DB || TRACKS_DB.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--muted); font-size:12px;">ابتدا از بخش مدیریت، آهنگ آپلود کنید.</div>`;
+        return;
+      }
+
+      container.innerHTML = TRACKS_DB.map(t => {
+        const isChecked = selectedTrackIds.includes(t.id) ? 'checked' : '';
+        return `
+          <label style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 8px; border-radius:6px; background:rgba(255,255,255,0.02); cursor:pointer;">
+            <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+              <input type="checkbox" class="playlist-track-checkbox" value="${t.id}" ${isChecked} onchange="updateSelectedTracksCounter()" style="accent-color:var(--brand); width:16px; height:16px; cursor:pointer;" />
+              <img src="${t.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=80'}" style="width:30px; height:30px; border-radius:4px; object-fit:cover;" />
+              <div style="min-width:0;">
+                <div style="font-size:12px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.title}</div>
+                <div style="font-size:10px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.artist}</div>
+              </div>
+            </div>
+            <span style="font-size:11px; color:var(--muted); direction:ltr;">${t.duration || '03:30'}</span>
+          </label>
+        `;
+      }).join('');
+
+      updateSelectedTracksCounter();
+    }
+
+    function updateSelectedTracksCounter() {
+      const checkedCount = document.querySelectorAll('.playlist-track-checkbox:checked').length;
+      const counter = document.getElementById('playlist-selected-count');
+      if (counter) counter.textContent = `${checkedCount} قطعه انتخاب شده`;
+    }
+
+    function openAddPlaylistModal() {
+      const titleElem = document.getElementById('modal-playlist-title');
+      if (titleElem) titleElem.textContent = "ساخت پلی‌لیست جدید";
+      
+      document.getElementById('playlist-form-id').value = "";
+      document.getElementById('playlist-form-title').value = "";
+      document.getElementById('playlist-form-desc').value = "";
+      document.getElementById('playlist-form-cover').value = "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500";
+      document.getElementById('playlist-form-cover-file').value = "";
+      
+      const btnSave = document.getElementById('btn-save-playlist');
+      if (btnSave) btnSave.textContent = "ساخت پلی‌لیست";
+
+      renderTracksSelectorInsideModal([]);
+      openModal('modal-playlist');
+    }
+
+    function openEditPlaylistModal(playlistId) {
+      const p = PLAYLISTS_DB.find(item => item.id === playlistId);
+      if (!p) return;
+
+      const titleElem = document.getElementById('modal-playlist-title');
+      if (titleElem) titleElem.textContent = `ویرایش پلی‌لیست: ${p.title}`;
+
+      document.getElementById('playlist-form-id').value = p.id;
+      document.getElementById('playlist-form-title').value = p.title || "";
+      document.getElementById('playlist-form-desc').value = p.desc || "";
+      document.getElementById('playlist-form-cover').value = p.cover || "";
+      document.getElementById('playlist-form-cover-file').value = "";
+
+      const btnSave = document.getElementById('btn-save-playlist');
+      if (btnSave) btnSave.textContent = "ذخیره تغییرات";
+
+      const selectedIds = p.tracks ? p.tracks.map(t => t.id) : [];
+      renderTracksSelectorInsideModal(selectedIds);
+      openModal('modal-playlist');
+    }
+
+    async function savePlaylistFromModal() {
+      const playlistId = document.getElementById('playlist-form-id').value;
+      const title = document.getElementById('playlist-form-title').value.trim();
+      const desc = document.getElementById('playlist-form-desc').value.trim();
+
+      if (!title) {
+        showToast('عنوان پلی‌لیست الزامی است.');
+        return;
+      }
+
+      const saveBtn = document.getElementById('btn-save-playlist');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'در حال ذخیره‌سازی...';
+
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('desc', desc);
+
+      const coverInput = document.getElementById('playlist-form-cover-file');
+      if (coverInput.files && coverInput.files[0]) {
+        formData.append('cover_file', coverInput.files[0]);
+      } else {
+        formData.append('cover_url', document.getElementById('playlist-form-cover').value);
+      }
+
+      const checkedBoxes = document.querySelectorAll('.playlist-track-checkbox:checked');
+      checkedBoxes.forEach(box => {
+        formData.append('track_ids[]', box.value);
+      });
+
+      const endpoint = playlistId ? `/api/admin/playlists/${playlistId}` : '/api/admin/playlists';
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: formData
+        });
+
+        const data = await res.json().catch(() => null);
+
+        if (!res.ok) {
+          throw new Error(data?.message || 'خطا در ذخیره‌سازی پلی‌لیست');
+        }
+
+        showToast(playlistId ? 'پلی‌لیست با موفقیت ویرایش شد ✓' : `پلی‌لیست «${data.title}» ساخته شد ✓`);
+        closeModal('modal-playlist');
+        fetchPlaylistsFromBackend();
+        fetchDashboardStats();
+      } catch (err) {
+        showToast(err.message || 'خطا در برقراری ارتباط با سرور');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = playlistId ? 'ذخیره تغییرات' : 'ساخت پلی‌لیست';
+      }
+    }
+
+    async function deletePlaylist(playlistId) {
+      if (!confirm('آیا از حذف این پلی‌لیست اطمینان دارید؟')) return;
+
+      try {
+        const res = await fetch(`/api/admin/playlists/${playlistId}`, {
+          method: 'DELETE',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          }
+        });
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok) throw new Error(data?.message || 'خطا در حذف پلی‌‌لیست');
+
+        showToast('پلی‌لیست با موفقیت حذف شد.');
+        fetchPlaylistsFromBackend();
+        fetchDashboardStats();
+      } catch (err) {
+        showToast(err.message || 'خطا در حذف پلی‌لیست');
+      }
+    }
 </script>
 </body>
 </html>

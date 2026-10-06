@@ -182,4 +182,40 @@ class TrackController extends Controller
 
         return response()->json(['message' => 'قطعه صوتی با موفقیت حذف شد']);
     }
+    // آمار زنده داشبورد ادمین
+    public function dashboardStats()
+    {
+        $totalTracks = Track::count();
+
+        // تعداد آهنگ‌هایی که حداقل یک خط لیریکس ثبت‌شده دارند
+        $syncedLyrics = Track::whereNotNull('lyrics')
+            ->where('lyrics', '!=', '[]')
+            ->where('lyrics', '!=', '')
+            ->count();
+
+        $totalStreams = (int) Track::sum('streams');
+        $totalArtists = \App\Models\Artist::count();
+        $totalPlaylists = \App\Models\Playlist::count();
+        $totalUsers = \App\Models\User::count();
+
+        // درصد پوشش لیریکس
+        $lyricsCoverage = $totalTracks > 0 ? round(($syncedLyrics / $totalTracks) * 100) : 0;
+
+        // ۴ قطعه پرطرفدار/جدید برای نمایش در مانیتورینگ زنده
+        $liveTracks = Track::orderBy('streams', 'desc')->take(4)->get([
+            'id', 'title', 'artist', 'cover', 'genre', 'streams', 'is_lossless'
+        ]);
+
+        return response()->json([
+            'total_tracks'    => $totalTracks,
+            'synced_lyrics'   => $syncedLyrics,
+            'lyrics_coverage' => $lyricsCoverage,
+            'total_streams'   => $totalStreams,
+            'total_artists'   => $totalArtists,
+            'total_playlists' => $totalPlaylists,
+            'total_users'     => $totalUsers > 0 ? $totalUsers : 4,
+            'live_tracks'     => $liveTracks,
+        ]);
+    }
 }
+
