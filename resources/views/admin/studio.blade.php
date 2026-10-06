@@ -284,6 +284,57 @@
       margin: 12px 8px;
     }
 
+    .studio-status-box {
+      margin-top: auto;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .studio-status-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .studio-status-title {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .studio-status-desc {
+      font-size: 10px;
+      color: var(--muted);
+      direction: ltr;
+      text-align: right;
+    }
+
+    .status-dot-pulse {
+      width: 8px;
+      height: 8px;
+      background: var(--brand);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--brand);
+      position: relative;
+    }
+    .status-dot-pulse::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      border: 1.5px solid var(--brand);
+      animation: pulseAnim 2s infinite ease-out;
+    }
+    @keyframes pulseAnim {
+      0% { transform: scale(0.8); opacity: 1; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+
     .main-wrapper {
       flex: 1;
       height: 100%;
@@ -617,56 +668,112 @@
       color: var(--brand);
     }
 
+    /* =========================================================
+       طراحی مدرن، کارت‌مانند و هماهنگ جدول آهنگ‌ها و جداول ادمین
+       ========================================================= */
     .table-wrapper {
       width: 100%;
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
+      border-radius: var(--radius-md);
     }
 
     .admin-table {
       width: 100%;
       border-collapse: separate;
-      border-spacing: 0;
+      border-spacing: 0 6px;
       text-align: right;
-      min-width: 650px;
+      min-width: 740px;
     }
 
-    .admin-table th {
+    .admin-table thead tr th {
       padding: 12px 14px;
       font-size: 11.5px;
       font-weight: 700;
       color: var(--muted);
+      background: transparent;
       border-bottom: 1px solid var(--border);
       white-space: nowrap;
+      letter-spacing: 0.3px;
+    }
+
+    .admin-table tbody tr {
+      background: rgba(255, 255, 255, 0.015);
+      border-radius: 10px;
+      transition: all var(--transition-fast);
+    }
+
+    .admin-table tbody tr:hover {
+      background: rgba(255, 255, 255, 0.045);
+      transform: translateY(-1.5px);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
     }
 
     .admin-table td {
-      padding: 12px 14px;
+      padding: 11px 14px;
       font-size: 13px;
       color: var(--text);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
       vertical-align: middle;
       white-space: nowrap;
     }
 
-    .admin-table tr:hover td {
-      background: rgba(255, 255, 255, 0.02);
+    .admin-table tbody tr td:first-child {
+      border-right: 1px solid rgba(255, 255, 255, 0.03);
+      border-top-right-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+
+    .admin-table tbody tr td:last-child {
+      border-left: 1px solid rgba(255, 255, 255, 0.03);
+      border-top-left-radius: 10px;
+      border-bottom-left-radius: 10px;
+    }
+
+    .admin-table tbody tr:hover td {
+      border-color: rgba(16, 185, 84, 0.18);
+    }
+
+    .track-meta-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .track-cover-thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: #1e1e2d;
+      flex-shrink: 0;
+      border: 1px solid var(--border-light);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+      transition: transform var(--transition-fast);
+    }
+
+    .admin-table tbody tr:hover .track-cover-thumb {
+      transform: scale(1.05);
+      border-color: var(--border-brand);
     }
 
     .badge-status {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      padding: 3px 9px;
+      padding: 4px 10px;
       border-radius: var(--radius-full);
       font-size: 11px;
       font-weight: 700;
+      letter-spacing: 0.2px;
     }
 
     .badge-status.synced {
       background: rgba(16, 185, 84, 0.15);
       color: var(--brand);
       border: 1px solid var(--border-brand);
+      box-shadow: 0 0 10px rgba(16, 185, 84, 0.15);
     }
 
     .badge-status.empty {
@@ -713,21 +820,24 @@
       background: var(--brand-dim);
       border-color: var(--border-brand);
       width: auto;
-      padding: 0 10px;
+      padding: 0 12px;
+      height: 34px;
       font-size: 11.5px;
       font-weight: 700;
       gap: 5px;
+      border-radius: var(--radius-full);
     }
 
     .btn-table-action.lyrics-action:hover {
       background: var(--brand);
       color: #052410;
+      box-shadow: 0 0 14px var(--brand-glow);
     }
 
     .btn-table-action.danger:hover {
-      background: rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.18);
       color: var(--accent-red);
-      border-color: var(--accent-red);
+      border-color: rgba(239, 68, 68, 0.4);
     }
 
     /* استودیو لیریکس */
@@ -1608,7 +1718,7 @@
               </div>
 
               <div style="display:flex; align-items:center; gap:8px;">
-                <input type="text" class="form-control" style="width:220px; padding:7px 12px; font-size:12px;" placeholder="جستجو در این جدول..." oninput="searchTracksLocal(this.value)" />
+                <input type="text" class="form-control" style="width:230px; padding:7px 12px; font-size:12px;" placeholder="جستجوی نام آهنگ، خواننده یا آلبوم..." oninput="searchTracksLocal(this.value)" />
               </div>
             </div>
 
@@ -1616,15 +1726,15 @@
               <table class="admin-table">
                 <thead>
                   <tr>
-                    <th>#</th>
-                    <th>کاور و نام اثر</th>
-                    <th>هنرمند</th>
+                    <th style="width: 45px;">#</th>
+                    <th>نام ترانه و کاور</th>
+                    <th>خواننده</th>
                     <th>آلبوم</th>
-                    <th>مدت زمان</th>
+                    <th style="width: 100px;">مدت زمان</th>
                     <th>کیفیت</th>
                     <th>وضعیت لیریکس</th>
                     <th>استریم</th>
-                    <th>عملیات</th>
+                    <th style="width: 120px;">عملیات</th>
                   </tr>
                 </thead>
                 <tbody id="tracks-table-body"></tbody>
@@ -1768,7 +1878,7 @@
           </div>
         </section>
 
-        <!-- VIEW 6: USERS (بدون پرمیوم، دارای فیلتر، جستجوی زنده، مسدودسازی و ویرایش) -->
+        <!-- VIEW 6: USERS -->
         <section class="admin-panel-view" id="view-users">
           <div class="section-title-row">
             <div>
@@ -1840,7 +1950,7 @@
       </div>
     </nav>
 
-    <!-- MODAL 1: ADD / EDIT TRACK (تک‌فیلد انتخابی خواننده) -->
+    <!-- MODAL 1: ADD / EDIT TRACK -->
     <div class="modal-backdrop" id="modal-track">
       <div class="modal-container">
         <div class="modal-head">
@@ -1861,7 +1971,6 @@
             <label class="form-label">عنوان ترانه *</label>
             <input type="text" class="form-control" id="track-form-name" placeholder="مثال: شیدایی" />
           </div>
-          <!-- تک‌فیلد استاندارد انتخاب خواننده -->
           <div class="form-group">
             <label class="form-label">خواننده / هنرمند ترانه *</label>
             <select class="form-control" id="track-form-artist-id">
@@ -2025,7 +2134,7 @@
       </div>
     </div>
 
-    <!-- MODAL 4: ADD / EDIT USER (تنها کاربر عادی و مدیر - بدون پرمیوم) -->
+    <!-- MODAL 4: ADD / EDIT USER -->
     <div class="modal-backdrop" id="modal-user">
       <div class="modal-container">
         <div class="modal-head">
@@ -2072,7 +2181,7 @@
     <div class="modal-backdrop" id="modal-bulk-lyrics">
       <div class="modal-container">
         <div class="modal-head">
-          <h3 class="modal-title">تبدیل متن ساده به خطوط همگام‌سازی</h3>
+          <h3 class="modal-title" id="modal-bulk-lyrics-title">تبدیل متن ساده به خطوط همگام‌سازی</h3>
           <button class="btn-table-action" onclick="closeModal('modal-bulk-lyrics')">✕</button>
         </div>
         <div class="form-group">
@@ -2112,7 +2221,6 @@
   </div>
 
   <script>
-    // پاک‌سازی دیتای فیک قدیمی مرورگر
     localStorage.removeItem('sehpatify_playlists');
     localStorage.removeItem('sehpatify_artists');
     localStorage.removeItem('sehpatify_users');
@@ -2126,7 +2234,6 @@
     let GENRES_DB = [];
     let USERS_DB = [];
 
-    // متغیرهای فیلتر و جستجوی کاربران
     let currentUsersFilter = 'all';
     let currentUsersSearchQuery = '';
 
@@ -2192,7 +2299,7 @@
       backdrop.classList.toggle('active');
     }
 
-    // واکشی خوانندگان و سبک‌ها مستقیماً از MySQL
+    // ۱. واکشی خوانندگان و سبک‌ها
     async function fetchGenresAndArtists() {
       try {
         const [resGenres, resArtists] = await Promise.all([
@@ -2218,7 +2325,7 @@
       }
 
       select.innerHTML = `<option value="">-- انتخاب خواننده از لیست --</option>` +
-        ARTISTS_DB.map(a => `<option value="${a.id}" ${a.id == selectedArtistId ? 'selected' : ''}>${a.name}</option>`).join('');
+        ARTISTS_DB.map(a => `<option value="${a.id}" ${a.id == selectedArtistId ? 'selected' : ''}>${escapeHtml(a.name)}</option>`).join('');
     }
 
     function renderArtistsAdmin() {
@@ -2239,8 +2346,8 @@
             <div style="display:flex; align-items:center; gap:10px;">
               <img src="${a.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80'}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; flex-shrink:0;" />
               <div style="min-width:0;">
-                <div style="font-weight:800; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${a.name}</div>
-                <div style="font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${a.bio ? a.bio.slice(0, 35) + '...' : ''}</div>
+                <div style="font-weight:800; font-size:14px;">${escapeHtml(a.name)}</div>
+                <div style="font-size:11px; color:var(--muted);">${a.bio ? escapeHtml(a.bio.slice(0, 35)) + '...' : ''}</div>
               </div>
             </div>
           </td>
@@ -2251,13 +2358,15 @@
           </td>
           <td style="font-weight:700;">${a.listeners || '۰'} شنونده</td>
           <td><span style="color:var(--brand); font-weight:800;">${a.tracks_count || 0} قطعه</span></td>
-          <td><span style="font-size:12px; color:var(--muted);">${a.genre_names || 'عمومی'}</span></td>
+          <td><span style="font-size:12px; color:var(--muted);">${escapeHtml(a.genre_names || 'عمومی')}</span></td>
           <td>
             <div class="table-actions-cell">
               <button class="btn-table-action" onclick="openEditArtistModal(${a.id})" title="ویرایش هنرمند">
                 <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
               </button>
-              <button class="btn-table-action danger" onclick="deleteArtist(${a.id})" title="حذف هنرمند">✕</button>
+              <button class="btn-table-action danger" onclick="deleteArtist(${a.id})" title="حذف هنرمند">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
             </div>
           </td>
         </tr>
@@ -2272,7 +2381,7 @@
         return `
           <label style="display:flex; align-items:center; gap:6px; font-size:12px; cursor:pointer;">
             <input type="checkbox" class="artist-genre-checkbox" value="${g.id}" ${checked} style="accent-color:var(--brand);" />
-            <span>${g.name}</span>
+            <span>${escapeHtml(g.name)}</span>
           </label>
         `;
       }).join('');
@@ -2381,9 +2490,7 @@
         });
 
         const data = await res.json().catch(() => null);
-        if (!res.ok) {
-          throw new Error(data?.message || 'خطا در حذف هنرمند');
-        }
+        if (!res.ok) throw new Error(data?.message || 'خطا در حذف هنرمند');
 
         showToast('هنرمند با موفقیت حذف شد.');
         await fetchGenresAndArtists();
@@ -2393,9 +2500,7 @@
       }
     }
 
-    // ==========================================
-    // مدیریت کامل کاربران (MySQL Live + Search)
-    // ==========================================
+    // ۲. مدیریت کامل کاربران (MySQL Live + Search)
     async function fetchUsersFromBackend() {
       try {
         const res = await fetch('/api/admin/users');
@@ -2414,10 +2519,8 @@
       const badge = document.getElementById('badge-users-count');
       if (badge) badge.textContent = USERS_DB.length;
 
-      // فیلتر و جستجوی کاربران در حافظه
       let filtered = [...USERS_DB];
 
-      // ۱. اعمال فیلتر دکمه‌ها
       if (currentUsersFilter === 'active') {
         filtered = filtered.filter(u => u.is_active);
       } else if (currentUsersFilter === 'blocked') {
@@ -2426,7 +2529,6 @@
         filtered = filtered.filter(u => u.role === 'مدیر');
       }
 
-      // ۲. اعمال عبارت جستجو
       if (currentUsersSearchQuery) {
         const q = currentUsersSearchQuery.toLowerCase().trim();
         filtered = filtered.filter(u => 
@@ -2446,10 +2548,10 @@
           <td>
             <div style="display:flex; align-items:center; gap:8px;">
               <div class="admin-avatar" style="width:30px; height:30px; font-size:11px;">${(u.name || 'ک')[0]}</div>
-              <span style="font-weight:700;">${u.name}</span>
+              <span style="font-weight:700;">${escapeHtml(u.name)}</span>
             </div>
           </td>
-          <td style="direction:ltr; text-align:right; color:var(--muted);">${u.email}</td>
+          <td style="direction:ltr; text-align:right; color:var(--muted);">${escapeHtml(u.email)}</td>
           <td>
             <span class="badge-status ${u.role === 'مدیر' ? 'synced' : 'hi-res'}">
               ${u.role === 'مدیر' ? 'مدیر سیستم' : 'کاربر عادی'}
@@ -2463,19 +2565,18 @@
           </td>
           <td>
             <div class="table-actions-cell">
-              <!-- دکمه مسدودسازی یا رفع مسدودیت -->
               <button class="btn-table-action" onclick="toggleUserStatus(${u.id})" title="${u.is_active ? 'مسدود کردن کاربر' : 'رفع مسدودیت'}">
                 ${u.is_active 
                   ? `<svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>`
                   : `<svg width="15" height="15" fill="none" stroke="var(--brand)" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`
                 }
               </button>
-              <!-- دکمه ویرایش اطلاعات کاربر -->
               <button class="btn-table-action" onclick="openEditUserModal(${u.id})" title="ویرایش مشخصات">
                 <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
               </button>
-              <!-- دکمه حذف -->
-              <button class="btn-table-action danger" onclick="deleteUser(${u.id})" title="حذف کاربر">✕</button>
+              <button class="btn-table-action danger" onclick="deleteUser(${u.id})" title="حذف کاربر">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
             </div>
           </td>
         </tr>
@@ -2622,9 +2723,7 @@
       }
     }
 
-    // ==========================================
-    // واکشی آهنگ‌ها
-    // ==========================================
+    // ۳. مدیریت قطعات موسیقی (واکشی و رندر با استایل شکیل و یکپارچه)
     async function fetchTracksFromBackend() {
       try {
         const res = await fetch('/api/tracks');
@@ -2653,7 +2752,7 @@
         document.getElementById('kpi-synced-percent').textContent = `${DASHBOARD_STATS.lyrics_coverage.toLocaleString('fa-IR')}٪ پوشش`;
         document.getElementById('kpi-total-streams').textContent = DASHBOARD_STATS.total_streams.toLocaleString('fa-IR');
         document.getElementById('kpi-total-artists').textContent = `${DASHBOARD_STATS.total_artists.toLocaleString('fa-IR')} هنرمند`;
-        document.getElementById('kpi-total-playlists').textContent = `${DASHBOARD_STATS.total_playlists.toLocaleString('fa-IR')} پلی‌لیست`;
+        document.getElementById('kpi-total-playlists').textContent = `${DASHBOARD_STATS.total_playlists.toLocaleString('fa-IR')} پلی‌‌لیست`;
 
         renderLiveActivity(DASHBOARD_STATS.live_tracks);
         drawStreamsChart(currentChartPeriod);
@@ -2667,36 +2766,81 @@
       if (!tbody) return;
 
       if (!tracksToRender || tracksToRender.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" style="text-align:center; padding:30px; color:var(--muted);">هیچ قطعه‌ای ثبت نشده است. روی دکمه «آهنگ جدید» کلیک کنید.</td></tr>`;
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" style="text-align:center; padding:48px 16px; color:var(--muted); background:transparent;">
+              <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
+                <div style="width:48px; height:48px; border-radius:50%; background:rgba(255,255,255,0.03); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--muted);">
+                  <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
+                </div>
+                <div style="font-size:14px; font-weight:700; color:var(--text);">هنوز هیچ قطعه صوتی ثبت نشده است</div>
+                <div style="font-size:12px; color:var(--muted); max-width:320px;">برای آغاز، با کلیک بر روی دکمه «آهنگ جدید» اولین ترانه را در پلتفرم سهپاتیفای آپلود و مدیریت کنید.</div>
+                <button class="btn-quick-action" onclick="openAddTrackModal()" style="margin-top:6px;">
+                  <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                  <span>افزودن آهنگ جدید</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
         document.getElementById('badge-track-count').textContent = '۰';
         return;
       }
 
       tbody.innerHTML = tracksToRender.map((t, idx) => `
         <tr>
-          <td><span style="color:var(--muted); font-weight:700;">${idx + 1}</span></td>
+          <td><span style="color:var(--muted); font-weight:700; font-family:monospace; font-size:12px;">${idx + 1}</span></td>
           <td>
             <div class="track-meta-cell">
-              <img class="track-cover-thumb" src="${t.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=100'}" alt="${t.title}" />
+              <img class="track-cover-thumb" src="${t.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=100'}" alt="${escapeHtml(t.title)}" />
               <div style="min-width:0;">
-                <div style="font-weight:800; font-size:13.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.title}</div>
-                <div style="font-size:11px; color:var(--muted);">${t.genre || 'پاپ'}</div>
+                <div style="font-weight:800; font-size:13.5px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(t.title)}</div>
+                <div style="font-size:11px; color:var(--muted); margin-top:1px;">
+                  <span style="display:inline-block; background:rgba(255,255,255,0.05); padding:1px 6px; border-radius:4px; font-size:10px;">${escapeHtml(t.genre || 'عمومی')}</span>
+                </div>
               </div>
             </div>
           </td>
-          <td><span style="font-weight:600;">${t.artist}</span></td>
-          <td><span style="color:var(--muted);">${t.album || t.title}</span></td>
-          <td style="direction:ltr; text-align:right;">${t.duration || '03:30'}</td>
-          <td><span class="badge-status ${t.is_lossless ? 'hi-res' : ''}">${t.is_lossless ? 'FLAC 24-bit' : 'MP3 320k'}</span></td>
-          <td><span class="badge-status ${t.lyrics && t.lyrics.length > 0 ? 'synced' : 'empty'}">${t.lyrics && t.lyrics.length > 0 ? `✓ ${t.lyrics.length} سطر` : 'فاقد لیریکس'}</span></td>
-          <td style="font-weight:700; color:var(--muted);">${(t.streams || 0).toLocaleString('fa-IR')}</td>
+          <td>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-weight:700; color:#fff;">${escapeHtml(t.artist || 'نامشخص')}</span>
+            </div>
+          </td>
+          <td><span style="color:var(--muted); font-size:12.5px;">${escapeHtml(t.album || t.title)}</span></td>
+          <td>
+            <div style="display:inline-flex; align-items:center; gap:5px; direction:ltr; font-family:monospace; font-weight:600; color:var(--muted); background:rgba(255,255,255,0.03); padding:3px 8px; border-radius:6px; border:1px solid rgba(255,255,255,0.05);">
+              <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>${t.duration || '03:30'}</span>
+            </div>
+          </td>
+          <td>
+            <span class="badge-status ${t.is_lossless ? 'hi-res' : ''}">
+              <span style="width:5px; height:5px; border-radius:50%; background:currentColor;"></span>
+              <span>${t.is_lossless ? 'FLAC 24-bit' : 'MP3 320k'}</span>
+            </span>
+          </td>
+          <td>
+            <span class="badge-status ${t.lyrics && t.lyrics.length > 0 ? 'synced' : 'empty'}">
+              <span style="width:5px; height:5px; border-radius:50%; background:currentColor;"></span>
+              <span>${t.lyrics && t.lyrics.length > 0 ? `✓ ${t.lyrics.length} سطر همگام` : 'فاقد لیریکس'}</span>
+            </span>
+          </td>
+          <td>
+            <span style="font-weight:700; color:var(--text); font-family:monospace; font-size:12.5px;">${(t.streams || 0).toLocaleString('fa-IR')}</span>
+            <span style="font-size:10.5px; color:var(--muted); margin-right:3px;">پخش</span>
+          </td>
           <td>
             <div class="table-actions-cell">
-              <button class="btn-table-action lyrics-action" onclick="openTrackInLyricsStudio(${t.id})" title="ورود به استودیو لیریکس">لیریکس</button>
-              <button class="btn-table-action" onclick="openEditTrackModal(${t.id})" title="ویرایش اطلاعات">
+              <button class="btn-table-action lyrics-action" onclick="openTrackInLyricsStudio(${t.id})" title="ورود به استودیو لیریکس این آهنگ">
+                <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+                <span>لیریکس</span>
+              </button>
+              <button class="btn-table-action" onclick="openEditTrackModal(${t.id})" title="ویرایش اطلاعات قطعه">
                 <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
               </button>
-              <button class="btn-table-action danger" onclick="deleteTrack(${t.id})" title="حذف اثر">✕</button>
+              <button class="btn-table-action danger" onclick="deleteTrack(${t.id})" title="حذف اثر">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
             </div>
           </td>
         </tr>
@@ -2845,7 +2989,7 @@
         const data = await res.json().catch(() => null);
 
         if (!res.ok) {
-          const errMsg = data?.message || (data?.errors ? Object.values(data.errors)[0][0] : 'خطا در ذخیره‌‌سازی');
+          const errMsg = data?.message || (data?.errors ? Object.values(data.errors)[0][0] : 'خطا در ذخیره‌سازی');
           throw new Error(errMsg);
         }
 
@@ -3038,8 +3182,8 @@
       }
       container.innerHTML = track.lyrics.map((line, idx) => `
         <div class="karaoke-line ${idx === 0 ? 'active' : ''}" id="karaoke-line-${idx}">
-          <div>${line.fa || '...'}</div>
-          ${line.en ? `<span class="karaoke-trans">${line.en}</span>` : ''}
+          <div>${escapeHtml(line.fa || '...')}</div>
+          ${line.en ? `<span class="karaoke-trans">${escapeHtml(line.en)}</span>` : ''}
         </div>
       `).join('');
     }
@@ -3233,7 +3377,7 @@
     function openModal(id) { const m = document.getElementById(id); if (m) m.classList.add('open'); }
     function closeModal(id) { const m = document.getElementById(id); if (m) m.classList.remove('open'); }
 
-    // توابع پلی‌لیست
+    // ۴. مدیریت پلی‌لیست‌ها
     async function fetchPlaylistsFromBackend() {
       try {
         const res = await fetch('/api/playlists');
@@ -3264,7 +3408,7 @@
       container.innerHTML = PLAYLISTS_DB.map(p => {
         const trackCount = p.tracks ? p.tracks.length : 0;
         const tracksPreview = p.tracks && p.tracks.length > 0
-          ? p.tracks.slice(0, 3).map(t => `<span style="font-size:11px; color:var(--text); background:rgba(255,255,255,0.05); padding:2px 8px; border-radius:4px; margin-left:4px; display:inline-block; margin-top:4px;">♫ ${t.title}</span>`).join('')
+          ? p.tracks.slice(0, 3).map(t => `<span style="font-size:11px; color:var(--text); background:rgba(255,255,255,0.05); padding:2px 8px; border-radius:4px; margin-left:4px; display:inline-block; margin-top:4px;">♫ ${escapeHtml(t.title)}</span>`).join('')
           : '<span style="font-size:11px; color:var(--muted);">هنوز آهنگی افزوده نشده</span>';
 
         return `
@@ -3273,11 +3417,11 @@
               <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
                 <img src="${p.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500'}" style="width:64px; height:64px; border-radius:10px; object-fit:cover; flex-shrink:0;" />
                 <div style="min-width:0;">
-                  <div style="font-weight:800; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.title}</div>
+                  <div style="font-weight:800; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(p.title)}</div>
                   <div style="font-size:12px; color:var(--brand); font-weight:700;">${trackCount} قطعه صوتی</div>
                 </div>
               </div>
-              <p style="font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:10px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${p.desc || ''}</p>
+              <p style="font-size:12px; color:var(--muted); line-height:1.6; margin-bottom:10px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;">${escapeHtml(p.desc || '')}</p>
               <div style="margin-bottom:14px; padding-top:6px; border-top:1px dashed var(--border);">
                 <div style="font-size:11px; color:var(--muted); margin-bottom:4px;">قطعات این مجموعه:</div>
                 <div style="display:flex; flex-wrap:wrap;">${tracksPreview}</div>
@@ -3290,7 +3434,7 @@
                   <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
                 </button>
                 <button class="btn-table-action danger" onclick="deletePlaylist(${p.id})" title="حذف پلی‌لیست">
-                  ✕
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                 </button>
               </div>
             </div>
@@ -3318,8 +3462,8 @@
               <input type="checkbox" class="playlist-track-checkbox" value="${t.id}" ${isChecked} onchange="updateSelectedTracksCounter()" style="accent-color:var(--brand); width:16px; height:16px; cursor:pointer;" />
               <img src="${t.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=80'}" style="width:30px; height:30px; border-radius:4px; object-fit:cover;" />
               <div style="min-width:0;">
-                <div style="font-size:12px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.title}</div>
-                <div style="font-size:10px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.artist}</div>
+                <div style="font-size:12px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(t.title)}</div>
+                <div style="font-size:10px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(t.artist)}</div>
               </div>
             </div>
             <span style="font-size:11px; color:var(--muted); direction:ltr;">${t.duration || '03:30'}</span>
@@ -3413,7 +3557,7 @@
           throw new Error(data?.message || 'خطا در ذخیره‌سازی پلی‌لیست');
         }
 
-        showToast(playlistId ? 'پلی‌لیست با موفقیت ویرایش شد ✓' : `پلی‌لیست «${data.title}» ساخته شد ✓`);
+        showToast(playlistId ? 'پلی‌‌لیست با موفقیت ویرایش شد ✓' : `پلی‌لیست «${data.title}» ساخته شد ✓`);
         closeModal('modal-playlist');
         await fetchPlaylistsFromBackend();
         await fetchDashboardStats();
@@ -3444,11 +3588,10 @@
         await fetchPlaylistsFromBackend();
         await fetchDashboardStats();
       } catch (err) {
-        showToast(err.message || 'خطا در حذف پلی‌لیست');
+        showToast(err.message || 'خطا در حذف پلی‌‌لیست');
       }
     }
 
-    function openAddArtistModal() { openModal('modal-artist'); }
     function openBulkLyricsModal() { openModal('modal-bulk-lyrics'); }
     function openLrcModal() { openModal('modal-lrc'); }
 
@@ -3533,8 +3676,8 @@
           <div style="display:flex; align-items:center; gap:10px; min-width:0;">
             <img src="${item.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=80'}" style="width:38px; height:38px; border-radius:6px; object-fit:cover; flex-shrink:0;" />
             <div style="min-width:0;">
-              <div style="font-weight:700; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.title}</div>
-              <div style="font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.artist}</div>
+              <div style="font-weight:700; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(item.title)}</div>
+              <div style="font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(item.artist)}</div>
             </div>
           </div>
           <div style="text-align:left; flex-shrink:0;">
@@ -3727,7 +3870,6 @@
       }
     });
 
-    // بارگذاری اولیه از دیتابیس MySQL
     window.addEventListener('DOMContentLoaded', async () => {
       await fetchGenresAndArtists();
       await fetchTracksFromBackend();
