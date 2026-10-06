@@ -3,18 +3,21 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\PlaylistController;
-use App\Models\Artist;
+use App\Http\Controllers\ArtistController;
 
 // پلیر عمومی
 Route::get('/tracks', [TrackController::class, 'index']);
 Route::get('/tracks/{id}/stream', [TrackController::class, 'stream']);
 Route::post('/tracks/{id}/favorite', [TrackController::class, 'toggleFavorite']);
 Route::get('/playlists', [PlaylistController::class, 'index']);
-Route::get('/artists', fn() => response()->json(Artist::all()));
 
-// استودیو و مدیریت ادمین
+// روت‌های عمومی هنرمندان و سبک‌ها
+Route::get('/artists', [ArtistController::class, 'index']);
+Route::get('/artists/{id}', [ArtistController::class, 'show']);
+Route::get('/genres', [ArtistController::class, 'genres']);
+
+// پنل ادمین و استودیو
 Route::prefix('admin')->group(function () {
-    // آمار داشبورد
     Route::get('/dashboard-stats', [TrackController::class, 'dashboardStats']);
 
     // مدیریت قطعات
@@ -27,4 +30,9 @@ Route::prefix('admin')->group(function () {
     Route::post('/playlists', [PlaylistController::class, 'store']);
     Route::post('/playlists/{id}', [PlaylistController::class, 'update']);
     Route::delete('/playlists/{id}', [PlaylistController::class, 'destroy']);
+
+    // مدیریت هنرمندان
+    Route::post('/artists', [ArtistController::class, 'store']);
+    Route::post('/artists/{id}', [ArtistController::class, 'update']);
+    Route::delete('/artists/{id}', [ArtistController::class, 'destroy']);
 });

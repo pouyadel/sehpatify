@@ -55,6 +55,7 @@ class TrackController extends Controller
             'artist'       => $request->input('artist'),
             'album'        => $request->input('album') ?: $request->input('title'),
             'genre'        => $request->input('genre') ?: 'پاپ مدرن',
+            'artist_id' => $request->input('artist_id'),
             'duration'     => $duration,
             'duration_sec' => $durationSec,
             'cover'        => $coverPath ?: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500',
@@ -78,6 +79,7 @@ class TrackController extends Controller
         $request->validate([
             'title'       => 'required|string|max:255',
             'artist'      => 'required|string|max:255',
+            'artist_id' => 'nullable|exists:artists,id',
             'album'       => 'nullable|string|max:255',
             'genre'       => 'nullable|string|max:100',
             'duration'    => 'nullable|string',

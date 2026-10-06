@@ -64,5 +64,20 @@ class DatabaseSeeder extends Seeder
             'cover' => 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&auto=format&fit=crop&q=80',
             'desc' => 'نواهای دلنشین برای رانندگی شبانه و آرامش پایتخت'
         ]);
+        // سبک‌های اصلی موسیقی
+        $defaultGenres = [
+            ['name' => 'پاپ مدرن', 'slug' => 'pop'],
+            ['name' => 'سنتی معاصر', 'slug' => 'traditional'],
+            ['name' => 'تلفیقی و الکترونیک', 'slug' => 'electronic-fusion'],
+            ['name' => 'آلترناتیو و راک', 'slug' => 'rock'],
+            ['name' => 'رپ و هیپ‌هاپ', 'slug' => 'rap'],
+            ['name' => 'امبینت و ریلکس', 'slug' => 'ambient'],
+            ['name' => 'کلاسیک ایرانی', 'slug' => 'classical'],
+            ['name' => 'بلوز و جاز', 'slug' => 'jazz'],
+        ];
+
+        foreach ($defaultGenres as $genre) {
+            \App\Models\Genre::firstOrCreate(['slug' => $genre['slug']], $genre);
+        }
     }
 }

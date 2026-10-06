@@ -17,4 +17,8 @@ class Track extends Model
     {
         return $this->belongsToMany(Playlist::class, 'playlist_track');
     }
+    public function artistRef()
+    {
+        return $this->belongsTo(Artist::class, 'artist_id');
+    }
 }

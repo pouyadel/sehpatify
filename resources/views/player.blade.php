@@ -2876,7 +2876,87 @@
       } catch (e) {
         console.warn('استفاده از دیتای محلی به دلیل عدم پاسخ سرور');
       }
+async function openArtistPage(artistId) {
+      try {
+        const res = await fetch(`/api/artists/${artistId}`);
+        if (!res.ok) throw new Error();
+        const artist = await res.json();
 
+        document.getElementById('artist-page-name').textContent = artist.name;
+        document.getElementById('artist-page-img').src = artist.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500';
+
+        // نمایش بیوگرافی و سبک‌ها
+        const metaBlock = document.querySelector('.artist-meta-txt');
+        if (metaBlock) {
+          metaBlock.innerHTML = `
+            <span>${artist.listeners || '۰'} شنونده ماهانه</span>
+            <span>•</span>
+            <span style="color:var(--brand); font-weight:700;">${artist.genre_names || 'سبک‌های متنوع'}</span>
+          `;
+        }
+
+        // رندر لیست اختصاصی آهنگ‌های این هنرمند
+        const list = document.getElementById('artist-tracks-list');
+        const artistTracks = artist.tracks || [];
+
+        if (artistTracks.length === 0) {
+          list.innerHTML = `<div style="text-align:center; padding:30px; color:var(--muted);">هنوز ترانه‌ای برای این هنرمند ثبت نشده است.</div>`;
+        } else {
+          list.innerHTML = artistTracks.map((t, idx) => `
+            <div class="track-row" onclick="playArtistTrack(${artist.id}, ${idx})">
+              <div class="track-num">${idx + 1}</div>
+              <div class="track-thumb"><img src="${t.cover || ''}" /></div>
+              <div class="track-meta"><div class="track-name">${t.title}</div><div class="track-artist">${t.artist}</div></div>
+              <div class="track-album">${t.album || t.title}</div>
+              <div class="track-duration">${t.duration || '03:30'}</div>
+            </div>
+          `).join('');
+        }
+
+        // تنظیم دکمه «پخش برترین‌ها» برای پخش پیوسته همین خواننده
+        const playBtn = document.querySelector('.artist-actions-row button.btn-brand');
+        if (playBtn) {
+          playBtn.onclick = () => playAllArtistTracks(artist.id);
+        }
+
+        switchView('artist');
+      } catch (err) {
+        showToast('خطا در بارگذاری اطلاعات هنرمند');
+      }
+    }
+
+    // پخش تمام آهنگ‌های این خواننده به عنوان پلی‌لیست اختصاصی
+    async function playAllArtistTracks(artistId) {
+      try {
+        const res = await fetch(`/api/artists/${artistId}`);
+        const artist = await res.json();
+        if (!artist.tracks || artist.tracks.length === 0) {
+          showToast('هیچ قطعه‌ای برای پخش وجود ندارد.');
+          return;
+        }
+
+        // تنظیم لیست موقت پلیر با آهنگ‌های این خواننده
+        TRACKS_DB = artist.tracks;
+        renderQueue();
+        playTrack(0);
+        showToast(`پخش آثار ${artist.name} آغاز شد ✓`);
+      } catch (e) {
+        showToast('خطا در ایجاد صف پخش هنرمند');
+      }
+    }
+
+    // پخش یک قطعه خاص از صفحه هنرمند
+    async function playArtistTrack(artistId, trackIndex) {
+      try {
+        const res = await fetch(`/api/artists/${artistId}`);
+        const artist = await res.json();
+        if (artist.tracks && artist.tracks.length > 0) {
+          TRACKS_DB = artist.tracks;
+          renderQueue();
+          playTrack(trackIndex);
+        }
+      } catch (e) {}
+    }
       renderAppGrids();
       initSliders();
       if (TRACKS_DB.length > 0) {
@@ -3138,6 +3218,18 @@
             <div class="card-subtitle">${t.artist}</div>
           </div>
         `).join('');
+        const homeArtists = document.getElementById('home-artists-grid');
+      if (homeArtists) {
+        homeArtists.innerHTML = ARTISTS_DB.map(a => `
+          <div class="music-card artist-card" onclick="openArtistPage(${a.id})">
+            <div class="card-art-box">
+              <img class="card-art-img" src="${a.image || ''}" alt="${a.name}" />
+            </div>
+            <div class="card-title">${a.name}</div>
+            <div class="card-subtitle">${a.genre_names || (a.listeners + ' شنونده')}</div>
+          </div>
+        `).join('');
+      }
       }
 
       const recent = document.getElementById('home-recent-tracks');
