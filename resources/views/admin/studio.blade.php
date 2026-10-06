@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>سهپاتیفای استودیو | Sehpatify Admin & Lyrics Studio Pro</title>
   <meta name="theme-color" content="#0A0A0F" />
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="description" content="مرکز مدیریت جامع، مانیتورینگ زنده و استودیو فوق‌پیشرفته همگام‌ساز لیریکس سهپاتیفای" />
 
   <!-- Google Fonts: Vazirmatn -->
@@ -269,12 +270,6 @@
       padding: 1px 7px;
       border-radius: var(--radius-full);
       font-weight: 600;
-    }
-
-    .nav-badge-pill.brand {
-      background: var(--brand-dim);
-      color: var(--brand);
-      border: 1px solid var(--border-brand);
     }
 
     .sidebar-divider {
@@ -796,7 +791,6 @@
       border-color: var(--accent-red);
     }
 
-    /* استودیو لیریکس */
     .lyrics-studio-container {
       display: grid;
       grid-template-columns: 1fr 360px;
@@ -1157,7 +1151,7 @@
 
     @keyframes modalFadeIn {
       from { opacity: 0; transform: scale(0.96); }
-      to { transform: scale(1); }
+      to { opacity: 1; transform: scale(1); }
     }
 
     .modal-container {
@@ -1323,7 +1317,6 @@
       to { transform: translateY(0); opacity: 1; }
     }
 
-    /* واکنش‌گرایی در صفحات مختلف */
     @media (max-width: 1024px) {
       .lyrics-studio-container {
         grid-template-columns: 1fr;
@@ -1491,6 +1484,7 @@
           <a class="nav-link" id="nav-artists" onclick="switchAdminView('artists')">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
             <span>هنرمندان</span>
+            <span class="nav-badge-pill" id="badge-artists-count">۰</span>
           </a>
         </li>
         <li>
@@ -1569,7 +1563,7 @@
 
             <div class="kpi-card">
               <div class="kpi-card-header">
-                <span class="kpi-title">لیریکس‌های همگام‌‌سازی شده</span>
+                <span class="kpi-title">لیریکس‌های همگام‌‌‌‌سازی شده</span>
                 <div class="kpi-icon-box" style="color:var(--accent-purple);">
                   <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
                 </div>
@@ -1585,7 +1579,7 @@
               <div class="kpi-card-header">
                 <span class="kpi-title">مجموع استریم‌ها</span>
                 <div class="kpi-icon-box" style="color:var(--accent-blue);">
-                  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
                 </div>
               </div>
               <div class="kpi-value" id="kpi-total-streams">۰</div>
@@ -1597,15 +1591,15 @@
 
             <div class="kpi-card">
               <div class="kpi-card-header">
-                <span class="kpi-title">کاربران و هنرمندان</span>
+                <span class="kpi-title">هنرمندان و پلی‌لیست‌ها</span>
                 <div class="kpi-icon-box" style="color:var(--accent-amber);">
-                  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 </div>
               </div>
               <div class="kpi-value" id="kpi-total-artists">۰</div>
               <div class="kpi-subtext">
                 <span class="kpi-trend-up" id="kpi-total-playlists">۰ پلی‌لیست</span>
-                <span>فعال در پلتفرم</span>
+                <span>ثبت شده در سیستم</span>
               </div>
             </div>
           </div>
@@ -1807,8 +1801,8 @@
         <section class="admin-panel-view" id="view-artists">
           <div class="section-title-row">
             <div>
-              <h2 class="section-title">مدیریت هنرمندان</h2>
-              <p style="font-size:12px; color:var(--muted); margin-top:2px;">اعطای نشان تاییدیه، پایش شنوندگان و آلبوم‌ها</p>
+              <h2 class="section-title">مدیریت هنرمندان، خوانندگان و آرتیست‌های رسمی</h2>
+              <p style="font-size:12px; color:var(--muted); margin-top:2px;">اعطای نشان تاییدیه، پایش شنوندگان و سبک‌های فعالیت</p>
             </div>
             <button class="btn-quick-action" onclick="openAddArtistModal()">
               <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
@@ -1824,7 +1818,7 @@
                     <th>وضعیت تاییدیه</th>
                     <th>شنوندگان ماهانه</th>
                     <th>تعداد قطعات</th>
-                    <th>ژانر اصلی</th>
+                    <th>سبک‌ها / ژانرها</th>
                     <th>عملیات</th>
                   </tr>
                 </thead>
@@ -1838,7 +1832,7 @@
         <section class="admin-panel-view" id="view-users">
           <div class="section-title-row">
             <div>
-              <h2 class="section-title">مدیریت کاربران</h2>
+              <h2 class="section-title">مدیریت کاربران و اشتراک‌های طلایی Lossless</h2>
               <p style="font-size:12px; color:var(--muted); margin-top:2px;">کنترل دسترسی‌ها، ارتقای سطح اشتراک و مانیتورینگ فعالیت</p>
             </div>
             <button class="btn-quick-action" onclick="openAddUserModal()">
@@ -1884,11 +1878,15 @@
       </div>
       <div class="mobile-bar-btn" id="mob-playlists" onclick="switchAdminView('playlists')">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-        <span>پلی‌‌لیست</span>
+        <span>پلی‌‌‌‌لیست</span>
+      </div>
+      <div class="mobile-bar-btn" id="mob-artists" onclick="switchAdminView('artists')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+        <span>هنرمندان</span>
       </div>
     </nav>
 
-    <!-- MODAL 1: ADD / EDIT TRACK -->
+    <!-- MODAL 1: ADD / EDIT TRACK (تنها با یک فیلد منوی انتخابی خواننده) -->
     <div class="modal-backdrop" id="modal-track">
       <div class="modal-container">
         <div class="modal-head">
@@ -1901,21 +1899,20 @@
         <div class="form-group" style="background: rgba(16, 185, 84, 0.08); padding: 12px; border-radius: var(--radius-sm); border: 1px dashed var(--border-brand);">
           <label class="form-label" style="color: var(--brand); font-weight: 800;">فایل صوتی ترانه (MP3, FLAC, WAV) *</label>
           <input type="file" class="form-control" id="track-form-audio-file" accept="audio/*" onchange="detectAudioDuration(this)" />
+          <span style="font-size:11px; color:var(--muted); margin-top:4px;">در صورت ویرایش، اگر مایل به تعویض فایل صوتی نیستید این فیلد را خالی بگذارید.</span>
         </div>
 
         <div class="form-row-2">
           <div class="form-group">
             <label class="form-label">عنوان ترانه *</label>
-            <input type="text" class="form-control" id="track-form-name" placeholder="مثال: آرمان‌شهر" />
+            <input type="text" class="form-control" id="track-form-name" placeholder="مثال: شیدایی" />
           </div>
+          <!-- تک فیلد انتخابی خواننده مطابق درخواست شما -->
           <div class="form-group">
-            <label class="form-label">انتخاب خواننده / هنرمند *</label>
-            <div style="display:flex; gap:6px;">
-              <select class="form-control" id="track-form-artist-select" onchange="syncArtistNameInput(this)">
-                <option value="">-- انتخاب از لیست هنرمندان --</option>
-              </select>
-              <input type="text" class="form-control" id="track-form-artist" placeholder="یا تایپ نام..." style="max-width:140px;" />
-            </div>
+            <label class="form-label">خواننده / هنرمند ترانه *</label>
+            <select class="form-control" id="track-form-artist-id">
+              <option value="">-- انتخاب خواننده از لیست --</option>
+            </select>
           </div>
         </div>
 
@@ -1964,7 +1961,7 @@
 
         <div class="modal-actions">
           <button class="btn-secondary" onclick="closeModal('modal-track')">انصراف</button>
-          <button class="btn-quick-action" id="btn-save-track" onclick="saveTrackFromModal()">آپلود و ذخیره در سرور</button>
+          <button class="btn-quick-action" id="btn-save-track" onclick="saveTrackFromModal()">ذخیره قطعه</button>
         </div>
       </div>
     </div>
@@ -2016,7 +2013,7 @@
       </div>
     </div>
 
-  <!-- MODAL 3: ADD / EDIT ARTIST -->
+    <!-- MODAL 3: ADD / EDIT ARTIST -->
     <div class="modal-backdrop" id="modal-artist">
       <div class="modal-container">
         <div class="modal-head">
@@ -2042,7 +2039,6 @@
           <textarea class="form-control" id="artist-form-bio" rows="3" placeholder="توضیحات مختصر درباره پیشینه و فعالیت هنرمند..."></textarea>
         </div>
 
-        <!-- سبک‌های چندگانه هنرمند -->
         <div class="form-group">
           <label class="form-label" style="font-weight: 800; color: var(--brand);">سبک‌های موسیقی این هنرمند (امکان انتخاب چند سبک):</label>
           <div id="artist-genres-selector" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; background: var(--surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; max-height: 140px; overflow-y: auto;">
@@ -2090,6 +2086,24 @@
           <div class="form-group">
             <label class="form-label">ایمیل *</label>
             <input type="email" class="form-control" id="user-form-email" placeholder="negin@example.com" />
+          </div>
+        </div>
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">سطح اشتراک</label>
+            <select class="form-control" id="user-form-plan">
+              <option value="طلایی Hi-Res (یک ساله)">طلایی Hi-Res (یک ساله)</option>
+              <option value="پرمیوم استاندارد">پرمیوم استاندارد</option>
+              <option value="رایگان">رایگان</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">نقش دسترسی</label>
+            <select class="form-control" id="user-form-role">
+              <option value="کاربر">کاربر</option>
+              <option value="آرتیست رسمی">آرتیست رسمی</option>
+              <option value="مدیر ارشد">مدیر ارشد</option>
+            </select>
           </div>
         </div>
         <div class="modal-actions">
@@ -2143,17 +2157,17 @@
   </div>
 
   <script>
-    // پاک‌سازی دیتای فیک قدیمی و شروع با آرایه‌های واقعی
+    // پاکسازی دیتای فیک قدیمی مرورگر
     localStorage.removeItem('sehpatify_playlists');
+    localStorage.removeItem('sehpatify_artists');
 
     let DASHBOARD_STATS = null;
     let currentChartPeriod = '7d';
 
     let TRACKS_DB = [];
     let PLAYLISTS_DB = [];
-    let ARTISTS_DB = JSON.parse(localStorage.getItem('sehpatify_artists')) || [
-      { name: "چارتار", listeners: "۱,۸۴۰,۳۲۰", verified: true, count: 18, genre: "تلفیقی الکترونیک" }
-    ];
+    let ARTISTS_DB = [];
+    let GENRES_DB = [];
     let USERS_DB = JSON.parse(localStorage.getItem('sehpatify_users')) || [
       { id: 1, name: "سهراب پارسا", email: "sohrab@sehpatify.ir", plan: "طلایی Hi-Res", role: "مدیر ارشد", date: "۱۴۰۲/۰۶/۱۵", active: true }
     ];
@@ -2166,7 +2180,6 @@
     let activeEditingLineIndex = 0;
     let realAudio = new Audio();
 
-    // محاسبه حداکثر زمان مجاز آهنگ جاری
     function getSelectedTrackMaxDuration() {
       const track = TRACKS_DB.find(t => t.id === selectedStudioTrackId);
       if (!track) return 300;
@@ -2221,6 +2234,210 @@
       backdrop.classList.toggle('active');
     }
 
+    // واکشی خوانندگان و سبک‌ها مستقیماً از MySQL
+    async function fetchGenresAndArtists() {
+      try {
+        const [resGenres, resArtists] = await Promise.all([
+          fetch('/api/genres'),
+          fetch('/api/artists')
+        ]);
+        if (resGenres.ok) GENRES_DB = await resGenres.json();
+        if (resArtists.ok) ARTISTS_DB = await resArtists.json();
+      } catch (e) {
+        console.warn('خطا در بارگذاری خوانندگان یا سبک‌ها');
+      }
+      renderArtistsAdmin();
+      populateArtistDropdownInTrackModal();
+    }
+
+    // پر کردن تک‌فیلد منوی انتخاب خواننده در مودال آهنگ
+    function populateArtistDropdownInTrackModal(selectedArtistId = null) {
+      const select = document.getElementById('track-form-artist-id');
+      if (!select) return;
+
+      if (!ARTISTS_DB || ARTISTS_DB.length === 0) {
+        select.innerHTML = `<option value="">هنوز هنرمندی ثبت نشده (ابتدا از تب هنرمندان اضافه کنید)</option>`;
+        return;
+      }
+
+      select.innerHTML = `<option value="">-- انتخاب خواننده از لیست --</option>` +
+        ARTISTS_DB.map(a => `<option value="${a.id}" ${a.id == selectedArtistId ? 'selected' : ''}>${a.name}</option>`).join('');
+    }
+
+    // رندر جدول هنرمندان با آمار قطعات
+    function renderArtistsAdmin() {
+      const tbody = document.getElementById('artists-table-body');
+      if (!tbody) return;
+
+      const badge = document.getElementById('badge-artists-count');
+      if (badge) badge.textContent = ARTISTS_DB.length;
+
+      if (!ARTISTS_DB || ARTISTS_DB.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--muted);">هنوز هنرمندی در دیتابیس ثبت نشده است. روی دکمه «افزودن آرتیست رسمی» کلیک کنید.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = ARTISTS_DB.map(a => `
+        <tr>
+          <td>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <img src="${a.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80'}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; flex-shrink:0;" />
+              <div style="min-width:0;">
+                <div style="font-weight:800; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${a.name}</div>
+                <div style="font-size:11px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${a.bio ? a.bio.slice(0, 35) + '...' : ''}</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="badge-status ${a.verified ? 'synced' : 'empty'}">
+              ${a.verified ? '✓ رسمی' : 'معمولی'}
+            </span>
+          </td>
+          <td style="font-weight:700;">${a.listeners || '۰'} شنونده</td>
+          <td><span style="color:var(--brand); font-weight:800;">${a.tracks_count || 0} قطعه</span></td>
+          <td><span style="font-size:12px; color:var(--muted);">${a.genre_names || 'عمومی'}</span></td>
+          <td>
+            <div class="table-actions-cell">
+              <button class="btn-table-action" onclick="openEditArtistModal(${a.id})" title="ویرایش هنرمند">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+              </button>
+              <button class="btn-table-action danger" onclick="deleteArtist(${a.id})" title="حذف هنرمند">✕</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderGenresCheckboxes(selectedIds = []) {
+      const container = document.getElementById('artist-genres-selector');
+      if (!container) return;
+      container.innerHTML = GENRES_DB.map(g => {
+        const checked = selectedIds.includes(g.id) ? 'checked' : '';
+        return `
+          <label style="display:flex; align-items:center; gap:6px; font-size:12px; cursor:pointer;">
+            <input type="checkbox" class="artist-genre-checkbox" value="${g.id}" ${checked} style="accent-color:var(--brand);" />
+            <span>${g.name}</span>
+          </label>
+        `;
+      }).join('');
+    }
+
+    function openAddArtistModal() {
+      document.getElementById('modal-artist-title').textContent = "افزودن آرتیست رسمی";
+      document.getElementById('artist-form-id').value = "";
+      document.getElementById('artist-form-name').value = "";
+      document.getElementById('artist-form-bio').value = "";
+      document.getElementById('artist-form-listeners').value = "۵۰۰,۰۰۰";
+      document.getElementById('artist-form-verified').value = "true";
+      document.getElementById('artist-form-image-file').value = "";
+      document.getElementById('artist-form-image-url').value = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500";
+      document.getElementById('btn-save-artist').textContent = "ثبت هنرمند";
+      renderGenresCheckboxes([]);
+      openModal('modal-artist');
+    }
+
+    function openEditArtistModal(artistId) {
+      const a = ARTISTS_DB.find(item => item.id === artistId);
+      if (!a) return;
+
+      document.getElementById('modal-artist-title').textContent = `ویرایش هنرمند: ${a.name}`;
+      document.getElementById('artist-form-id').value = a.id;
+      document.getElementById('artist-form-name').value = a.name;
+      document.getElementById('artist-form-bio').value = a.bio || "";
+      document.getElementById('artist-form-listeners').value = a.listeners || "";
+      document.getElementById('artist-form-verified').value = a.verified ? "true" : "false";
+      document.getElementById('artist-form-image-file').value = "";
+      document.getElementById('artist-form-image-url').value = a.image || "";
+      document.getElementById('btn-save-artist').textContent = "ذخیره تغییرات";
+
+      const selectedIds = a.genres ? a.genres.map(g => g.id) : [];
+      renderGenresCheckboxes(selectedIds);
+      openModal('modal-artist');
+    }
+
+    async function saveArtistFromModal() {
+      const artistId = document.getElementById('artist-form-id').value;
+      const name = document.getElementById('artist-form-name').value.trim();
+
+      if (!name) {
+        showToast('نام هنرمند الزامی است.');
+        return;
+      }
+
+      const saveBtn = document.getElementById('btn-save-artist');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'در حال ذخیره‌سازی...';
+
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('bio', document.getElementById('artist-form-bio').value.trim());
+      formData.append('listeners', document.getElementById('artist-form-listeners').value.trim());
+      formData.append('verified', document.getElementById('artist-form-verified').value);
+
+      const fileInput = document.getElementById('artist-form-image-file');
+      if (fileInput.files && fileInput.files[0]) {
+        formData.append('image_file', fileInput.files[0]);
+      } else {
+        formData.append('image_url', document.getElementById('artist-form-image-url').value);
+      }
+
+      document.querySelectorAll('.artist-genre-checkbox:checked').forEach(cb => {
+        formData.append('genre_ids[]', cb.value);
+      });
+
+      const endpoint = artistId ? `/api/admin/artists/${artistId}` : '/api/admin/artists';
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: formData
+        });
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok) throw new Error(data?.message || 'خطا در ثبت هنرمند');
+
+        showToast(artistId ? 'مشخصات هنرمند به‌روز شد ✓' : `هنرمند «${data.name}» افزوده شد ✓`);
+        closeModal('modal-artist');
+        await fetchGenresAndArtists();
+        await fetchDashboardStats();
+      } catch (err) {
+        showToast(err.message || 'خطا در برقراری ارتباط');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = artistId ? 'ذخیره تغییرات' : 'ثبت هنرمند';
+      }
+    }
+
+    async function deleteArtist(artistId) {
+      if (!confirm('آیا از حذف این هنرمند اطمینان دارید؟')) return;
+
+      try {
+        const res = await fetch(`/api/admin/artists/${artistId}`, {
+          method: 'DELETE',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          }
+        });
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok) {
+          throw new Error(data?.message || 'خطا در حذف هنرمند');
+        }
+
+        showToast('هنرمند با موفقیت حذف شد.');
+        await fetchGenresAndArtists();
+        await fetchDashboardStats();
+      } catch (err) {
+        showToast(err.message || 'خطا در حذف هنرمند');
+      }
+    }
+
+    // واکشی آهنگ‌ها
     async function fetchTracksFromBackend() {
       try {
         const res = await fetch('/api/tracks');
@@ -2248,7 +2465,7 @@
         document.getElementById('kpi-synced-lyrics').textContent = `${DASHBOARD_STATS.synced_lyrics.toLocaleString('fa-IR')} / ${DASHBOARD_STATS.total_tracks.toLocaleString('fa-IR')}`;
         document.getElementById('kpi-synced-percent').textContent = `${DASHBOARD_STATS.lyrics_coverage.toLocaleString('fa-IR')}٪ پوشش`;
         document.getElementById('kpi-total-streams').textContent = DASHBOARD_STATS.total_streams.toLocaleString('fa-IR');
-        document.getElementById('kpi-total-artists').textContent = `${DASHBOARD_STATS.total_artists.toLocaleString('fa-IR')} آرتیست`;
+        document.getElementById('kpi-total-artists').textContent = `${DASHBOARD_STATS.total_artists.toLocaleString('fa-IR')} هنرمند`;
         document.getElementById('kpi-total-playlists').textContent = `${DASHBOARD_STATS.total_playlists.toLocaleString('fa-IR')} پلی‌لیست`;
 
         renderLiveActivity(DASHBOARD_STATS.live_tracks);
@@ -2351,13 +2568,13 @@
       document.getElementById('modal-track-title').textContent = "افزودن آهنگ جدید به سهپاتیفای";
       document.getElementById('track-form-id').value = "";
       document.getElementById('track-form-name').value = "";
-      document.getElementById('track-form-artist').value = "";
       document.getElementById('track-form-album').value = "";
       document.getElementById('track-form-audio-file').value = "";
       document.getElementById('track-form-cover-file').value = "";
       document.getElementById('track-form-duration').value = "03:45";
       document.getElementById('track-form-duration-sec').value = "225";
       document.getElementById('btn-save-track').textContent = "آپلود و ذخیره در سرور";
+      populateArtistDropdownInTrackModal();
       openModal('modal-track');
     }
 
@@ -2367,7 +2584,6 @@
       document.getElementById('modal-track-title').textContent = `ویرایش ترانه: ${t.title}`;
       document.getElementById('track-form-id').value = t.id;
       document.getElementById('track-form-name').value = t.title || "";
-      document.getElementById('track-form-artist').value = t.artist || "";
       document.getElementById('track-form-album').value = t.album || "";
       document.getElementById('track-form-genre').value = t.genre || "پاپ مدرن";
       document.getElementById('track-form-duration').value = t.duration || "03:45";
@@ -2377,6 +2593,7 @@
       document.getElementById('track-form-audio-file').value = "";
       document.getElementById('track-form-cover-file').value = "";
       document.getElementById('btn-save-track').textContent = "ذخیره تغییرات";
+      populateArtistDropdownInTrackModal(t.artist_id);
       openModal('modal-track');
     }
 
@@ -2384,10 +2601,16 @@
       const trackId = document.getElementById('track-form-id').value;
       const audioInput = document.getElementById('track-form-audio-file');
       const title = document.getElementById('track-form-name').value.trim();
-      const artist = document.getElementById('track-form-artist').value.trim();
+      const artistSelect = document.getElementById('track-form-artist-id');
+      const artistId = artistSelect ? artistSelect.value : "";
 
-      if (!title || !artist) {
-        showToast('عنوان ترانه و نام هنرمند الزامی است.');
+      if (!title) {
+        showToast('عنوان ترانه الزامی است.');
+        return;
+      }
+
+      if (!artistId) {
+        showToast('لطفاً خواننده ترانه را از لیست انتخاب فرمایید.');
         return;
       }
 
@@ -2402,7 +2625,7 @@
 
       const formData = new FormData();
       formData.append('title', title);
-      formData.append('artist', artist);
+      formData.append('artist_id', artistId);
       formData.append('album', document.getElementById('track-form-album').value.trim());
       formData.append('genre', document.getElementById('track-form-genre').value);
       formData.append('duration', document.getElementById('track-form-duration').value);
@@ -2839,13 +3062,15 @@
       const container = document.getElementById('playlists-admin-grid');
       if (!container) return;
 
+      const badge = document.getElementById('badge-playlist-count');
+      if (badge) badge.textContent = PLAYLISTS_DB.length;
+
       if (!PLAYLISTS_DB || PLAYLISTS_DB.length === 0) {
         container.innerHTML = `
           <div style="grid-column: 1/-1; text-align:center; padding:40px; color:var(--muted); background:var(--surface-card); border-radius:var(--radius-md); border:1px dashed var(--border);">
             هنوز پلی‌لیستی در دیتابیس ثبت نشده است. روی دکمه «پلی‌لیست جدید» کلیک کنید.
           </div>
         `;
-        document.getElementById('badge-playlist-count').textContent = '۰';
         return;
       }
 
@@ -2885,8 +3110,6 @@
           </div>
         `;
       }).join('');
-
-      document.getElementById('badge-playlist-count').textContent = PLAYLISTS_DB.length;
     }
 
     function renderTracksSelectorInsideModal(selectedTrackIds = []) {
@@ -2898,8 +3121,10 @@
         return;
       }
 
+      const selectedSet = new Set(selectedTrackIds.map(Number));
+
       container.innerHTML = TRACKS_DB.map(t => {
-        const isChecked = selectedTrackIds.includes(t.id) ? 'checked' : '';
+        const isChecked = selectedSet.has(Number(t.id)) ? 'checked' : '';
         return `
           <label style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 8px; border-radius:6px; background:rgba(255,255,255,0.02); cursor:pointer;">
             <div style="display:flex; align-items:center; gap:8px; min-width:0;">
@@ -2948,7 +3173,7 @@
       document.getElementById('playlist-form-cover-file').value = "";
       document.getElementById('btn-save-playlist').textContent = "ذخیره تغییرات";
 
-      const selectedIds = p.tracks ? p.tracks.map(t => t.id) : [];
+      const selectedIds = p.tracks ? p.tracks.map(t => Number(t.id)) : [];
       renderTracksSelectorInsideModal(selectedIds);
       openModal('modal-playlist');
     }
@@ -3001,12 +3226,12 @@
           throw new Error(data?.message || 'خطا در ذخیره‌سازی پلی‌لیست');
         }
 
-        showToast(playlistId ? 'پلی‌لیست با موفقیت ویرایش شد ✓' : `پلی‌لیست «${data.title}» ساخته شد ✓`);
+        showToast(playlistId ? 'پلی‌‌لیست با موفقیت ویرایش شد ✓' : `پلی‌لیست «${data.title}» ساخته شد ✓`);
         closeModal('modal-playlist');
-        fetchPlaylistsFromBackend();
-        fetchDashboardStats();
+        await fetchPlaylistsFromBackend();
+        await fetchDashboardStats();
       } catch (err) {
-        showToast(err.message || 'خطا در ارتباط با سرور');
+        showToast(err.message || 'خطا در برقراری ارتباط با سرور');
       } finally {
         saveBtn.disabled = false;
         saveBtn.textContent = playlistId ? 'ذخیره تغییرات' : 'ساخت پلی‌لیست';
@@ -3026,17 +3251,16 @@
         });
 
         const data = await res.json().catch(() => null);
-        if (!res.ok) throw new Error(data?.message || 'خطا در حذف پلی‌‌لیست');
+        if (!res.ok) throw new Error(data?.message || 'خطا در حذف پلی‌لیست');
 
         showToast('پلی‌لیست با موفقیت حذف شد.');
-        fetchPlaylistsFromBackend();
-        fetchDashboardStats();
+        await fetchPlaylistsFromBackend();
+        await fetchDashboardStats();
       } catch (err) {
         showToast(err.message || 'خطا در حذف پلی‌لیست');
       }
     }
 
-    function openAddArtistModal() { openModal('modal-artist'); }
     function openAddUserModal() { openModal('modal-user'); }
     function openBulkLyricsModal() { openModal('modal-bulk-lyrics'); }
     function openLrcModal() { openModal('modal-lrc'); }
@@ -3106,11 +3330,6 @@
       a.href = dataStr;
       a.download = "tracks_backup.json";
       a.click();
-    }
-
-    function renderArtistsAdmin() {
-      const b = document.getElementById('artists-table-body');
-      if (b) b.innerHTML = ARTISTS_DB.map(a => `<tr><td>${a.name}</td><td>${a.verified ? '✓ رسمی' : 'معمولی'}</td><td>${a.listeners}</td><td>${a.count}</td><td>${a.genre}</td><td>-</td></tr>`).join('');
     }
 
     function renderUsersAdmin() {
@@ -3280,13 +3499,11 @@
       const ms = Math.floor((sec % 1) * 100);
       return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}.${ms < 10 ? '0' : ''}${ms}`;
     }
-
     function parseTimeStrToSeconds(str) {
       if (!str) return 0;
       const p = str.split(':');
       return p.length === 2 ? (parseFloat(p[0]) * 60 + parseFloat(p[1])) : (parseFloat(str) || 0);
     }
-
     function parseDurationToSeconds(dur) {
       const p = (dur || '').split(':');
       if (p.length === 2) {
@@ -3294,14 +3511,11 @@
       }
       return 210;
     }
-
     function escapeHtml(str) { return (str || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
-
     function updateStudioTimerDisplay(sec) {
       const d = document.getElementById('studio-time-display');
       if (d) d.textContent = formatTimeWithMs(sec);
     }
-
     function updateStudioScrubberFill(pct) {
       const f = document.getElementById('studio-progress-fill');
       if (f) f.style.width = Math.min(100, Math.max(0, pct)) + '%';
@@ -3330,214 +3544,13 @@
         drawStreamsChart(currentChartPeriod);
       }
     });
-        let GENRES_DB = [];
 
-    // واکشی سبک‌ها و هنرمندان واقعی از سرور
-    async function fetchGenresAndArtists() {
-      try {
-        const [resGenres, resArtists] = await Promise.all([
-          fetch('/api/genres'),
-          fetch('/api/artists')
-        ]);
-        if (resGenres.ok) GENRES_DB = await resGenres.json();
-        if (resArtists.ok) ARTISTS_DB = await resArtists.json();
-      } catch (e) {
-        console.warn('خطا در دریافت لیست سبک‌ها یا هنرمندان');
-      }
-      renderArtistsAdmin();
-      populateArtistDropdownInTrackModal();
-    }
-
-    // هماهنگی انتخاب خواننده در مودال آهنگ
-    function populateArtistDropdownInTrackModal(selectedArtistId = null) {
-      const select = document.getElementById('track-form-artist-select');
-      if (!select) return;
-      select.innerHTML = `<option value="">-- انتخاب از لیست هنرمندان --</option>` +
-        ARTISTS_DB.map(a => `<option value="${a.id}" ${a.id == selectedArtistId ? 'selected' : ''}>${a.name}</option>`).join('');
-    }
-
-    function syncArtistNameInput(select) {
-      const selectedId = select.value;
-      const artist = ARTISTS_DB.find(a => a.id == selectedId);
-      if (artist) {
-        document.getElementById('track-form-artist').value = artist.name;
-      }
-    }
-
-    // رندر جدول هنرمندان با سبک‌های چندگانه و تعداد قطعات واقعی
-    function renderArtistsAdmin() {
-      const tbody = document.getElementById('artists-table-body');
-      if (!tbody) return;
-
-      if (!ARTISTS_DB || ARTISTS_DB.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:30px; color:var(--muted);">هنوز هنرمندی در دیتابیس ثبت نشده است.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = ARTISTS_DB.map(a => `
-        <tr>
-          <td>
-            <div style="display:flex; align-items:center; gap:10px;">
-              <img src="${a.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80'}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;" />
-              <div>
-                <div style="font-weight:800; font-size:14px;">${a.name}</div>
-                <div style="font-size:11px; color:var(--muted);">${a.bio ? a.bio.slice(0, 35) + '...' : ''}</div>
-              </div>
-            </div>
-          </td>
-          <td>
-            <span class="badge-status ${a.verified ? 'synced' : 'empty'}">
-              ${a.verified ? '✓ رسمی' : 'معمولی'}
-            </span>
-          </td>
-          <td style="font-weight:700;">${a.listeners || '۰'} شنونده</td>
-          <td><span style="color:var(--brand); font-weight:800;">${a.tracks_count || 0} قطعه</span></td>
-          <td><span style="font-size:12px; color:var(--muted);">${a.genre_names || 'عمومی'}</span></td>
-          <td>
-            <div class="table-actions-cell">
-              <button class="btn-table-action" onclick="openEditArtistModal(${a.id})" title="ویرایش هنرمند">
-                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-              </button>
-              <button class="btn-table-action danger" onclick="deleteArtist(${a.id})" title="حذف هنرمند">✕</button>
-            </div>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function renderGenresCheckboxes(selectedIds = []) {
-      const container = document.getElementById('artist-genres-selector');
-      if (!container) return;
-      container.innerHTML = GENRES_DB.map(g => {
-        const checked = selectedIds.includes(g.id) ? 'checked' : '';
-        return `
-          <label style="display:flex; align-items:center; gap:6px; font-size:12px; cursor:pointer;">
-            <input type="checkbox" class="artist-genre-checkbox" value="${g.id}" ${checked} style="accent-color:var(--brand);" />
-            <span>${g.name}</span>
-          </label>
-        `;
-      }).join('');
-    }
-
-    function openAddArtistModal() {
-      document.getElementById('modal-artist-title').textContent = "افزودن آرتیست رسمی";
-      document.getElementById('artist-form-id').value = "";
-      document.getElementById('artist-form-name').value = "";
-      document.getElementById('artist-form-bio').value = "";
-      document.getElementById('artist-form-listeners').value = "۵۰۰,۰۰۰";
-      document.getElementById('artist-form-verified').value = "true";
-      document.getElementById('artist-form-image-file').value = "";
-      document.getElementById('artist-form-image-url').value = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500";
-      document.getElementById('btn-save-artist').textContent = "ثبت هنرمند";
-      renderGenresCheckboxes([]);
-      openModal('modal-artist');
-    }
-
-    function openEditArtistModal(artistId) {
-      const a = ARTISTS_DB.find(item => item.id === artistId);
-      if (!a) return;
-
-      document.getElementById('modal-artist-title').textContent = `ویرایش هنرمند: ${a.name}`;
-      document.getElementById('artist-form-id').value = a.id;
-      document.getElementById('artist-form-name').value = a.name;
-      document.getElementById('artist-form-bio').value = a.bio || "";
-      document.getElementById('artist-form-listeners').value = a.listeners || "";
-      document.getElementById('artist-form-verified').value = a.verified ? "true" : "false";
-      document.getElementById('artist-form-image-file').value = "";
-      document.getElementById('artist-form-image-url').value = a.image || "";
-      document.getElementById('btn-save-artist').textContent = "ذخیره تغییرات";
-
-      const selectedIds = a.genres ? a.genres.map(g => g.id) : [];
-      renderGenresCheckboxes(selectedIds);
-      openModal('modal-artist');
-    }
-
-    async function saveArtistFromModal() {
-      const artistId = document.getElementById('artist-form-id').value;
-      const name = document.getElementById('artist-form-name').value.trim();
-
-      if (!name) {
-        showToast('نام هنرمند الزامی است.');
-        return;
-      }
-
-      const saveBtn = document.getElementById('btn-save-artist');
-      saveBtn.disabled = true;
-      saveBtn.textContent = 'در حال ذخیره‌سازی...';
-
-      const formData = new FormData();
-      formData.append('name', name);
-      formData.append('bio', document.getElementById('artist-form-bio').value.trim());
-      formData.append('listeners', document.getElementById('artist-form-listeners').value.trim());
-      formData.append('verified', document.getElementById('artist-form-verified').value);
-
-      const fileInput = document.getElementById('artist-form-image-file');
-      if (fileInput.files && fileInput.files[0]) {
-        formData.append('image_file', fileInput.files[0]);
-      } else {
-        formData.append('image_url', document.getElementById('artist-form-image-url').value);
-      }
-
-      document.querySelectorAll('.artist-genre-checkbox:checked').forEach(cb => {
-        formData.append('genre_ids[]', cb.value);
-      });
-
-      const endpoint = artistId ? `/api/admin/artists/${artistId}` : '/api/admin/artists';
-
-      try {
-        const res = await fetch(endpoint, {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-          },
-          body: formData
-        });
-
-        const data = await res.json().catch(() => null);
-        if (!res.ok) throw new Error(data?.message || 'خطا در ثبت هنرمند');
-
-        showToast(artistId ? 'مشخصات هنرمند به‌روز شد ✓' : `هنرمند «${data.name}» با موفقیت افزوده شد ✓`);
-        closeModal('modal-artist');
-        fetchGenresAndArtists();
-        fetchDashboardStats();
-      } catch (err) {
-        showToast(err.message || 'خطا در برقراری ارتباط');
-      } finally {
-        saveBtn.disabled = false;
-        saveBtn.textContent = artistId ? 'ذخیره تغییرات' : 'ثبت هنرمند';
-      }
-    }
-
-    async function deleteArtist(artistId) {
-      if (!confirm('آیا از حذف این هنرمند اطمینان دارید؟')) return;
-
-      try {
-        const res = await fetch(`/api/admin/artists/${artistId}`, {
-          method: 'DELETE',
-          headers: {
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-          }
-        });
-
-        const data = await res.json().catch(() => null);
-        if (!res.ok) {
-          throw new Error(data?.message || 'خطا در حذف هنرمند');
-        }
-
-        showToast('هنرمند با موفقیت حذف شد.');
-        fetchGenresAndArtists();
-        fetchDashboardStats();
-      } catch (err) {
-        showToast(err.message || 'خطا در حذف هنرمند');
-      }
-    }
-    window.addEventListener('DOMContentLoaded', () => {
-      fetchTracksFromBackend();
-      fetchDashboardStats();
-      fetchPlaylistsFromBackend();
-      renderArtistsAdmin();
+    // بارگذاری کامل و مرتب اطلاعات از پایگاه‌داده به محض بالا آمدن صفحه
+    window.addEventListener('DOMContentLoaded', async () => {
+      await fetchGenresAndArtists();
+      await fetchTracksFromBackend();
+      await fetchPlaylistsFromBackend();
+      await fetchDashboardStats();
       renderUsersAdmin();
     });
   </script>

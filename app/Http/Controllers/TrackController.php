@@ -19,25 +19,23 @@ class TrackController extends Controller
         return response()->json($tracks);
     }
 
-    // آپلود و افزودن آهنگ جدید
-    public function store(Request $request)
+public function store(Request $request)
     {
         $request->validate([
             'title'       => 'required|string|max:255',
-            'artist'      => 'required|string|max:255',
+            'artist_id'   => 'required|exists:artists,id',
             'album'       => 'nullable|string|max:255',
             'genre'       => 'nullable|string|max:100',
             'duration'    => 'nullable|string',
             'duration_sec'=> 'nullable|numeric',
-            'audio_file'  => 'required|file|max:102400', // تا ۱۰۰ مگابایت
+            'audio_file'  => 'required|file|max:102400',
             'cover_file'  => 'nullable|image|max:10240',
             'cover_url'   => 'nullable|string',
             'is_lossless' => 'nullable',
         ], [
             'title.required'      => 'عنوان ترانه الزامی است.',
-            'artist.required'     => 'نام هنرمند الزامی است.',
+            'artist_id.required'  => 'لطفاً خواننده ترانه را انتخاب کنید.',
             'audio_file.required' => 'فایل صوتی ترانه را انتخاب نکرده‌اید.',
-            'audio_file.max'      => 'حجم فایل صوتی بیش از حد مجاز است (حداکثر ۱۰۰ مگابایت).',
         ]);
 
         $audioPath = $request->file('audio_file')->store('tracks', 'public');
@@ -47,15 +45,16 @@ class TrackController extends Controller
             $coverPath = '/storage/' . $request->file('cover_file')->store('covers', 'public');
         }
 
+        $artist = \App\Models\Artist::findOrFail($request->input('artist_id'));
         $duration = $request->input('duration') ?: '03:30';
         $durationSec = (int) ($request->input('duration_sec') ?: 210);
 
         $track = Track::create([
             'title'        => $request->input('title'),
-            'artist'       => $request->input('artist'),
+            'artist'       => $artist->name,
+            'artist_id'    => $artist->id,
             'album'        => $request->input('album') ?: $request->input('title'),
             'genre'        => $request->input('genre') ?: 'پاپ مدرن',
-            'artist_id' => $request->input('artist_id'),
             'duration'     => $duration,
             'duration_sec' => $durationSec,
             'cover'        => $coverPath ?: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500',
@@ -71,15 +70,13 @@ class TrackController extends Controller
         return response()->json($track, 201);
     }
 
-    // ویرایش اطلاعات اثر
     public function update(Request $request, $id)
     {
         $track = Track::findOrFail($id);
 
         $request->validate([
             'title'       => 'required|string|max:255',
-            'artist'      => 'required|string|max:255',
-            'artist_id' => 'nullable|exists:artists,id',
+            'artist_id'   => 'nullable|exists:artists,id',
             'album'       => 'nullable|string|max:255',
             'genre'       => 'nullable|string|max:100',
             'duration'    => 'nullable|string',
@@ -90,7 +87,6 @@ class TrackController extends Controller
             'is_lossless' => 'nullable',
         ]);
 
-        // در صورت انتخاب فایل صوتی جدید، قبلی حذف و جدید جایگزین می‌شود
         if ($request->hasFile('audio_file')) {
             if ($track->audio_path && Storage::disk('public')->exists($track->audio_path)) {
                 Storage::disk('public')->delete($track->audio_path);
@@ -98,15 +94,21 @@ class TrackController extends Controller
             $track->audio_path = $request->file('audio_file')->store('tracks', 'public');
         }
 
-        // در صورت آپلود کاور جدید
         if ($request->hasFile('cover_file')) {
             $track->cover = '/storage/' . $request->file('cover_file')->store('covers', 'public');
         } elseif ($request->filled('cover_url')) {
             $track->cover = $request->input('cover_url');
         }
 
+        if ($request->filled('artist_id')) {
+            $artist = \App\Models\Artist::find($request->input('artist_id'));
+            if ($artist) {
+                $track->artist_id = $artist->id;
+                $track->artist = $artist->name;
+            }
+        }
+
         $track->title = $request->input('title');
-        $track->artist = $request->input('artist');
         $track->album = $request->input('album') ?: $request->input('title');
         $track->genre = $request->input('genre') ?: $track->genre;
         if ($request->filled('duration')) $track->duration = $request->input('duration');

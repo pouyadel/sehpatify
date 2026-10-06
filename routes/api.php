@@ -5,13 +5,13 @@ use App\Http\Controllers\TrackController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\ArtistController;
 
-// پلیر عمومی
+// روت‌های عمومی دریافت اطلاعات
 Route::get('/tracks', [TrackController::class, 'index']);
 Route::get('/tracks/{id}/stream', [TrackController::class, 'stream']);
 Route::post('/tracks/{id}/favorite', [TrackController::class, 'toggleFavorite']);
 Route::get('/playlists', [PlaylistController::class, 'index']);
 
-// روت‌های عمومی هنرمندان و سبک‌ها
+// روت‌های هنرمندان و سبک‌ها
 Route::get('/artists', [ArtistController::class, 'index']);
 Route::get('/artists/{id}', [ArtistController::class, 'show']);
 Route::get('/genres', [ArtistController::class, 'genres']);
