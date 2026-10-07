@@ -81,7 +81,12 @@ class PlaylistController extends Controller
 
         return response()->json($playlist->load('tracks'));
     }
-
+    // دریافت جزئیات یک پلی‌لیست همراه با تمام آهنگ‌های داخل آن
+    public function show($id)
+    {
+        $playlist = Playlist::with('tracks')->findOrFail($id);
+        return response()->json($playlist);
+    }
     public function destroy($id)
     {
         $playlist = Playlist::findOrFail($id);

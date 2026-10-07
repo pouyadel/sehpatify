@@ -11,6 +11,7 @@ Route::get('/tracks', [TrackController::class, 'index']);
 Route::get('/tracks/{id}/stream', [TrackController::class, 'stream']);
 Route::post('/tracks/{id}/favorite', [TrackController::class, 'toggleFavorite']);
 Route::get('/playlists', [PlaylistController::class, 'index']);
+Route::get('/playlists/{id}', [\App\Http\Controllers\PlaylistController::class, 'show']);
 Route::get('/artists', [ArtistController::class, 'index']);
 Route::get('/artists/{id}', [ArtistController::class, 'show']);
 Route::get('/genres', [ArtistController::class, 'genres']);
