@@ -1673,33 +1673,35 @@
 
     <!-- لیست ژانرها -->
     <div class="space-y-3">
-        @foreach($genres as $genre)
-            <div class="flex items-center justify-between bg-neutral-800/60 border border-neutral-700/50 p-3 rounded-xl">
-                <!-- فرم ویرایش سریع -->
-                <form action="{{ route('genres.update', $genre) }}" method="POST" class="flex items-center gap-2 flex-1">
-                    @csrf
-                    @method('PUT')
-                    <input 
-                        type="text" 
-                        name="name" 
-                        value="{{ $genre->name }}" 
-                        class="bg-transparent border border-transparent hover:border-neutral-600 focus:border-green-500 rounded-lg px-2 py-1 text-sm text-neutral-200 focus:outline-none"
-                    >
-                    <button type="submit" class="text-xs text-neutral-400 hover:text-green-400 transition">
-                        ذخیره تغییرات
-                    </button>
-                </form>
+        @forelse($genres ?? [] as $genre)
+    <div class="flex items-center justify-between bg-neutral-800/60 border border-neutral-700/50 p-3 rounded-xl">
+        <!-- فرم ویرایش -->
+        <form action="{{ route('genres.update', $genre) }}" method="POST" class="flex items-center gap-2 flex-1">
+            @csrf
+            @method('PUT')
+            <input 
+                type="text" 
+                name="name" 
+                value="{{ $genre->name }}" 
+                class="bg-transparent border border-transparent hover:border-neutral-600 focus:border-green-500 rounded-lg px-2 py-1 text-sm text-neutral-200 focus:outline-none"
+            >
+            <button type="submit" class="text-xs text-neutral-400 hover:text-green-400 transition">
+                ذخیره
+            </button>
+        </form>
 
-                <!-- فرم حذف -->
-                <form action="{{ route('genres.destroy', $genre) }}" method="POST" onsubmit="return confirm('آیا از حذف این سبک مطمئن هستید؟')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="text-red-400 hover:text-red-300 text-xs px-2 py-1 transition">
-                        حذف
-                    </button>
-                </form>
-            </div>
-        @endforeach
+        <!-- فرم حذف -->
+        <form action="{{ route('genres.destroy', $genre) }}" method="POST" onsubmit="return confirm('آیا از حذف این سبک مطمئن هستید؟')">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="text-red-400 hover:text-red-300 text-xs px-2 py-1 transition">
+                حذف
+            </button>
+        </form>
+    </div>
+@empty
+    <p class="text-xs text-neutral-500">هنوز سبکی ثبت نشده است.</p>
+@endforelse
     </div>
 </div>
           <div class="panel-card">

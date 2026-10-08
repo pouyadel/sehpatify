@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GenreController;
+use App\Models\Genre;
 
 Route::get('/', function () {
     return view('welcome');
@@ -11,7 +12,10 @@ Route::get('/', function () {
 })->name('player');
 
 Route::get('/admin/studio', function () {
-    return view('admin.studio');
+    $genres = Genre::withCount('tracks')->get();
+    return view('admin.studio' ,[
+        'genres' => $genres
+    ]);
 })->name('admin.studio');
 
 Route::prefix('admin')->middleware(['auth'])->group(function () {
