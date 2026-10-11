@@ -10,6 +10,12 @@ use Illuminate\Support\Str;
 
 class GenreController extends Controller
 {
+    public function index()
+    {
+        $genres = Genre::latest()->get();
+        return response()->json($genres);
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -20,14 +26,17 @@ class GenreController extends Controller
         ]);
 
         $data = ['name' => trim($request->name)];
-
         if (Schema::hasColumn('genres', 'slug')) {
             $data['slug'] = Str::slug($request->name);
         }
 
-        Genre::create($data);
+        $genre = Genre::create($data);
 
-        return back()->with('success', 'سبک جدید با موفقیت اضافه شد.');
+        return response()->json([
+            'success' => true,
+            'message' => 'سبک جدید با موفقیت اضافه شد.',
+            'genre'   => $genre
+        ], 201);
     }
 
     public function update(Request $request, $id)
@@ -38,36 +47,36 @@ class GenreController extends Controller
             'name' => 'required|string|max:100|unique:genres,name,' . $genre->id,
         ], [
             'name.required' => 'نام سبک الزامی است.',
-            'name.unique' => 'این نام سبک قبلاً ثبت شده است.',
+            'name.unique' => 'این نام سبک از قبل وجود دارد.',
         ]);
 
         $data = ['name' => trim($request->name)];
-
         if (Schema::hasColumn('genres', 'slug')) {
             $data['slug'] = Str::slug($request->name);
         }
 
         $genre->update($data);
 
-        return back()->with('success', 'سبک مورد نظر با موفقیت ویرایش شد.');
+        return response()->json([
+            'success' => true,
+            'message' => 'سبک با موفقیت ویرایش شد.',
+            'genre'   => $genre
+        ]);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $genre = Genre::findOrFail($id);
 
-        // در صورت وجود ستون genre_id در جدول آهنگ‌ها، ارجاع آهنگ‌ها به این سبک null می‌شود
         if (Schema::hasColumn('tracks', 'genre_id')) {
             Track::where('genre_id', $genre->id)->update(['genre_id' => null]);
         }
 
-        // قطع رابطه چندبه‌چند با هنرمندان در صورت وجود
-        if (method_exists($genre, 'artists')) {
-            $genre->artists()->detach();
-        }
-
         $genre->delete();
 
-        return back()->with('success', 'سبک با موفقیت حذف شد.');
+        return response()->json([
+            'success' => true,
+            'message' => 'سبک با موفقیت حذف گردید.'
+        ]);
     }
 }

@@ -2,24 +2,57 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GenreController;
-use App\Models\Genre;
+use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\TrackController;
+use App\Http\Controllers\PlaylistController;
+use App\Http\Controllers\UserController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// جلوگیری از خطای ریدایرکت لاگین در لاراول
+Route::get('/login', function () {
+    return redirect('/admin/studio');
+})->name('login');
+
+// صفحه اصلی و استودیو
 Route::get('/', function () {
     return view('player');
-})->name('player');
+});
 
 Route::get('/admin/studio', function () {
-    $genres = Genre::withCount('tracks')->get();
-    return view('admin.studio' ,[
-        'genres' => $genres
-    ]);
+    return view('admin.studio');
 })->name('admin.studio');
 
-Route::prefix('admin')->middleware(['auth'])->group(function () {
-    Route::post('/admin/genres', [GenreController::class, 'store'])->name('genres.store');
-    Route::put('/admin/genres/{id}', [GenreController::class, 'update'])->name('genres.update');
-    Route::delete('/admin/genres/{id}', [GenreController::class, 'destroy'])->name('genres.destroy');
+// مسیرهای API و دیتای استودیو
+Route::prefix('api')->group(function () {
+    // سبک‌ها
+    Route::get('/genres', [GenreController::class, 'index']);
+    Route::post('/genres', [GenreController::class, 'store']);
+    Route::match(['put', 'post'], '/genres/{id}', [GenreController::class, 'update']);
+    Route::match(['delete', 'post'], '/genres/{id}', [GenreController::class, 'destroy']);
+
+    // آهنگ‌ها
+    Route::get('/tracks', [TrackController::class, 'index']);
+    Route::post('/admin/tracks', [TrackController::class, 'store']);
+    Route::post('/admin/tracks/{id}', [TrackController::class, 'update']);
+    Route::delete('/admin/tracks/{id}', [TrackController::class, 'destroy']);
+    Route::post('/admin/tracks/{id}/lyrics', [TrackController::class, 'saveLyrics']);
+
+    // پلی‌لیست‌ها
+    Route::get('/playlists', [PlaylistController::class, 'index']);
+    Route::post('/admin/playlists', [PlaylistController::class, 'store']);
+    Route::post('/admin/playlists/{id}', [PlaylistController::class, 'update']);
+    Route::delete('/admin/playlists/{id}', [PlaylistController::class, 'destroy']);
+
+    // هنرمندان
+    Route::get('/artists', [ArtistController::class, 'index']);
+    Route::post('/admin/artists', [ArtistController::class, 'store']);
+    Route::post('/admin/artists/{id}', [ArtistController::class, 'update']);
+    Route::delete('/admin/artists/{id}', [ArtistController::class, 'destroy']);
+
+    // کاربران و داشبورد
+    Route::get('/admin/users', [UserController::class, 'index']);
+    Route::post('/admin/users', [UserController::class, 'store']);
+    Route::post('/admin/users/{id}', [UserController::class, 'update']);
+    Route::post('/admin/users/{id}/toggle-status', [UserController::class, 'toggleStatus']);
+    Route::delete('/admin/users/{id}', [UserController::class, 'destroy']);
+    Route::get('/admin/dashboard-stats', [TrackController::class, 'dashboardStats']);
 });

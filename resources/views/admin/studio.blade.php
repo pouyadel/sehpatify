@@ -668,9 +668,6 @@
       color: var(--brand);
     }
 
-    /* =========================================================
-       طراحی مدرن، کارت‌مانند و هماهنگ جدول آهنگ‌ها و جداول ادمین
-       ========================================================= */
     .table-wrapper {
       width: 100%;
       overflow-x: auto;
@@ -1513,6 +1510,13 @@
           </a>
         </li>
         <li>
+          <a class="nav-link" id="nav-genres" onclick="switchAdminView('genres')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+            <span>سبک‌ها و ژانرها</span>
+            <span class="nav-badge-pill" id="badge-genres-count">۰</span>
+          </a>
+        </li>
+        <li>
           <a class="nav-link" id="nav-lyrics" onclick="switchAdminView('lyrics')">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
             <span>استودیو لیریکس</span>
@@ -1743,6 +1747,36 @@
           </div>
         </section>
 
+        <!-- VIEW 7: GENRES MANAGEMENT -->
+        <section class="admin-panel-view" id="view-genres">
+          <div class="section-title-row">
+            <div>
+              <h2 class="section-title">مدیریت سبک‌ها و ژانرهای موسیقی</h2>
+              <p style="font-size:12px; color:var(--muted); margin-top:2px;">افزودن سبک جدید، ویرایش عناوین یا حذف سبک‌های ثبت‌شده</p>
+            </div>
+            <button class="btn-quick-action" onclick="openAddGenreModal()">
+              <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+              <span>افزودن سبک جدید</span>
+            </button>
+          </div>
+
+          <div class="panel-card">
+            <div class="table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th style="width: 50px;">#</th>
+                    <th>نام سبک / ژانر</th>
+                    <th>شناسه نامک (Slug)</th>
+                    <th>عملیات</th>
+                  </tr>
+                </thead>
+                <tbody id="genres-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
         <!-- VIEW 3: LYRICS STUDIO -->
         <section class="admin-panel-view" id="view-lyrics">
           <div class="section-title-row">
@@ -1936,6 +1970,10 @@
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
         <span>آهنگ‌ها</span>
       </div>
+      <div class="mobile-bar-btn" id="mob-genres" onclick="switchAdminView('genres')">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+        <span>سبک‌ها</span>
+      </div>
       <div class="mobile-bar-btn" id="mob-lyrics" onclick="switchAdminView('lyrics')">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
         <span>لیریکس</span>
@@ -1944,13 +1982,9 @@
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
         <span>پلی‌لیست</span>
       </div>
-      <div class="mobile-bar-btn" id="mob-artists" onclick="switchAdminView('artists')">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-        <span>هنرمندان</span>
-      </div>
     </nav>
 
-    <!-- MODAL 1: ADD / EDIT TRACK -->
+    <!-- MODAL 1: ADD / EDIT TRACK (شامل انتخاب چند خواننده و فیت) -->
     <div class="modal-backdrop" id="modal-track">
       <div class="modal-container">
         <div class="modal-head">
@@ -1967,47 +2001,52 @@
         </div>
 
         <div class="form-row-2">
-  <div class="form-group">
-    <label class="form-label">عنوان ترانه *</label>
-    <input type="text" class="form-control" id="track-form-name" placeholder="مثال: شیدایی" />
-  </div>
-  <div class="form-group">
-    <label class="form-label">نام آلبوم</label>
-    <input type="text" class="form-control" id="track-form-album" placeholder="مثال: نسیم وصل" />
-  </div>
-</div>
-
-<!-- بخش انتخاب خوانندگان و فیت -->
-<div class="form-group" style="margin-top: 4px;">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
-    <label class="form-label" style="font-weight: 800; color: var(--brand); margin-bottom: 0;">
-      خوانندگان ترانه (امکان انتخاب همزمان چند خواننده برای فیت): *
-    </label>
-    <span style="font-size:11px; color:var(--muted);" id="track-selected-artists-count">۰ هنرمند انتخاب شده</span>
-  </div>
-
-        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">عنوان ترانه *</label>
+            <input type="text" class="form-control" id="track-form-name" placeholder="مثال: شیدایی" />
+          </div>
           <div class="form-group">
             <label class="form-label">نام آلبوم</label>
             <input type="text" class="form-control" id="track-form-album" placeholder="مثال: نسیم وصل" />
           </div>
-          <div class="form-group">
-            <label class="form-label">ژانر موسیقی</label>
-            <select class="form-control" id="track-form-genre">
-              <option>سنتی معاصر</option>
-              <option>تلفیقی و الکترونیک</option>
-              <option>آلترناتیو</option>
-              <option>پاپ مدرن</option>
-              <option>امبینت و ریلکس</option>
-            </select>
+        </div>
+
+        <!-- بخش انتخاب خوانندگان و فیت -->
+        <div class="form-group" style="margin-top: 4px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+            <label class="form-label" style="font-weight: 800; color: var(--brand); margin-bottom: 0;">
+              خوانندگان ترانه (امکان انتخاب همزمان چند خواننده برای فیت): *
+            </label>
+            <span style="font-size:11px; color:var(--muted);" id="track-selected-artists-count">۰ هنرمند انتخاب شده</span>
+          </div>
+
+          <!-- سرچ سریع بین هنرمندان -->
+          <div style="position: relative; margin-bottom: 8px;">
+            <input 
+              type="text" 
+              id="track-artists-search" 
+              class="form-control" 
+              style="padding: 7px 34px 7px 12px; font-size: 12px;" 
+              placeholder="جستجوی سریع خواننده..." 
+              oninput="filterTrackArtistsSelector(this.value)"
+            />
+            <span style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none;">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </span>
+          </div>
+
+          <div id="track-artists-selector" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; background: var(--surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; max-height: 145px; overflow-y: auto;">
           </div>
         </div>
 
         <div class="form-row-2">
           <div class="form-group">
-            <label class="form-label">مدت زمان (دقیقه:ثانیه)</label>
-            <input type="text" class="form-control" id="track-form-duration" placeholder="03:45" value="03:45" readonly />
-            <input type="hidden" id="track-form-duration-sec" value="225" />
+            <label class="form-label">سبک / ژانر موسیقی</label>
+            <select class="form-control" id="track-form-genre">
+              <!-- داینامیک توسط GENRES_DB پر می‌شود -->
+            </select>
           </div>
           <div class="form-group">
             <label class="form-label">کیفیت استودیو</label>
@@ -2020,13 +2059,19 @@
 
         <div class="form-row-2">
           <div class="form-group">
+            <label class="form-label">مدت زمان (دقیقه:ثانیه)</label>
+            <input type="text" class="form-control" id="track-form-duration" placeholder="03:45" value="03:45" readonly />
+            <input type="hidden" id="track-form-duration-sec" value="225" />
+          </div>
+          <div class="form-group">
             <label class="form-label">انتخاب فایل کاور تصویر</label>
             <input type="file" class="form-control" id="track-form-cover-file" accept="image/*" />
           </div>
-          <div class="form-group">
-            <label class="form-label">یا آدرس اینترنتی کاور (URL)</label>
-            <input type="text" class="form-control" id="track-form-cover" value="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80" />
-          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">یا آدرس اینترنتی کاور (URL)</label>
+          <input type="text" class="form-control" id="track-form-cover" value="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500&auto=format&fit=crop&q=80" />
         </div>
 
         <div class="modal-actions">
@@ -2036,7 +2081,7 @@
       </div>
     </div>
 
-    <!-- MODAL 2: ADD / EDIT PLAYLIST -->
+    <!-- MODAL 2: ADD / EDIT PLAYLIST (دارای سرچ‌بار اختصاصی) -->
     <div class="modal-backdrop" id="modal-playlist">
       <div class="modal-container">
         <div class="modal-head">
@@ -2068,34 +2113,57 @@
         </div>
 
         <div class="form-group" style="margin-top: 10px;">
-  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
-    <label class="form-label" style="font-weight: 800; color: var(--brand); margin-bottom: 0;">انتخاب آهنگ‌های این پلی‌لیست:</label>
-    <span style="font-size:11px; color:var(--muted);" id="playlist-selected-count">۰ قطعه انتخاب شده</span>
-  </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+            <label class="form-label" style="font-weight: 800; color: var(--brand); margin-bottom: 0;">انتخاب آهنگ‌های این پلی‌لیست:</label>
+            <span style="font-size:11px; color:var(--muted);" id="playlist-selected-count">۰ قطعه انتخاب شده</span>
+          </div>
 
-<!-- سرچ سریع بین هنرمندان -->
-  <div style="position: relative; margin-bottom: 8px;">
-    <input 
-      type="text" 
-      id="track-artists-search" 
-      class="form-control" 
-      style="padding: 7px 34px 7px 12px; font-size: 12px;" 
-      placeholder="جستجوی سریع خواننده..." 
-      oninput="filterTrackArtistsSelector(this.value)"
-    />
-    <span style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none;">
-      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-      </svg>
-    </span>
-  </div>
+          <!-- سرچ‌بار اختصاصی آهنگ‌های پلی‌لیست -->
+          <div style="position: relative; margin-bottom: 8px;">
+            <input 
+              type="text" 
+              id="playlist-tracks-search" 
+              class="form-control" 
+              style="padding: 8px 36px 8px 12px; font-size: 12px;" 
+              placeholder="جستجوی سریع عنوان ترانه، خواننده یا آلبوم..." 
+              oninput="filterPlaylistTracksSelector(this.value)"
+            />
+            <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none;">
+              <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </span>
+          </div>
 
-  <div id="track-artists-selector" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; background: var(--surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; max-height: 145px; overflow-y: auto;">
-  </div>
-</div>
+          <div id="playlist-tracks-selector" style="max-height: 220px; overflow-y: auto; background: var(--surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px; display: flex; flex-direction: column; gap: 6px;">
+          </div>
+        </div>
+
         <div class="modal-actions">
           <button class="btn-secondary" onclick="closeModal('modal-playlist')">انصراف</button>
           <button class="btn-quick-action" id="btn-save-playlist" onclick="savePlaylistFromModal()">ساخت پلی‌لیست</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 7: ADD / EDIT GENRE -->
+    <div class="modal-backdrop" id="modal-genre">
+      <div class="modal-container" style="max-width: 460px;">
+        <div class="modal-head">
+          <h3 class="modal-title" id="modal-genre-title">افزودن سبک موسیقی جدید</h3>
+          <button class="btn-table-action" onclick="closeModal('modal-genre')">✕</button>
+        </div>
+
+        <input type="hidden" id="genre-form-id" />
+
+        <div class="form-group">
+          <label class="form-label">نام سبک / ژانر موسیقی *</label>
+          <input type="text" class="form-control" id="genre-form-name" placeholder="مثال: Hip Hop, Rock, Pop, تلفیقی..." />
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-secondary" onclick="closeModal('modal-genre')">انصراف</button>
+          <button class="btn-quick-action" id="btn-save-genre" onclick="saveGenreFromModal()">ذخیره سبک</button>
         </div>
       </div>
     </div>
@@ -2243,184 +2311,7 @@
     <div class="toast-container" id="toast-shelf"></div>
 
   </div>
-<!-- بخش اختصاصی مدیریت سبک‌ها و ژانرها -->
-<div x-data="{ 
-    editModalOpen: false, 
-    editId: null, 
-    editName: '',
-    openEdit(id, name) {
-        this.editId = id;
-        this.editName = name;
-        this.editModalOpen = true;
-    }
-}" class="w-full my-8">
 
-    <!-- نمایش پیام‌های موفقیت یا خطا -->
-    @if(session('success'))
-        <div class="mb-4 flex items-center justify-between p-4 bg-emerald-950/80 border border-emerald-500/50 rounded-2xl text-emerald-300 text-sm">
-            <div class="flex items-center gap-2">
-                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                <span>{{ session('success') }}</span>
-            </div>
-            <button @click="$el.parentElement.remove()" class="text-emerald-400 hover:text-emerald-200">✕</button>
-        </div>
-    @endif
-
-    @if($errors->any())
-        <div class="mb-4 p-4 bg-rose-950/80 border border-rose-500/50 rounded-2xl text-rose-300 text-sm">
-            <ul class="list-disc list-inside space-y-1">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <!-- کارت اصلی مدیریت ژانرها -->
-    <div class="bg-[#121212] border border-neutral-800/80 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
-        
-        <!-- هدر بخش -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-800">
-            <div>
-                <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></span>
-                    <h2 class="text-xl font-bold text-white tracking-wide">مدیریت ژانرها و سبک‌های موسیقی</h2>
-                </div>
-                <p class="text-xs text-neutral-400 mt-1">سبک‌های موجود را ویرایش یا حذف کنید و سبک جدید برای دسته‌بندی ترک‌ها بسازید.</p>
-            </div>
-            <span class="text-xs font-semibold px-3 py-1.5 rounded-full bg-neutral-900 border border-neutral-700/60 text-neutral-300 w-fit">
-                تعداد کل: {{ count($genres ?? []) }} سبک
-            </span>
-        </div>
-
-        <!-- فرم افزودن ژانر جدید -->
-        <div class="mt-6 mb-8">
-            <form action="{{ route('genres.store') }}" method="POST" class="flex flex-col sm:flex-row gap-3">
-                @csrf
-                <div class="relative flex-1">
-                    <input 
-                        type="text" 
-                        name="name" 
-                        placeholder="نام ژانر جدید (مثال: Hip Hop، Deep House، Pop، Rock...)" 
-                        required
-                        class="w-full bg-[#181818] border border-neutral-700/80 focus:border-emerald-500 rounded-2xl px-5 py-3 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all duration-200"
-                    >
-                </div>
-                <button 
-                    type="submit" 
-                    class="bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-neutral-950 font-semibold px-7 py-3 rounded-2xl text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"
-                >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
-                    </svg>
-                    <span>افزودن سبک</span>
-                </button>
-            </form>
-        </div>
-
-        <!-- لیست سبک‌ها به صورت کارت‌های مدرن -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            @forelse($genres ?? [] as $genre)
-                <div class="group flex items-center justify-between bg-[#181818] hover:bg-[#202020] border border-neutral-800/80 hover:border-neutral-700 rounded-2xl p-4 transition-all duration-200">
-                    <div class="flex items-center gap-3 truncate">
-                        <div class="w-9 h-9 rounded-xl bg-neutral-800 flex items-center justify-center text-neutral-400 group-hover:text-emerald-400 group-hover:bg-neutral-900 transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
-                            </svg>
-                        </div>
-                        <span class="font-medium text-sm text-neutral-200 truncate">{{ $genre->name }}</span>
-                    </div>
-
-                    <!-- دکمه‌های عملیات (ویرایش و حذف) -->
-                    <div class="flex items-center gap-1.5 opacity-90 group-hover:opacity-100 transition-opacity">
-                        <!-- دکمه ویرایش (باز کردن مودال) -->
-                        <button 
-                            type="button"
-                            @click="openEdit({{ $genre->id }}, '{{ addslashes($genre->name) }}')"
-                            class="p-2 text-neutral-400 hover:text-emerald-400 hover:bg-neutral-800 rounded-xl transition"
-                            title="ویرایش"
-                        >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                            </svg>
-                        </button>
-
-                        <!-- دکمه حذف -->
-                        <form action="{{ route('genres.destroy', $genre->id) }}" method="POST" onsubmit="return confirm('آیا از حذف سبک «{{ $genre->name }}» مطمئن هستید؟')">
-                            @csrf
-                            @method('DELETE')
-                            <button 
-                                type="submit" 
-                                class="p-2 text-neutral-400 hover:text-rose-400 hover:bg-neutral-800 rounded-xl transition"
-                                title="حذف"
-                            >
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                </svg>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            @empty
-                <div class="col-span-full py-12 text-center text-neutral-500">
-                    <p class="text-sm">هنوز هیچ ژانری ثبت نشده است. از کادر بالا اولین سبک را اضافه کنید.</p>
-                </div>
-            @endforelse
-        </div>
-    </div>
-
-    <!-- مودال اختصاصی ویرایش سبک -->
-    <div 
-        x-show="editModalOpen" 
-        x-cloak 
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-        @keydown.escape.window="editModalOpen = false"
-    >
-        <div 
-            @click.away="editModalOpen = false" 
-            class="bg-[#181818] border border-neutral-700/80 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4"
-        >
-            <div class="flex items-center justify-between pb-2 border-b border-neutral-800">
-                <h3 class="text-base font-bold text-white">ویرایش نام سبک</h3>
-                <button @click="editModalOpen = false" class="text-neutral-400 hover:text-white text-lg">✕</button>
-            </div>
-
-            <form :action="'{{ url('/admin/genres') }}/' + editId" method="POST" class="space-y-4">
-                @csrf
-                @method('PUT')
-                <div>
-                    <label class="block text-xs font-medium text-neutral-400 mb-2">نام جدید سبک:</label>
-                    <input 
-                        type="text" 
-                        name="name" 
-                        x-model="editName" 
-                        required 
-                        class="w-full bg-[#121212] border border-neutral-700 rounded-2xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
-                    >
-                </div>
-
-                <div class="flex justify-end gap-2 pt-2">
-                    <button 
-                        type="button" 
-                        @click="editModalOpen = false" 
-                        class="px-5 py-2 text-xs font-semibold text-neutral-300 hover:bg-neutral-800 rounded-xl transition"
-                    >
-                        انصراف
-                    </button>
-                    <button 
-                        type="submit" 
-                        class="bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-semibold px-5 py-2 rounded-xl text-xs transition"
-                    >
-                        ذخیره تغییرات
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-</div>
   <script>
     localStorage.removeItem('sehpatify_playlists');
     localStorage.removeItem('sehpatify_artists');
@@ -2473,6 +2364,7 @@
       const titles = {
         dashboard: { title: "داشبورد و آمار تحلیلی", crumb: "سهپاتیفای استودیو / پنل مدیریت اصلی" },
         tracks: { title: "مدیریت آهنگ‌ها و فایل‌ها", crumb: "سهپاتیفای استودیو / مخزن صوت و متادیتا" },
+        genres: { title: "مدیریت سبک‌ها و ژانرها", crumb: "سهپاتیفای استودیو / دسته‌بندی و سبک‌های موسیقی" },
         lyrics: { title: "استودیو همگام‌ساز لیریکس", crumb: "سهپاتیفای استودیو / ویرایشگر زنده کارائوکه" },
         playlists: { title: "مدیریت پلی‌لیست‌ها", crumb: "سهپاتیفای استودیو / کالکشن‌های عمومی و VIP" },
         artists: { title: "مدیریت هنرمندان", crumb: "سهپاتیفای استودیو / آرتیست‌های تایید شده" },
@@ -2489,6 +2381,7 @@
       const viewport = document.getElementById('viewport');
       if (viewport) viewport.scrollTo({ top: 0, behavior: 'smooth' });
 
+      if (viewKey === 'genres') renderGenresAdmin();
       if (viewKey === 'lyrics') renderStudioView();
       if (viewKey === 'dashboard') drawStreamsChart(currentChartPeriod);
     }
@@ -2500,7 +2393,7 @@
       backdrop.classList.toggle('active');
     }
 
-    // ۱. واکشی خوانندگان و سبک‌ها
+    // ۱. مدیریت سبک‌ها و ژانرها
     async function fetchGenresAndArtists() {
       try {
         const [resGenres, resArtists] = await Promise.all([
@@ -2512,64 +2405,190 @@
       } catch (e) {
         console.warn('خطا در بارگذاری خوانندگان یا سبک‌ها');
       }
+      renderGenresAdmin();
       renderArtistsAdmin();
-      populateArtistDropdownInTrackModal();
+      populateGenreDropdownInTrackModal();
     }
 
-    // رندر کردن چک‌باکس‌های هنرمندان برای آهنگ
-function renderTrackArtistsSelector(selectedArtistIds = []) {
-  const container = document.getElementById('track-artists-selector');
-  if (!container) return;
+    function renderGenresAdmin() {
+      const tbody = document.getElementById('genres-table-body');
+      if (!tbody) return;
 
-  if (!ARTISTS_DB || ARTISTS_DB.length === 0) {
-    container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:15px; color:var(--muted); font-size:12px;">هنوز هنرمندی ثبت نشده است. ابتدا از تب هنرمندان اضافه کنید.</div>`;
-    updateSelectedArtistsCounter();
-    return;
-  }
+      const badge = document.getElementById('badge-genres-count');
+      if (badge) badge.textContent = GENRES_DB.length;
 
-  const selectedSet = new Set(selectedArtistIds.map(Number));
+      if (!GENRES_DB || GENRES_DB.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px; color:var(--muted);">هنوز هیچ سبکی ثبت نشده است. روی دکمه «افزودن سبک جدید» کلیک کنید.</td></tr>`;
+        return;
+      }
 
-  container.innerHTML = ARTISTS_DB.map(a => {
-    const isChecked = selectedSet.has(Number(a.id)) ? 'checked' : '';
-    return `
-      <label class="track-artist-item" data-name="${escapeHtml(a.name.toLowerCase())}" style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-radius:8px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); cursor:pointer; transition:all var(--transition-fast);">
-        <input type="checkbox" class="track-artist-checkbox" value="${a.id}" ${isChecked} onchange="updateSelectedArtistsCounter()" style="accent-color:var(--brand); width:15px; height:15px; cursor:pointer;" />
-        <img src="${a.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80'}" style="width:26px; height:26px; border-radius:50%; object-fit:cover; flex-shrink:0;" />
-        <span style="font-size:12px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text);">${escapeHtml(a.name)}</span>
-      </label>
-    `;
-  }).join('');
+      tbody.innerHTML = GENRES_DB.map((g, idx) => `
+        <tr>
+          <td><span style="color:var(--muted); font-weight:700;">${idx + 1}</span></td>
+          <td style="font-weight:700; color:#fff;">${escapeHtml(g.name)}</td>
+          <td><span style="font-family:monospace; color:var(--muted); font-size:12px;">${escapeHtml(g.slug || '-')}</span></td>
+          <td>
+            <div class="table-actions-cell">
+              <button class="btn-table-action" onclick="openEditGenreModal(${g.id})" title="ویرایش سبک">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+              </button>
+              <button class="btn-table-action danger" onclick="deleteGenre(${g.id})" title="حذف سبک">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
 
-  updateSelectedArtistsCounter();
-}
+    function openAddGenreModal() {
+      document.getElementById('modal-genre-title').textContent = "افزودن سبک موسیقی جدید";
+      document.getElementById('genre-form-id').value = "";
+      document.getElementById('genre-form-name').value = "";
+      document.getElementById('btn-save-genre').textContent = "افزودن سبک";
+      openModal('modal-genre');
+    }
 
-// شمارنده هنرمندان انتخاب شده (مشخص کردن حالت فیت)
-function updateSelectedArtistsCounter() {
-  const checked = document.querySelectorAll('.track-artist-checkbox:checked');
-  const countSpan = document.getElementById('track-selected-artists-count');
-  if (!countSpan) return;
+    function openEditGenreModal(genreId) {
+      const g = GENRES_DB.find(item => item.id === genreId);
+      if (!g) return;
+      document.getElementById('modal-genre-title').textContent = `ویرایش سبک: ${g.name}`;
+      document.getElementById('genre-form-id').value = g.id;
+      document.getElementById('genre-form-name').value = g.name;
+      document.getElementById('btn-save-genre').textContent = "ذخیره تغییرات";
+      openModal('modal-genre');
+    }
 
-  if (checked.length === 0) {
-    countSpan.textContent = '۰ هنرمند انتخاب شده';
-    countSpan.style.color = 'var(--muted)';
-  } else if (checked.length === 1) {
-    countSpan.textContent = '۱ خواننده (تک‌خوانی)';
-    countSpan.style.color = 'var(--brand)';
-  } else {
-    countSpan.textContent = `${checked.length} خواننده (فیت / همکاری)`;
-    countSpan.style.color = 'var(--accent-purple)';
-  }
-}
+    async function saveGenreFromModal() {
+      const genreId = document.getElementById('genre-form-id').value;
+      const name = document.getElementById('genre-form-name').value.trim();
 
-// فیلتر لحظه‌ای لیست خوانندگان
-function filterTrackArtistsSelector(query) {
-  const q = (query || '').toLowerCase().trim();
-  const items = document.querySelectorAll('#track-artists-selector .track-artist-item');
-  items.forEach(item => {
-    const name = item.getAttribute('data-name') || '';
-    item.style.display = (!q || name.includes(q)) ? 'flex' : 'none';
-  });
-}
+      if (!name) {
+        showToast('نام سبک را وارد کنید.');
+        return;
+      }
+
+      const saveBtn = document.getElementById('btn-save-genre');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'در حال ذخیره‌سازی...';
+
+      const endpoint = genreId ? `/api/genres/${genreId}` : '/api/genres';
+      const method = genreId ? 'PUT' : 'POST';
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: JSON.stringify({ name: name, _method: method })
+        });
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok) throw new Error(data?.message || 'خطا در ثبت سبک');
+
+        showToast(genreId ? 'سبک با موفقیت ویرایش شد ✓' : 'سبک جدید افزوده شد ✓');
+        closeModal('modal-genre');
+        await fetchGenresAndArtists();
+      } catch (err) {
+        showToast(err.message || 'خطا در برقراری ارتباط');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = genreId ? 'ذخیره تغییرات' : 'افزودن سبک';
+      }
+    }
+
+    async function deleteGenre(genreId) {
+      if (!confirm('آیا از حذف این سبک مطمئن هستید؟')) return;
+
+      try {
+        const res = await fetch(`/api/genres/${genreId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: JSON.stringify({ _method: 'DELETE' })
+        });
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok) throw new Error(data?.message || 'خطا در حذف سبک');
+
+        showToast('سبک با موفقیت حذف شد.');
+        await fetchGenresAndArtists();
+      } catch (err) {
+        showToast(err.message || 'خطا در حذف سبک');
+      }
+    }
+
+    function populateGenreDropdownInTrackModal(selectedGenre = null) {
+      const select = document.getElementById('track-form-genre');
+      if (!select) return;
+
+      if (!GENRES_DB || GENRES_DB.length === 0) {
+        select.innerHTML = `<option value="">عمومی / بدون سبک</option>`;
+        return;
+      }
+
+      select.innerHTML = GENRES_DB.map(g => 
+        `<option value="${escapeHtml(g.name)}" ${g.name === selectedGenre ? 'selected' : ''}>${escapeHtml(g.name)}</option>`
+      ).join('');
+    }
+
+    // ۲. فیت و انتخاب چند خواننده برای ترانه
+    function renderTrackArtistsSelector(selectedArtistIds = []) {
+      const container = document.getElementById('track-artists-selector');
+      if (!container) return;
+
+      if (!ARTISTS_DB || ARTISTS_DB.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:15px; color:var(--muted); font-size:12px;">هنوز هنرمندی ثبت نشده است. ابتدا از تب هنرمندان اضافه کنید.</div>`;
+        updateSelectedArtistsCounter();
+        return;
+      }
+
+      const selectedSet = new Set(selectedArtistIds.map(Number));
+
+      container.innerHTML = ARTISTS_DB.map(a => {
+        const isChecked = selectedSet.has(Number(a.id)) ? 'checked' : '';
+        return `
+          <label class="track-artist-item" data-name="${escapeHtml(a.name.toLowerCase())}" style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-radius:8px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); cursor:pointer;">
+            <input type="checkbox" class="track-artist-checkbox" value="${a.id}" ${isChecked} onchange="updateSelectedArtistsCounter()" style="accent-color:var(--brand); width:15px; height:15px; cursor:pointer;" />
+            <img src="${a.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80'}" style="width:26px; height:26px; border-radius:50%; object-fit:cover; flex-shrink:0;" />
+            <span style="font-size:12px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text);">${escapeHtml(a.name)}</span>
+          </label>
+        `;
+      }).join('');
+
+      updateSelectedArtistsCounter();
+    }
+
+    function updateSelectedArtistsCounter() {
+      const checked = document.querySelectorAll('.track-artist-checkbox:checked');
+      const countSpan = document.getElementById('track-selected-artists-count');
+      if (!countSpan) return;
+
+      if (checked.length === 0) {
+        countSpan.textContent = '۰ هنرمند انتخاب شده';
+        countSpan.style.color = 'var(--muted)';
+      } else if (checked.length === 1) {
+        countSpan.textContent = '۱ خواننده (تک‌خوانی)';
+        countSpan.style.color = 'var(--brand)';
+      } else {
+        countSpan.textContent = `${checked.length} خواننده (فیت / همکاری)`;
+        countSpan.style.color = 'var(--accent-purple)';
+      }
+    }
+
+    function filterTrackArtistsSelector(query) {
+      const q = (query || '').toLowerCase().trim();
+      document.querySelectorAll('#track-artists-selector .track-artist-item').forEach(item => {
+        const name = item.getAttribute('data-name') || '';
+        item.style.display = (!q || name.includes(q)) ? 'flex' : 'none';
+      });
+    }
 
     function renderArtistsAdmin() {
       const tbody = document.getElementById('artists-table-body');
@@ -2743,7 +2762,7 @@ function filterTrackArtistsSelector(query) {
       }
     }
 
-    // ۲. مدیریت کامل کاربران (MySQL Live + Search)
+    // ۳. مدیریت کاربران
     async function fetchUsersFromBackend() {
       try {
         const res = await fetch('/api/admin/users');
@@ -2966,7 +2985,7 @@ function filterTrackArtistsSelector(query) {
       }
     }
 
-    // ۳. مدیریت قطعات موسیقی (واکشی و رندر با استایل شکیل و یکپارچه)
+    // ۴. مدیریت قطعات موسیقی
     async function fetchTracksFromBackend() {
       try {
         const res = await fetch('/api/tracks');
@@ -3147,8 +3166,13 @@ function filterTrackArtistsSelector(query) {
       document.getElementById('track-form-cover-file').value = "";
       document.getElementById('track-form-duration').value = "03:45";
       document.getElementById('track-form-duration-sec').value = "225";
+      
+      const searchInput = document.getElementById('track-artists-search');
+      if (searchInput) searchInput.value = "";
+
       document.getElementById('btn-save-track').textContent = "آپلود و ذخیره در سرور";
-      populateArtistDropdownInTrackModal();
+      renderTrackArtistsSelector([]);
+      populateGenreDropdownInTrackModal();
       openModal('modal-track');
     }
 
@@ -3159,15 +3183,21 @@ function filterTrackArtistsSelector(query) {
       document.getElementById('track-form-id').value = t.id;
       document.getElementById('track-form-name').value = t.title || "";
       document.getElementById('track-form-album').value = t.album || "";
-      document.getElementById('track-form-genre').value = t.genre || "پاپ مدرن";
       document.getElementById('track-form-duration').value = t.duration || "03:45";
       document.getElementById('track-form-duration-sec').value = t.duration_sec || "225";
       document.getElementById('track-form-cover').value = t.cover || "";
       document.getElementById('track-form-hires').value = t.is_lossless ? "true" : "false";
       document.getElementById('track-form-audio-file').value = "";
       document.getElementById('track-form-cover-file').value = "";
+      
+      const searchInput = document.getElementById('track-artists-search');
+      if (searchInput) searchInput.value = "";
+
       document.getElementById('btn-save-track').textContent = "ذخیره تغییرات";
-      populateArtistDropdownInTrackModal(t.artist_id);
+
+      const selectedIds = t.artist_ids || (t.artists ? t.artists.map(a => a.id) : (t.artist_id ? [t.artist_id] : []));
+      renderTrackArtistsSelector(selectedIds);
+      populateGenreDropdownInTrackModal(t.genre);
       openModal('modal-track');
     }
 
@@ -3175,16 +3205,15 @@ function filterTrackArtistsSelector(query) {
       const trackId = document.getElementById('track-form-id').value;
       const audioInput = document.getElementById('track-form-audio-file');
       const title = document.getElementById('track-form-name').value.trim();
-      const artistSelect = document.getElementById('track-form-artist-id');
-      const artistId = artistSelect ? artistSelect.value : "";
+      const checkedArtists = document.querySelectorAll('.track-artist-checkbox:checked');
 
       if (!title) {
         showToast('عنوان ترانه الزامی است.');
         return;
       }
 
-      if (!artistId) {
-        showToast('لطفاً خواننده ترانه را از لیست انتخاب فرمایید.');
+      if (checkedArtists.length === 0) {
+        showToast('لطفاً حداقل یک خواننده برای ترانه انتخاب نمایید.');
         return;
       }
 
@@ -3199,12 +3228,16 @@ function filterTrackArtistsSelector(query) {
 
       const formData = new FormData();
       formData.append('title', title);
-      formData.append('artist_id', artistId);
       formData.append('album', document.getElementById('track-form-album').value.trim());
       formData.append('genre', document.getElementById('track-form-genre').value);
       formData.append('duration', document.getElementById('track-form-duration').value);
       formData.append('duration_sec', document.getElementById('track-form-duration-sec').value);
       formData.append('is_lossless', document.getElementById('track-form-hires').value);
+
+      checkedArtists.forEach(cb => {
+        formData.append('artist_ids[]', cb.value);
+      });
+      formData.append('artist_id', checkedArtists[0].value);
 
       if (audioInput.files && audioInput.files[0]) {
         formData.append('audio_file', audioInput.files[0]);
@@ -3270,6 +3303,7 @@ function filterTrackArtistsSelector(query) {
       }
     }
 
+    // ۵. استودیو لیریکس
     function renderStudioView() {
       const picker = document.getElementById('studio-track-picker');
       if (!picker) return;
@@ -3620,7 +3654,7 @@ function filterTrackArtistsSelector(query) {
     function openModal(id) { const m = document.getElementById(id); if (m) m.classList.add('open'); }
     function closeModal(id) { const m = document.getElementById(id); if (m) m.classList.remove('open'); }
 
-    // ۴. مدیریت پلی‌لیست‌ها
+    // ۶. مدیریت پلی‌لیست‌ها با سرچ‌بار
     async function fetchPlaylistsFromBackend() {
       try {
         const res = await fetch('/api/playlists');
@@ -3686,66 +3720,64 @@ function filterTrackArtistsSelector(query) {
       }).join('');
     }
 
-    // رندر کردن لیست آهنگ‌ها با قابلیت شناسایی متنی برای سرچ
-function renderTracksSelectorInsideModal(selectedTrackIds = []) {
-  const container = document.getElementById('playlist-tracks-selector');
-  if (!container) return;
+    function renderTracksSelectorInsideModal(selectedTrackIds = []) {
+      const container = document.getElementById('playlist-tracks-selector');
+      if (!container) return;
 
-  if (!TRACKS_DB || TRACKS_DB.length === 0) {
-    container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--muted); font-size:12px;">ابتدا از بخش «مدیریت آهنگ‌ها» قطعه صوتی آپلود کنید.</div>`;
-    return;
-  }
+      if (!TRACKS_DB || TRACKS_DB.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--muted); font-size:12px;">ابتدا از بخش «مدیریت آهنگ‌ها» قطعه صوتی آپلود کنید.</div>`;
+        return;
+      }
 
-  const selectedSet = new Set(selectedTrackIds.map(Number));
+      const selectedSet = new Set(selectedTrackIds.map(Number));
 
-  container.innerHTML = TRACKS_DB.map(t => {
-    const isChecked = selectedSet.has(Number(t.id)) ? 'checked' : '';
-    // متن جستجو بر اساس نام ترانه، خواننده و آلبوم
-    const searchTarget = `${t.title || ''} ${t.artist || ''} ${t.album || ''}`.toLowerCase();
+      container.innerHTML = TRACKS_DB.map(t => {
+        const isChecked = selectedSet.has(Number(t.id)) ? 'checked' : '';
+        const searchTarget = `${t.title || ''} ${t.artist || ''} ${t.album || ''}`.toLowerCase();
 
-    return `
-      <label class="playlist-track-item" data-search="${escapeHtml(searchTarget)}" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 8px; border-radius:6px; background:rgba(255,255,255,0.02); cursor:pointer; transition: background 0.15s;">
-        <div style="display:flex; align-items:center; gap:8px; min-width:0;">
-          <input type="checkbox" class="playlist-track-checkbox" value="${t.id}" ${isChecked} onchange="updateSelectedTracksCounter()" style="accent-color:var(--brand); width:16px; height:16px; cursor:pointer;" />
-          <img src="${t.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=80'}" style="width:30px; height:30px; border-radius:4px; object-fit:cover; flex-shrink:0;" />
-          <div style="min-width:0;">
-            <div style="font-size:12px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(t.title)}</div>
-            <div style="font-size:10px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(t.artist || 'نامشخص')}</div>
-          </div>
+        return `
+          <label class="playlist-track-item" data-search="${escapeHtml(searchTarget)}" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 8px; border-radius:6px; background:rgba(255,255,255,0.02); cursor:pointer;">
+            <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+              <input type="checkbox" class="playlist-track-checkbox" value="${t.id}" ${isChecked} onchange="updateSelectedTracksCounter()" style="accent-color:var(--brand); width:16px; height:16px; cursor:pointer;" />
+              <img src="${t.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=80'}" style="width:30px; height:30px; border-radius:4px; object-fit:cover;" />
+              <div style="min-width:0;">
+                <div style="font-size:12px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(t.title)}</div>
+                <div style="font-size:10px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(t.artist || 'نامشخص')}</div>
+              </div>
+            </div>
+            <span style="font-size:11px; color:var(--muted); direction:ltr; flex-shrink:0;">${t.duration || '03:30'}</span>
+          </label>
+        `;
+      }).join('') + `
+        <div id="playlist-tracks-no-result" style="display:none; text-align:center; padding:16px; color:var(--muted); font-size:12px;">
+          هیچ آهنگی مطابق با جستجوی شما یافت نشد.
         </div>
-        <span style="font-size:11px; color:var(--muted); direction:ltr; flex-shrink:0;">${t.duration || '03:30'}</span>
-      </label>
-    `;
-  }).join('') + `
-    <div id="playlist-tracks-no-result" style="display:none; text-align:center; padding:16px; color:var(--muted); font-size:12px;">
-      هیچ آهنگی مطابق با جستجوی شما یافت نشد.
-    </div>
-  `;
+      `;
 
-  updateSelectedTracksCounter();
-}
-
-// تابع جستجوی زنده در لیست آهنگ‌ها
-function filterPlaylistTracksSelector(query) {
-  const q = (query || '').toLowerCase().trim();
-  const items = document.querySelectorAll('#playlist-tracks-selector .playlist-track-item');
-  let visibleCount = 0;
-
-  items.forEach(item => {
-    const searchData = item.getAttribute('data-search') || '';
-    if (!q || searchData.includes(q)) {
-      item.style.display = 'flex';
-      visibleCount++;
-    } else {
-      item.style.display = 'none';
+      updateSelectedTracksCounter();
     }
-  });
 
-  const noResult = document.getElementById('playlist-tracks-no-result');
-  if (noResult) {
-    noResult.style.display = visibleCount === 0 ? 'block' : 'none';
-  }
-}
+    function filterPlaylistTracksSelector(query) {
+      const q = (query || '').toLowerCase().trim();
+      const items = document.querySelectorAll('#playlist-tracks-selector .playlist-track-item');
+      let visibleCount = 0;
+
+      items.forEach(item => {
+        const searchData = item.getAttribute('data-search') || '';
+        if (!q || searchData.includes(q)) {
+          item.style.display = 'flex';
+          visibleCount++;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+
+      const noResult = document.getElementById('playlist-tracks-no-result');
+      if (noResult) {
+        noResult.style.display = visibleCount === 0 ? 'block' : 'none';
+      }
+    }
+
     function updateSelectedTracksCounter() {
       const checkedCount = document.querySelectorAll('.playlist-track-checkbox:checked').length;
       const counter = document.getElementById('playlist-selected-count');
@@ -3759,6 +3791,10 @@ function filterPlaylistTracksSelector(query) {
       document.getElementById('playlist-form-desc').value = "";
       document.getElementById('playlist-form-cover').value = "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500";
       document.getElementById('playlist-form-cover-file').value = "";
+      
+      const searchInput = document.getElementById('playlist-tracks-search');
+      if (searchInput) searchInput.value = "";
+
       document.getElementById('btn-save-playlist').textContent = "ساخت پلی‌لیست";
       renderTracksSelectorInsideModal([]);
       openModal('modal-playlist');
@@ -3774,6 +3810,10 @@ function filterPlaylistTracksSelector(query) {
       document.getElementById('playlist-form-desc').value = p.desc || "";
       document.getElementById('playlist-form-cover').value = p.cover || "";
       document.getElementById('playlist-form-cover-file').value = "";
+
+      const searchInput = document.getElementById('playlist-tracks-search');
+      if (searchInput) searchInput.value = "";
+
       document.getElementById('btn-save-playlist').textContent = "ذخیره تغییرات";
 
       const selectedIds = p.tracks ? p.tracks.map(t => Number(t.id)) : [];
@@ -3864,6 +3904,7 @@ function filterPlaylistTracksSelector(query) {
       }
     }
 
+    // ۷. توابع Bulk و LRC و ابزارهای تحلیلی
     function openBulkLyricsModal() { openModal('modal-bulk-lyrics'); }
     function openLrcModal() { openModal('modal-lrc'); }
 
