@@ -19,7 +19,7 @@ Route::get('/admin/studio', function () {
 })->name('admin.studio');
 
 Route::prefix('admin')->middleware(['auth'])->group(function () {
-    Route::post('/genres', [GenreController::class, 'store'])->name('genres.store');
-    Route::put('/genres/{genre}', [GenreController::class, 'update'])->name('genres.update');
-    Route::delete('/genres/{genre}', [GenreController::class, 'destroy'])->name('genres.destroy');
+    Route::post('/admin/genres', [GenreController::class, 'store'])->name('genres.store');
+    Route::put('/admin/genres/{id}', [GenreController::class, 'update'])->name('genres.update');
+    Route::delete('/admin/genres/{id}', [GenreController::class, 'destroy'])->name('genres.destroy');
 });

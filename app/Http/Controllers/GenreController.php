@@ -3,44 +3,67 @@
 namespace App\Http\Controllers;
 
 use App\Models\Genre;
+use App\Models\Track;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class GenreController extends Controller
 {
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:100|unique:genres,name',
+        ], [
+            'name.required' => 'نام سبک الزامی است.',
+            'name.unique' => 'این سبک قبلاً ثبت شده است.',
         ]);
 
-        Genre::create([
-            'name' => $validated['name'],
-            'slug' => Str::slug($validated['name']),
-        ]);
+        $data = ['name' => trim($request->name)];
 
-        return back()->with('success', 'سبک جدید با موفقیت ایجاد شد.');
+        if (Schema::hasColumn('genres', 'slug')) {
+            $data['slug'] = Str::slug($request->name);
+        }
+
+        Genre::create($data);
+
+        return back()->with('success', 'سبک جدید با موفقیت اضافه شد.');
     }
 
-    public function update(Request $request, Genre $genre)
+    public function update(Request $request, $id)
     {
-        $validated = $request->validate([
+        $genre = Genre::findOrFail($id);
+
+        $request->validate([
             'name' => 'required|string|max:100|unique:genres,name,' . $genre->id,
+        ], [
+            'name.required' => 'نام سبک الزامی است.',
+            'name.unique' => 'این نام سبک قبلاً ثبت شده است.',
         ]);
 
-        $genre->update([
-            'name' => $validated['name'],
-            'slug' => Str::slug($validated['name']),
-        ]);
+        $data = ['name' => trim($request->name)];
 
-        return back()->with('success', 'سبک مورد نظر با موفقیت به‌روزرسانی شد.');
+        if (Schema::hasColumn('genres', 'slug')) {
+            $data['slug'] = Str::slug($request->name);
+        }
+
+        $genre->update($data);
+
+        return back()->with('success', 'سبک مورد نظر با موفقیت ویرایش شد.');
     }
 
-    public function destroy(Genre $genre)
+    public function destroy($id)
     {
-        // در صورت وجود آهنگ متصل، می‌توانید مانع حذف شوید یا رابطه را null کنید
-        if ($genre->tracks()->exists()) {
-            return back()->with('error', 'امکان حذف این سبک به دلیل وجود آهنگ‌های متصل وجود ندارد.');
+        $genre = Genre::findOrFail($id);
+
+        // در صورت وجود ستون genre_id در جدول آهنگ‌ها، ارجاع آهنگ‌ها به این سبک null می‌شود
+        if (Schema::hasColumn('tracks', 'genre_id')) {
+            Track::where('genre_id', $genre->id)->update(['genre_id' => null]);
+        }
+
+        // قطع رابطه چندبه‌چند با هنرمندان در صورت وجود
+        if (method_exists($genre, 'artists')) {
+            $genre->artists()->detach();
         }
 
         $genre->delete();

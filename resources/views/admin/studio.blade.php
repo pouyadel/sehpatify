@@ -1653,57 +1653,7 @@
               </div>
             </div>
           </div>
-          <div class="bg-neutral-900 text-white p-6 rounded-2xl border border-neutral-800">
-    <h2 class="text-xl font-bold mb-4">مدیریت سبک‌ها و ژانرها</h2>
 
-    <!-- فرم افزودن ژانر جدید -->
-    <form action="{{ route('genres.store') }}" method="POST" class="flex gap-3 mb-6">
-        @csrf
-        <input 
-            type="text" 
-            name="name" 
-            placeholder="نام سبک (مثلاً: Rock, Pop, Hip-Hop)" 
-            required
-            class="flex-1 bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-green-500"
-        >
-        <button type="submit" class="bg-green-500 hover:bg-green-600 text-black font-semibold px-5 py-2 rounded-xl text-sm transition">
-            افزودن
-        </button>
-    </form>
-
-    <!-- لیست ژانرها -->
-    <div class="space-y-3">
-        @forelse($genres ?? [] as $genre)
-    <div class="flex items-center justify-between bg-neutral-800/60 border border-neutral-700/50 p-3 rounded-xl">
-        <!-- فرم ویرایش -->
-        <form action="{{ route('genres.update', $genre) }}" method="POST" class="flex items-center gap-2 flex-1">
-            @csrf
-            @method('PUT')
-            <input 
-                type="text" 
-                name="name" 
-                value="{{ $genre->name }}" 
-                class="bg-transparent border border-transparent hover:border-neutral-600 focus:border-green-500 rounded-lg px-2 py-1 text-sm text-neutral-200 focus:outline-none"
-            >
-            <button type="submit" class="text-xs text-neutral-400 hover:text-green-400 transition">
-                ذخیره
-            </button>
-        </form>
-
-        <!-- فرم حذف -->
-        <form action="{{ route('genres.destroy', $genre) }}" method="POST" onsubmit="return confirm('آیا از حذف این سبک مطمئن هستید؟')">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="text-red-400 hover:text-red-300 text-xs px-2 py-1 transition">
-                حذف
-            </button>
-        </form>
-    </div>
-@empty
-    <p class="text-xs text-neutral-500">هنوز سبکی ثبت نشده است.</p>
-@endforelse
-    </div>
-</div>
           <div class="panel-card">
             <div class="section-title-row" style="margin-bottom:14px;">
               <div>
@@ -2269,7 +2219,184 @@
     <div class="toast-container" id="toast-shelf"></div>
 
   </div>
+<!-- بخش اختصاصی مدیریت سبک‌ها و ژانرها -->
+<div x-data="{ 
+    editModalOpen: false, 
+    editId: null, 
+    editName: '',
+    openEdit(id, name) {
+        this.editId = id;
+        this.editName = name;
+        this.editModalOpen = true;
+    }
+}" class="w-full my-8">
 
+    <!-- نمایش پیام‌های موفقیت یا خطا -->
+    @if(session('success'))
+        <div class="mb-4 flex items-center justify-between p-4 bg-emerald-950/80 border border-emerald-500/50 rounded-2xl text-emerald-300 text-sm">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                <span>{{ session('success') }}</span>
+            </div>
+            <button @click="$el.parentElement.remove()" class="text-emerald-400 hover:text-emerald-200">✕</button>
+        </div>
+    @endif
+
+    @if($errors->any())
+        <div class="mb-4 p-4 bg-rose-950/80 border border-rose-500/50 rounded-2xl text-rose-300 text-sm">
+            <ul class="list-disc list-inside space-y-1">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
+    <!-- کارت اصلی مدیریت ژانرها -->
+    <div class="bg-[#121212] border border-neutral-800/80 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
+        
+        <!-- هدر بخش -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-800">
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_#10b981]"></span>
+                    <h2 class="text-xl font-bold text-white tracking-wide">مدیریت ژانرها و سبک‌های موسیقی</h2>
+                </div>
+                <p class="text-xs text-neutral-400 mt-1">سبک‌های موجود را ویرایش یا حذف کنید و سبک جدید برای دسته‌بندی ترک‌ها بسازید.</p>
+            </div>
+            <span class="text-xs font-semibold px-3 py-1.5 rounded-full bg-neutral-900 border border-neutral-700/60 text-neutral-300 w-fit">
+                تعداد کل: {{ count($genres ?? []) }} سبک
+            </span>
+        </div>
+
+        <!-- فرم افزودن ژانر جدید -->
+        <div class="mt-6 mb-8">
+            <form action="{{ route('genres.store') }}" method="POST" class="flex flex-col sm:flex-row gap-3">
+                @csrf
+                <div class="relative flex-1">
+                    <input 
+                        type="text" 
+                        name="name" 
+                        placeholder="نام ژانر جدید (مثال: Hip Hop، Deep House، Pop، Rock...)" 
+                        required
+                        class="w-full bg-[#181818] border border-neutral-700/80 focus:border-emerald-500 rounded-2xl px-5 py-3 text-sm text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-all duration-200"
+                    >
+                </div>
+                <button 
+                    type="submit" 
+                    class="bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-neutral-950 font-semibold px-7 py-3 rounded-2xl text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    <span>افزودن سبک</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- لیست سبک‌ها به صورت کارت‌های مدرن -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            @forelse($genres ?? [] as $genre)
+                <div class="group flex items-center justify-between bg-[#181818] hover:bg-[#202020] border border-neutral-800/80 hover:border-neutral-700 rounded-2xl p-4 transition-all duration-200">
+                    <div class="flex items-center gap-3 truncate">
+                        <div class="w-9 h-9 rounded-xl bg-neutral-800 flex items-center justify-center text-neutral-400 group-hover:text-emerald-400 group-hover:bg-neutral-900 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                            </svg>
+                        </div>
+                        <span class="font-medium text-sm text-neutral-200 truncate">{{ $genre->name }}</span>
+                    </div>
+
+                    <!-- دکمه‌های عملیات (ویرایش و حذف) -->
+                    <div class="flex items-center gap-1.5 opacity-90 group-hover:opacity-100 transition-opacity">
+                        <!-- دکمه ویرایش (باز کردن مودال) -->
+                        <button 
+                            type="button"
+                            @click="openEdit({{ $genre->id }}, '{{ addslashes($genre->name) }}')"
+                            class="p-2 text-neutral-400 hover:text-emerald-400 hover:bg-neutral-800 rounded-xl transition"
+                            title="ویرایش"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                            </svg>
+                        </button>
+
+                        <!-- دکمه حذف -->
+                        <form action="{{ route('genres.destroy', $genre->id) }}" method="POST" onsubmit="return confirm('آیا از حذف سبک «{{ $genre->name }}» مطمئن هستید؟')">
+                            @csrf
+                            @method('DELETE')
+                            <button 
+                                type="submit" 
+                                class="p-2 text-neutral-400 hover:text-rose-400 hover:bg-neutral-800 rounded-xl transition"
+                                title="حذف"
+                            >
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-full py-12 text-center text-neutral-500">
+                    <p class="text-sm">هنوز هیچ ژانری ثبت نشده است. از کادر بالا اولین سبک را اضافه کنید.</p>
+                </div>
+            @endforelse
+        </div>
+    </div>
+
+    <!-- مودال اختصاصی ویرایش سبک -->
+    <div 
+        x-show="editModalOpen" 
+        x-cloak 
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+        @keydown.escape.window="editModalOpen = false"
+    >
+        <div 
+            @click.away="editModalOpen = false" 
+            class="bg-[#181818] border border-neutral-700/80 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4"
+        >
+            <div class="flex items-center justify-between pb-2 border-b border-neutral-800">
+                <h3 class="text-base font-bold text-white">ویرایش نام سبک</h3>
+                <button @click="editModalOpen = false" class="text-neutral-400 hover:text-white text-lg">✕</button>
+            </div>
+
+            <form :action="'{{ url('/admin/genres') }}/' + editId" method="POST" class="space-y-4">
+                @csrf
+                @method('PUT')
+                <div>
+                    <label class="block text-xs font-medium text-neutral-400 mb-2">نام جدید سبک:</label>
+                    <input 
+                        type="text" 
+                        name="name" 
+                        x-model="editName" 
+                        required 
+                        class="w-full bg-[#121212] border border-neutral-700 rounded-2xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
+                    >
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button 
+                        type="button" 
+                        @click="editModalOpen = false" 
+                        class="px-5 py-2 text-xs font-semibold text-neutral-300 hover:bg-neutral-800 rounded-xl transition"
+                    >
+                        انصراف
+                    </button>
+                    <button 
+                        type="submit" 
+                        class="bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-semibold px-5 py-2 rounded-xl text-xs transition"
+                    >
+                        ذخیره تغییرات
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
   <script>
     localStorage.removeItem('sehpatify_playlists');
     localStorage.removeItem('sehpatify_artists');
