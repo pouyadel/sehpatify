@@ -21,6 +21,6 @@ class Artist extends Model
     // رابطه یک-به-چند با آهنگ‌ها
     public function tracks()
     {
-        return $this->hasMany(Track::class, 'artist_id');
+        return $this->belongsToMany(Track::class, 'artist_track')->withTimestamps();
     }
 }

@@ -11,9 +11,28 @@ class TrackController extends Controller
     // دریافت لیست همه آهنگ‌ها
     public function index()
     {
-        $tracks = Track::latest()->get()->map(function ($track) {
-            $track->stream_url = $track->audio_path ? url("/api/tracks/{$track->id}/stream") : null;
-            return $track;
+        $tracks = Track::with('artists')->latest()->get()->map(function ($track) {
+            // نام تمام خواننده‌ها با علامت «&» ترکیب می‌شود تا در پلیر و جداول درست نمایش داده شود
+            $artistNames = $track->artists->isNotEmpty() 
+                ? $track->artists->pluck('name')->join(' & ') 
+                : ($track->artist?->name ?? 'نامشخص');
+
+            return [
+                'id' => $track->id,
+                'title' => $track->title,
+                'artist' => $artistNames,
+                'artist_ids' => $track->artists->pluck('id')->toArray(),
+                'artists' => $track->artists,
+                'album' => $track->album,
+                'genre' => $track->genre,
+                'duration' => $track->duration,
+                'duration_sec' => $track->duration_sec,
+                'is_lossless' => (bool)$track->is_lossless,
+                'cover' => $track->cover_url ?? $track->cover,
+                'stream_url' => $track->stream_url ?? $track->audio_url,
+                'lyrics' => $track->lyrics ?? [],
+                'streams' => $track->streams ?? 0,
+            ];
         });
 
         return response()->json($tracks);
@@ -23,7 +42,7 @@ public function store(Request $request)
     {
         $request->validate([
             'title'       => 'required|string|max:255',
-            'artist_id'   => 'required|exists:artists,id',
+            'artist_ids' => 'required|array|min:1',
             'album'       => 'nullable|string|max:255',
             'genre'       => 'nullable|string|max:100',
             'duration'    => 'nullable|string',
@@ -37,6 +56,9 @@ public function store(Request $request)
             'artist_id.required'  => 'لطفاً خواننده ترانه را انتخاب کنید.',
             'audio_file.required' => 'فایل صوتی ترانه را انتخاب نکرده‌اید.',
         ]);
+
+        $data = $request->except(['artist_ids', 'audio_file', 'cover_file']);
+        $data['artist_id'] = $request->artist_ids[0]; // خواننده اصلی اول برای سازگاری قبلی
 
         $audioPath = $request->file('audio_file')->store('tracks', 'public');
 
@@ -64,19 +86,20 @@ public function store(Request $request)
             'lyrics'       => [],
             'favorited'    => false,
         ]);
+        $track = Track::create($data);
+        $track->artists()->sync($request->artist_ids);
 
         $track->stream_url = url("/api/tracks/{$track->id}/stream");
 
-        return response()->json($track, 201);
-    }
+        return response()->json($track->load('artists'), 201);    }
 
     public function update(Request $request, $id)
     {
         $track = Track::findOrFail($id);
 
         $request->validate([
-            'title'       => 'required|string|max:255',
-            'artist_id'   => 'nullable|exists:artists,id',
+            'title' => 'required|string|max:255',            
+            'artist_ids' => 'required|array|min:1',
             'album'       => 'nullable|string|max:255',
             'genre'       => 'nullable|string|max:100',
             'duration'    => 'nullable|string',
@@ -86,7 +109,8 @@ public function store(Request $request)
             'cover_url'   => 'nullable|string',
             'is_lossless' => 'nullable',
         ]);
-
+        $data = $request->except(['artist_ids', 'audio_file', 'cover_file']);
+        $data['artist_id'] = $request->artist_ids[0];
         if ($request->hasFile('audio_file')) {
             if ($track->audio_path && Storage::disk('public')->exists($track->audio_path)) {
                 Storage::disk('public')->delete($track->audio_path);
@@ -120,7 +144,10 @@ public function store(Request $request)
         $track->save();
         $track->stream_url = $track->audio_path ? url("/api/tracks/{$track->id}/stream") : null;
 
-        return response()->json($track);
+        $track->update($data);
+        $track->artists()->sync($request->artist_ids);
+
+        return response()->json($track->load('artists'));
     }
 
     // استریم فایل صوتی با پشتیبانی از Seek

@@ -1967,17 +1967,24 @@
         </div>
 
         <div class="form-row-2">
-          <div class="form-group">
-            <label class="form-label">عنوان ترانه *</label>
-            <input type="text" class="form-control" id="track-form-name" placeholder="مثال: شیدایی" />
-          </div>
-          <div class="form-group">
-            <label class="form-label">خواننده / هنرمند ترانه *</label>
-            <select class="form-control" id="track-form-artist-id">
-              <option value="">-- انتخاب خواننده از لیست --</option>
-            </select>
-          </div>
-        </div>
+  <div class="form-group">
+    <label class="form-label">عنوان ترانه *</label>
+    <input type="text" class="form-control" id="track-form-name" placeholder="مثال: شیدایی" />
+  </div>
+  <div class="form-group">
+    <label class="form-label">نام آلبوم</label>
+    <input type="text" class="form-control" id="track-form-album" placeholder="مثال: نسیم وصل" />
+  </div>
+</div>
+
+<!-- بخش انتخاب خوانندگان و فیت -->
+<div class="form-group" style="margin-top: 4px;">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+    <label class="form-label" style="font-weight: 800; color: var(--brand); margin-bottom: 0;">
+      خوانندگان ترانه (امکان انتخاب همزمان چند خواننده برای فیت): *
+    </label>
+    <span style="font-size:11px; color:var(--muted);" id="track-selected-artists-count">۰ هنرمند انتخاب شده</span>
+  </div>
 
         <div class="form-row-2">
           <div class="form-group">
@@ -2066,24 +2073,24 @@
     <span style="font-size:11px; color:var(--muted);" id="playlist-selected-count">۰ قطعه انتخاب شده</span>
   </div>
 
-  <!-- فیلد جستجوی زنده آهنگ‌ها -->
+<!-- سرچ سریع بین هنرمندان -->
   <div style="position: relative; margin-bottom: 8px;">
     <input 
       type="text" 
-      id="playlist-tracks-search" 
+      id="track-artists-search" 
       class="form-control" 
-      style="padding: 8px 36px 8px 12px; font-size: 12px;" 
-      placeholder="جستجوی سریع عنوان ترانه، خواننده یا آلبوم..." 
-      oninput="filterPlaylistTracksSelector(this.value)"
+      style="padding: 7px 34px 7px 12px; font-size: 12px;" 
+      placeholder="جستجوی سریع خواننده..." 
+      oninput="filterTrackArtistsSelector(this.value)"
     />
-    <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none;">
-      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <span style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none;">
+      <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
       </svg>
     </span>
   </div>
 
-  <div id="playlist-tracks-selector" style="max-height: 220px; overflow-y: auto; background: var(--surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px; display: flex; flex-direction: column; gap: 6px;">
+  <div id="track-artists-selector" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 8px; background: var(--surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px; max-height: 145px; overflow-y: auto;">
   </div>
 </div>
         <div class="modal-actions">
@@ -2509,18 +2516,60 @@
       populateArtistDropdownInTrackModal();
     }
 
-    function populateArtistDropdownInTrackModal(selectedArtistId = null) {
-      const select = document.getElementById('track-form-artist-id');
-      if (!select) return;
+    // رندر کردن چک‌باکس‌های هنرمندان برای آهنگ
+function renderTrackArtistsSelector(selectedArtistIds = []) {
+  const container = document.getElementById('track-artists-selector');
+  if (!container) return;
 
-      if (!ARTISTS_DB || ARTISTS_DB.length === 0) {
-        select.innerHTML = `<option value="">هنوز هنرمندی ثبت نشده (ابتدا از تب هنرمندان اضافه کنید)</option>`;
-        return;
-      }
+  if (!ARTISTS_DB || ARTISTS_DB.length === 0) {
+    container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:15px; color:var(--muted); font-size:12px;">هنوز هنرمندی ثبت نشده است. ابتدا از تب هنرمندان اضافه کنید.</div>`;
+    updateSelectedArtistsCounter();
+    return;
+  }
 
-      select.innerHTML = `<option value="">-- انتخاب خواننده از لیست --</option>` +
-        ARTISTS_DB.map(a => `<option value="${a.id}" ${a.id == selectedArtistId ? 'selected' : ''}>${escapeHtml(a.name)}</option>`).join('');
-    }
+  const selectedSet = new Set(selectedArtistIds.map(Number));
+
+  container.innerHTML = ARTISTS_DB.map(a => {
+    const isChecked = selectedSet.has(Number(a.id)) ? 'checked' : '';
+    return `
+      <label class="track-artist-item" data-name="${escapeHtml(a.name.toLowerCase())}" style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-radius:8px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); cursor:pointer; transition:all var(--transition-fast);">
+        <input type="checkbox" class="track-artist-checkbox" value="${a.id}" ${isChecked} onchange="updateSelectedArtistsCounter()" style="accent-color:var(--brand); width:15px; height:15px; cursor:pointer;" />
+        <img src="${a.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80'}" style="width:26px; height:26px; border-radius:50%; object-fit:cover; flex-shrink:0;" />
+        <span style="font-size:12px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text);">${escapeHtml(a.name)}</span>
+      </label>
+    `;
+  }).join('');
+
+  updateSelectedArtistsCounter();
+}
+
+// شمارنده هنرمندان انتخاب شده (مشخص کردن حالت فیت)
+function updateSelectedArtistsCounter() {
+  const checked = document.querySelectorAll('.track-artist-checkbox:checked');
+  const countSpan = document.getElementById('track-selected-artists-count');
+  if (!countSpan) return;
+
+  if (checked.length === 0) {
+    countSpan.textContent = '۰ هنرمند انتخاب شده';
+    countSpan.style.color = 'var(--muted)';
+  } else if (checked.length === 1) {
+    countSpan.textContent = '۱ خواننده (تک‌خوانی)';
+    countSpan.style.color = 'var(--brand)';
+  } else {
+    countSpan.textContent = `${checked.length} خواننده (فیت / همکاری)`;
+    countSpan.style.color = 'var(--accent-purple)';
+  }
+}
+
+// فیلتر لحظه‌ای لیست خوانندگان
+function filterTrackArtistsSelector(query) {
+  const q = (query || '').toLowerCase().trim();
+  const items = document.querySelectorAll('#track-artists-selector .track-artist-item');
+  items.forEach(item => {
+    const name = item.getAttribute('data-name') || '';
+    item.style.display = (!q || name.includes(q)) ? 'flex' : 'none';
+  });
+}
 
     function renderArtistsAdmin() {
       const tbody = document.getElementById('artists-table-body');

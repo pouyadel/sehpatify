@@ -31,4 +31,15 @@ class Track extends Model
     {
         return $this->belongsTo(Artist::class, 'artist_id');
     }
+
+    public function artists()
+    {
+        return $this->belongsToMany(Artist::class, 'artist_track')->withTimestamps();
+    }
+
+    // خواننده اصلی (برای سازگاری با کدهای قبلی)
+    public function artist()
+    {
+        return $this->belongsTo(Artist::class, 'artist_id');
+    }
 }
