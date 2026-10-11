@@ -2061,14 +2061,31 @@
         </div>
 
         <div class="form-group" style="margin-top: 10px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
-            <label class="form-label" style="font-weight: 800; color: var(--brand);">انتخاب آهنگ‌های این پلی‌لیست:</label>
-            <span style="font-size:11px; color:var(--muted);" id="playlist-selected-count">۰ قطعه انتخاب شده</span>
-          </div>
-          <div id="playlist-tracks-selector" style="max-height: 200px; overflow-y: auto; background: var(--surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px; display: flex; flex-direction: column; gap: 6px;">
-          </div>
-        </div>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+    <label class="form-label" style="font-weight: 800; color: var(--brand); margin-bottom: 0;">انتخاب آهنگ‌های این پلی‌لیست:</label>
+    <span style="font-size:11px; color:var(--muted);" id="playlist-selected-count">۰ قطعه انتخاب شده</span>
+  </div>
 
+  <!-- فیلد جستجوی زنده آهنگ‌ها -->
+  <div style="position: relative; margin-bottom: 8px;">
+    <input 
+      type="text" 
+      id="playlist-tracks-search" 
+      class="form-control" 
+      style="padding: 8px 36px 8px 12px; font-size: 12px;" 
+      placeholder="جستجوی سریع عنوان ترانه، خواننده یا آلبوم..." 
+      oninput="filterPlaylistTracksSelector(this.value)"
+    />
+    <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none;">
+      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+    </span>
+  </div>
+
+  <div id="playlist-tracks-selector" style="max-height: 220px; overflow-y: auto; background: var(--surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px; display: flex; flex-direction: column; gap: 6px;">
+  </div>
+</div>
         <div class="modal-actions">
           <button class="btn-secondary" onclick="closeModal('modal-playlist')">انصراف</button>
           <button class="btn-quick-action" id="btn-save-playlist" onclick="savePlaylistFromModal()">ساخت پلی‌لیست</button>
@@ -3620,37 +3637,66 @@
       }).join('');
     }
 
-    function renderTracksSelectorInsideModal(selectedTrackIds = []) {
-      const container = document.getElementById('playlist-tracks-selector');
-      if (!container) return;
+    // رندر کردن لیست آهنگ‌ها با قابلیت شناسایی متنی برای سرچ
+function renderTracksSelectorInsideModal(selectedTrackIds = []) {
+  const container = document.getElementById('playlist-tracks-selector');
+  if (!container) return;
 
-      if (!TRACKS_DB || TRACKS_DB.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--muted); font-size:12px;">ابتدا از بخش «مدیریت آهنگ‌ها» قطعه صوتی آپلود کنید.</div>`;
-        return;
-      }
+  if (!TRACKS_DB || TRACKS_DB.length === 0) {
+    container.innerHTML = `<div style="text-align:center; padding:15px; color:var(--muted); font-size:12px;">ابتدا از بخش «مدیریت آهنگ‌ها» قطعه صوتی آپلود کنید.</div>`;
+    return;
+  }
 
-      const selectedSet = new Set(selectedTrackIds.map(Number));
+  const selectedSet = new Set(selectedTrackIds.map(Number));
 
-      container.innerHTML = TRACKS_DB.map(t => {
-        const isChecked = selectedSet.has(Number(t.id)) ? 'checked' : '';
-        return `
-          <label style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 8px; border-radius:6px; background:rgba(255,255,255,0.02); cursor:pointer;">
-            <div style="display:flex; align-items:center; gap:8px; min-width:0;">
-              <input type="checkbox" class="playlist-track-checkbox" value="${t.id}" ${isChecked} onchange="updateSelectedTracksCounter()" style="accent-color:var(--brand); width:16px; height:16px; cursor:pointer;" />
-              <img src="${t.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=80'}" style="width:30px; height:30px; border-radius:4px; object-fit:cover;" />
-              <div style="min-width:0;">
-                <div style="font-size:12px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(t.title)}</div>
-                <div style="font-size:10px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(t.artist)}</div>
-              </div>
-            </div>
-            <span style="font-size:11px; color:var(--muted); direction:ltr;">${t.duration || '03:30'}</span>
-          </label>
-        `;
-      }).join('');
+  container.innerHTML = TRACKS_DB.map(t => {
+    const isChecked = selectedSet.has(Number(t.id)) ? 'checked' : '';
+    // متن جستجو بر اساس نام ترانه، خواننده و آلبوم
+    const searchTarget = `${t.title || ''} ${t.artist || ''} ${t.album || ''}`.toLowerCase();
 
-      updateSelectedTracksCounter();
+    return `
+      <label class="playlist-track-item" data-search="${escapeHtml(searchTarget)}" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 8px; border-radius:6px; background:rgba(255,255,255,0.02); cursor:pointer; transition: background 0.15s;">
+        <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+          <input type="checkbox" class="playlist-track-checkbox" value="${t.id}" ${isChecked} onchange="updateSelectedTracksCounter()" style="accent-color:var(--brand); width:16px; height:16px; cursor:pointer;" />
+          <img src="${t.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=80'}" style="width:30px; height:30px; border-radius:4px; object-fit:cover; flex-shrink:0;" />
+          <div style="min-width:0;">
+            <div style="font-size:12px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(t.title)}</div>
+            <div style="font-size:10px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(t.artist || 'نامشخص')}</div>
+          </div>
+        </div>
+        <span style="font-size:11px; color:var(--muted); direction:ltr; flex-shrink:0;">${t.duration || '03:30'}</span>
+      </label>
+    `;
+  }).join('') + `
+    <div id="playlist-tracks-no-result" style="display:none; text-align:center; padding:16px; color:var(--muted); font-size:12px;">
+      هیچ آهنگی مطابق با جستجوی شما یافت نشد.
+    </div>
+  `;
+
+  updateSelectedTracksCounter();
+}
+
+// تابع جستجوی زنده در لیست آهنگ‌ها
+function filterPlaylistTracksSelector(query) {
+  const q = (query || '').toLowerCase().trim();
+  const items = document.querySelectorAll('#playlist-tracks-selector .playlist-track-item');
+  let visibleCount = 0;
+
+  items.forEach(item => {
+    const searchData = item.getAttribute('data-search') || '';
+    if (!q || searchData.includes(q)) {
+      item.style.display = 'flex';
+      visibleCount++;
+    } else {
+      item.style.display = 'none';
     }
+  });
 
+  const noResult = document.getElementById('playlist-tracks-no-result');
+  if (noResult) {
+    noResult.style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+}
     function updateSelectedTracksCounter() {
       const checkedCount = document.querySelectorAll('.playlist-track-checkbox:checked').length;
       const counter = document.getElementById('playlist-selected-count');
