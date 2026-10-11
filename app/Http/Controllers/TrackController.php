@@ -3,78 +3,97 @@
 namespace App\Http\Controllers;
 
 use App\Models\Track;
+use App\Models\Artist;
+use App\Models\Playlist;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class TrackController extends Controller
 {
-    // دریافت لیست همه آهنگ‌ها
+    // دریافت لیست همه آهنگ‌ها (همراه با خوانندگان فیت)
     public function index()
     {
         $tracks = Track::with('artists')->latest()->get()->map(function ($track) {
-            // نام تمام خواننده‌ها با علامت «&» ترکیب می‌شود تا در پلیر و جداول درست نمایش داده شود
-            $artistNames = $track->artists->isNotEmpty() 
-                ? $track->artists->pluck('name')->join(' & ') 
-                : ($track->artist?->name ?? 'نامشخص');
+            $track->stream_url = $track->audio_path ? url("/api/tracks/{$track->id}/stream") : null;
 
-            return [
-                'id' => $track->id,
-                'title' => $track->title,
-                'artist' => $artistNames,
-                'artist_ids' => $track->artists->pluck('id')->toArray(),
-                'artists' => $track->artists,
-                'album' => $track->album,
-                'genre' => $track->genre,
-                'duration' => $track->duration,
-                'duration_sec' => $track->duration_sec,
-                'is_lossless' => (bool)$track->is_lossless,
-                'cover' => $track->cover_url ?? $track->cover,
-                'stream_url' => $track->stream_url ?? $track->audio_url,
-                'lyrics' => $track->lyrics ?? [],
-                'streams' => $track->streams ?? 0,
-            ];
+            // استخراج خوانندگان فیت به صورت متن و آرایه آیدی‌ها
+            $artists = $track->artists;
+            if ($artists->isNotEmpty()) {
+                $track->artist = $artists->pluck('name')->join(' & ');
+                $track->artist_ids = $artists->pluck('id')->toArray();
+            } else {
+                $track->artist_ids = $track->artist_id ? [$track->artist_id] : [];
+            }
+
+            return $track;
         });
 
         return response()->json($tracks);
     }
 
-public function store(Request $request)
+    // ایجاد آهنگ جدید (پشتیبانی کامل از فیت و فایل صوتی)
+    public function store(Request $request)
     {
         $request->validate([
-            'title'       => 'required|string|max:255',
-            'artist_ids' => 'required|array|min:1',
-            'album'       => 'nullable|string|max:255',
-            'genre'       => 'nullable|string|max:100',
-            'duration'    => 'nullable|string',
-            'duration_sec'=> 'nullable|numeric',
-            'audio_file'  => 'required|file|max:102400',
-            'cover_file'  => 'nullable|image|max:10240',
-            'cover_url'   => 'nullable|string',
-            'is_lossless' => 'nullable',
+            'title'        => 'required|string|max:255',
+            'artist_id'    => 'nullable',
+            'artist_ids'   => 'nullable|array',
+            'album'        => 'nullable|string|max:255',
+            'genre'        => 'nullable|string|max:100',
+            'duration'     => 'nullable|string',
+            'duration_sec' => 'nullable|numeric',
+            'audio_file'   => 'required|file|max:102400',
+            'cover_file'   => 'nullable|image|max:10240',
+            'cover_url'    => 'nullable|string',
+            'is_lossless'  => 'nullable',
         ], [
             'title.required'      => 'عنوان ترانه الزامی است.',
-            'artist_id.required'  => 'لطفاً خواننده ترانه را انتخاب کنید.',
             'audio_file.required' => 'فایل صوتی ترانه را انتخاب نکرده‌اید.',
         ]);
 
-        $data = $request->except(['artist_ids', 'audio_file', 'cover_file']);
-        $data['artist_id'] = $request->artist_ids[0]; // خواننده اصلی اول برای سازگاری قبلی
+        // پشتیبانی همزمان از artist_ids (فیت) و artist_id تکی
+        $artistIds = $request->input('artist_ids', []);
+        if (empty($artistIds) && $request->filled('artist_id')) {
+            $artistIds = [$request->input('artist_id')];
+        }
 
+        if (empty($artistIds)) {
+            return response()->json([
+                'message' => 'لطفاً حداقل یک خواننده برای ترانه انتخاب فرمایید.',
+                'errors'  => ['artist_id' => ['انتخاب خواننده الزامی است.']]
+            ], 422);
+        }
+
+        // واکشی خوانندگان انتخاب‌شده
+        $artists = Artist::whereIn('id', $artistIds)->get();
+        if ($artists->isEmpty()) {
+            return response()->json([
+                'message' => 'خواننده انتخاب شده یافت نشد.',
+                'errors'  => ['artist_id' => ['خواننده نامعتبر است.']]
+            ], 422);
+        }
+
+        $artistNames = $artists->pluck('name')->join(' & ');
+        $primaryArtistId = $artists->first()->id;
+
+        // آپلود فایل صوتی
         $audioPath = $request->file('audio_file')->store('tracks', 'public');
 
+        // پردازش کاور
         $coverPath = $request->input('cover_url');
         if ($request->hasFile('cover_file')) {
             $coverPath = '/storage/' . $request->file('cover_file')->store('covers', 'public');
         }
 
-        $artist = \App\Models\Artist::findOrFail($request->input('artist_id'));
         $duration = $request->input('duration') ?: '03:30';
         $durationSec = (int) ($request->input('duration_sec') ?: 210);
 
+        // درج رکورد آهنگ در دیتابیس
         $track = Track::create([
             'title'        => $request->input('title'),
-            'artist'       => $artist->name,
-            'artist_id'    => $artist->id,
+            'artist'       => $artistNames,
+            'artist_id'    => $primaryArtistId,
             'album'        => $request->input('album') ?: $request->input('title'),
             'genre'        => $request->input('genre') ?: 'پاپ مدرن',
             'duration'     => $duration,
@@ -86,31 +105,39 @@ public function store(Request $request)
             'lyrics'       => [],
             'favorited'    => false,
         ]);
-        $track = Track::create($data);
-        $track->artists()->sync($request->artist_ids);
+
+        // ذخیره خوانندگان فیت در جدول واسط با زمان دقیق
+        $syncData = [];
+        foreach ($artists as $a) {
+            $syncData[$a->id] = ['created_at' => now(), 'updated_at' => now()];
+        }
+        $track->artists()->sync($syncData);
 
         $track->stream_url = url("/api/tracks/{$track->id}/stream");
+        $track->artist_ids = $artists->pluck('id')->toArray();
 
-        return response()->json($track->load('artists'), 201);    }
+        return response()->json($track, 201);
+    }
 
+    // ویرایش آهنگ موجود
     public function update(Request $request, $id)
     {
         $track = Track::findOrFail($id);
 
         $request->validate([
-            'title' => 'required|string|max:255',            
-            'artist_ids' => 'required|array|min:1',
-            'album'       => 'nullable|string|max:255',
-            'genre'       => 'nullable|string|max:100',
-            'duration'    => 'nullable|string',
-            'duration_sec'=> 'nullable|numeric',
-            'audio_file'  => 'nullable|file|max:102400',
-            'cover_file'  => 'nullable|image|max:10240',
-            'cover_url'   => 'nullable|string',
-            'is_lossless' => 'nullable',
+            'title'        => 'required|string|max:255',
+            'artist_id'    => 'nullable',
+            'artist_ids'   => 'nullable|array',
+            'album'        => 'nullable|string|max:255',
+            'genre'        => 'nullable|string|max:100',
+            'duration'     => 'nullable|string',
+            'duration_sec' => 'nullable|numeric',
+            'audio_file'   => 'nullable|file|max:102400',
+            'cover_file'   => 'nullable|image|max:10240',
+            'cover_url'    => 'nullable|string',
+            'is_lossless'  => 'nullable',
         ]);
-        $data = $request->except(['artist_ids', 'audio_file', 'cover_file']);
-        $data['artist_id'] = $request->artist_ids[0];
+
         if ($request->hasFile('audio_file')) {
             if ($track->audio_path && Storage::disk('public')->exists($track->audio_path)) {
                 Storage::disk('public')->delete($track->audio_path);
@@ -124,11 +151,23 @@ public function store(Request $request)
             $track->cover = $request->input('cover_url');
         }
 
-        if ($request->filled('artist_id')) {
-            $artist = \App\Models\Artist::find($request->input('artist_id'));
-            if ($artist) {
-                $track->artist_id = $artist->id;
-                $track->artist = $artist->name;
+        // همگام‌سازی خوانندگان در صورت ارسال
+        $artistIds = $request->input('artist_ids', []);
+        if (empty($artistIds) && $request->filled('artist_id')) {
+            $artistIds = [$request->input('artist_id')];
+        }
+
+        if (!empty($artistIds)) {
+            $artists = Artist::whereIn('id', $artistIds)->get();
+            if ($artists->isNotEmpty()) {
+                $track->artist_id = $artists->first()->id;
+                $track->artist = $artists->pluck('name')->join(' & ');
+
+                $syncData = [];
+                foreach ($artists as $a) {
+                    $syncData[$a->id] = ['created_at' => now(), 'updated_at' => now()];
+                }
+                $track->artists()->sync($syncData);
             }
         }
 
@@ -143,11 +182,9 @@ public function store(Request $request)
 
         $track->save();
         $track->stream_url = $track->audio_path ? url("/api/tracks/{$track->id}/stream") : null;
+        $track->artist_ids = $track->artists->pluck('id')->toArray();
 
-        $track->update($data);
-        $track->artists()->sync($request->artist_ids);
-
-        return response()->json($track->load('artists'));
+        return response()->json($track);
     }
 
     // استریم فایل صوتی با پشتیبانی از Seek
@@ -209,10 +246,13 @@ public function store(Request $request)
             Storage::disk('public')->delete($track->audio_path);
         }
 
+        // قطع رابطه با خوانندگان قبل از حذف
+        $track->artists()->detach();
         $track->delete();
 
         return response()->json(['message' => 'قطعه صوتی با موفقیت حذف شد']);
     }
+
     // آمار زنده داشبورد ادمین
     public function dashboardStats()
     {
@@ -224,9 +264,9 @@ public function store(Request $request)
             ->count();
 
         $totalStreams = (int) Track::sum('streams');
-        $totalArtists = \App\Models\Artist::count();
-        $totalPlaylists = \App\Models\Playlist::count();
-        $totalUsers = \App\Models\User::count();
+        $totalArtists = Artist::count();
+        $totalPlaylists = Playlist::count();
+        $totalUsers = User::count();
 
         $lyricsCoverage = $totalTracks > 0 ? round(($syncedLyrics / $totalTracks) * 100) : 0;
 
@@ -246,4 +286,3 @@ public function store(Request $request)
         ]);
     }
 }
-
