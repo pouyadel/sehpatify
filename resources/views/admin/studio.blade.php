@@ -668,6 +668,7 @@
       color: var(--brand);
     }
 
+    /* طراحی مدرن جدول استودیو */
     .table-wrapper {
       width: 100%;
       overflow-x: auto;
@@ -1984,7 +1985,7 @@
       </div>
     </nav>
 
-    <!-- MODAL 1: ADD / EDIT TRACK (شامل انتخاب چند خواننده و فیت) -->
+    <!-- MODAL 1: ADD / EDIT TRACK (شامل فیت و کلمات کلیدی مخفی) -->
     <div class="modal-backdrop" id="modal-track">
       <div class="modal-container">
         <div class="modal-head">
@@ -2003,11 +2004,11 @@
         <div class="form-row-2">
           <div class="form-group">
             <label class="form-label">عنوان ترانه *</label>
-            <input type="text" class="form-control" id="track-form-name" placeholder="مثال: شیدایی" />
+            <input type="text" class="form-control" id="track-form-name" placeholder="مثال: Pain" />
           </div>
           <div class="form-group">
             <label class="form-label">نام آلبوم</label>
-            <input type="text" class="form-control" id="track-form-album" placeholder="مثال: نسیم وصل" />
+            <input type="text" class="form-control" id="track-form-album" placeholder="مثال: A Night at the Opera" />
           </div>
         </div>
 
@@ -2041,12 +2042,17 @@
           </div>
         </div>
 
+        <!-- فیلد کلمات کلیدی مخفی ترانه (مترادف‌های فارسی و انگلیسی) -->
+        <div class="form-group">
+          <label class="form-label" style="font-weight: 800; color: var(--accent-blue);">کلمات کلیدی جستجو (مخفی - مترادف فارسی/انگلیسی):</label>
+          <input type="text" class="form-control" id="track-form-keywords" placeholder="مثال: درد، پین، کوئین، رپ، راک (جهت جستجوی فارسی)" />
+          <span style="font-size:11px; color:var(--muted); margin-top:2px;">این کلمات در ظاهر سایت مخفی هستند، اما کاربر با سرچ فارسی نیز این آهنگ را فوراً پیدا خواهد کرد.</span>
+        </div>
+
         <div class="form-row-2">
           <div class="form-group">
             <label class="form-label">سبک / ژانر موسیقی</label>
-            <select class="form-control" id="track-form-genre">
-              <!-- داینامیک توسط GENRES_DB پر می‌شود -->
-            </select>
+            <select class="form-control" id="track-form-genre"></select>
           </div>
           <div class="form-group">
             <label class="form-label">کیفیت استودیو</label>
@@ -2125,7 +2131,7 @@
               id="playlist-tracks-search" 
               class="form-control" 
               style="padding: 8px 36px 8px 12px; font-size: 12px;" 
-              placeholder="جستجوی سریع عنوان ترانه، خواننده یا آلبوم..." 
+              placeholder="جستجوی سریع عنوان ترانه، خواننده، آلبوم یا کلمه کلیدی..." 
               oninput="filterPlaylistTracksSelector(this.value)"
             />
             <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none;">
@@ -2168,7 +2174,7 @@
       </div>
     </div>
 
-    <!-- MODAL 3: ADD / EDIT ARTIST -->
+    <!-- MODAL 3: ADD / EDIT ARTIST (شامل کلمات کلیدی مخفی) -->
     <div class="modal-backdrop" id="modal-artist">
       <div class="modal-container">
         <div class="modal-head">
@@ -2181,7 +2187,7 @@
         <div class="form-row-2">
           <div class="form-group">
             <label class="form-label">نام هنرمند / گروه *</label>
-            <input type="text" class="form-control" id="artist-form-name" placeholder="مثال: همایون شجریان" />
+            <input type="text" class="form-control" id="artist-form-name" placeholder="مثال: Queen" />
           </div>
           <div class="form-group">
             <label class="form-label">تعداد شنوندگان تخمینی</label>
@@ -2192,6 +2198,13 @@
         <div class="form-group">
           <label class="form-label">بیوگرافی و معرفی هنرمند</label>
           <textarea class="form-control" id="artist-form-bio" rows="3" placeholder="توضیحات مختصر درباره پیشینه و فعالیت هنرمند..."></textarea>
+        </div>
+
+        <!-- فیلد کلمات کلیدی مخفی هنرمند -->
+        <div class="form-group">
+          <label class="form-label" style="font-weight: 800; color: var(--accent-blue);">کلمات کلیدی و نام‌های مستعار هنرمند (مخفی):</label>
+          <input type="text" class="form-control" id="artist-form-keywords" placeholder="مثال: کوئین، کویین، Queen (جهت جستجوی فارسی)" />
+          <span style="font-size:11px; color:var(--muted); margin-top:2px;">جهت تطبیق نام فارسی یا املای متفاوت خواننده در باکس جستجو.</span>
         </div>
 
         <div class="form-group">
@@ -2553,9 +2566,10 @@
 
       container.innerHTML = ARTISTS_DB.map(a => {
         const isChecked = selectedSet.has(Number(a.id)) ? 'checked' : '';
+        const searchKeywords = (a.search_keywords || '').toLowerCase();
         return `
-          <label class="track-artist-item" data-name="${escapeHtml(a.name.toLowerCase())}" style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-radius:8px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); cursor:pointer;">
-            <input type="checkbox" class="track-artist-checkbox" value="${a.id}" ${isChecked} onchange="updateSelectedArtistsCounter()" style="accent-color:var(--brand); width:15px; height:15px; cursor:pointer;" />
+          <label class="track-artist-item" data-name="${escapeHtml(a.name.toLowerCase())}" data-keywords="${escapeHtml(searchKeywords)}" style="display:flex; align-items:center; gap:8px; padding:6px 10px; border-radius:8px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04); cursor:pointer;">
+            <input type="checkbox" class="track-artist-checkbox" value="${a.id}" ${isChecked} onchange="updateSelectedArtistsCounter()" style="accent-color:var(--brand); width:15px; height:15px;" />
             <img src="${a.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80'}" style="width:26px; height:26px; border-radius:50%; object-fit:cover; flex-shrink:0;" />
             <span style="font-size:12px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text);">${escapeHtml(a.name)}</span>
           </label>
@@ -2586,7 +2600,8 @@
       const q = (query || '').toLowerCase().trim();
       document.querySelectorAll('#track-artists-selector .track-artist-item').forEach(item => {
         const name = item.getAttribute('data-name') || '';
-        item.style.display = (!q || name.includes(q)) ? 'flex' : 'none';
+        const keywords = item.getAttribute('data-keywords') || '';
+        item.style.display = (!q || name.includes(q) || keywords.includes(q)) ? 'flex' : 'none';
       });
     }
 
@@ -2654,6 +2669,7 @@
       document.getElementById('artist-form-id').value = "";
       document.getElementById('artist-form-name').value = "";
       document.getElementById('artist-form-bio').value = "";
+      document.getElementById('artist-form-keywords').value = "";
       document.getElementById('artist-form-listeners').value = "۵۰۰,۰۰۰";
       document.getElementById('artist-form-verified').value = "true";
       document.getElementById('artist-form-image-file').value = "";
@@ -2671,6 +2687,7 @@
       document.getElementById('artist-form-id').value = a.id;
       document.getElementById('artist-form-name').value = a.name;
       document.getElementById('artist-form-bio').value = a.bio || "";
+      document.getElementById('artist-form-keywords').value = a.search_keywords || "";
       document.getElementById('artist-form-listeners').value = a.listeners || "";
       document.getElementById('artist-form-verified').value = a.verified ? "true" : "false";
       document.getElementById('artist-form-image-file').value = "";
@@ -2698,6 +2715,7 @@
       const formData = new FormData();
       formData.append('name', name);
       formData.append('bio', document.getElementById('artist-form-bio').value.trim());
+      formData.append('search_keywords', document.getElementById('artist-form-keywords').value.trim());
       formData.append('listeners', document.getElementById('artist-form-listeners').value.trim());
       formData.append('verified', document.getElementById('artist-form-verified').value);
 
@@ -3131,7 +3149,8 @@
       const results = TRACKS_DB.filter(t =>
         (t.title && t.title.toLowerCase().includes(q)) ||
         (t.artist && t.artist.toLowerCase().includes(q)) ||
-        (t.album && t.album.toLowerCase().includes(q))
+        (t.album && t.album.toLowerCase().includes(q)) ||
+        (t.search_keywords && t.search_keywords.toLowerCase().includes(q))
       );
       renderTracksTable(results);
     }
@@ -3162,6 +3181,7 @@
       document.getElementById('track-form-id').value = "";
       document.getElementById('track-form-name').value = "";
       document.getElementById('track-form-album').value = "";
+      document.getElementById('track-form-keywords').value = "";
       document.getElementById('track-form-audio-file').value = "";
       document.getElementById('track-form-cover-file').value = "";
       document.getElementById('track-form-duration').value = "03:45";
@@ -3183,6 +3203,7 @@
       document.getElementById('track-form-id').value = t.id;
       document.getElementById('track-form-name').value = t.title || "";
       document.getElementById('track-form-album').value = t.album || "";
+      document.getElementById('track-form-keywords').value = t.search_keywords || "";
       document.getElementById('track-form-duration').value = t.duration || "03:45";
       document.getElementById('track-form-duration-sec').value = t.duration_sec || "225";
       document.getElementById('track-form-cover').value = t.cover || "";
@@ -3233,6 +3254,7 @@
       formData.append('duration', document.getElementById('track-form-duration').value);
       formData.append('duration_sec', document.getElementById('track-form-duration-sec').value);
       formData.append('is_lossless', document.getElementById('track-form-hires').value);
+      formData.append('search_keywords', document.getElementById('track-form-keywords').value.trim());
 
       checkedArtists.forEach(cb => {
         formData.append('artist_ids[]', cb.value);
@@ -3733,19 +3755,19 @@
 
       container.innerHTML = TRACKS_DB.map(t => {
         const isChecked = selectedSet.has(Number(t.id)) ? 'checked' : '';
-        const searchTarget = `${t.title || ''} ${t.artist || ''} ${t.album || ''}`.toLowerCase();
+        const searchTarget = `${t.title || ''} ${t.artist || ''} ${t.album || ''} ${t.search_keywords || ''}`.toLowerCase();
 
         return `
           <label class="playlist-track-item" data-search="${escapeHtml(searchTarget)}" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 8px; border-radius:6px; background:rgba(255,255,255,0.02); cursor:pointer;">
-            <div style="display:flex; align-items:center; gap:8px; min-width:0;">
-              <input type="checkbox" class="playlist-track-checkbox" value="${t.id}" ${isChecked} onchange="updateSelectedTracksCounter()" style="accent-color:var(--brand); width:16px; height:16px; cursor:pointer;" />
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" class="playlist-track-checkbox" value="${t.id}" ${isChecked} onchange="updateSelectedTracksCounter()" style="accent-color:var(--brand); width:16px; height:16px;" />
               <img src="${t.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=80'}" style="width:30px; height:30px; border-radius:4px; object-fit:cover;" />
-              <div style="min-width:0;">
-                <div style="font-size:12px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(t.title)}</div>
-                <div style="font-size:10px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(t.artist || 'نامشخص')}</div>
+              <div>
+                <div style="font-size:12px; font-weight:700;">${escapeHtml(t.title)}</div>
+                <div style="font-size:10px; color:var(--muted);">${escapeHtml(t.artist || 'نامشخص')}</div>
               </div>
             </div>
-            <span style="font-size:11px; color:var(--muted); direction:ltr; flex-shrink:0;">${t.duration || '03:30'}</span>
+            <span style="font-size:11px; color:var(--muted); direction:ltr;">${t.duration || '03:45'}</span>
           </label>
         `;
       }).join('') + `
@@ -3779,9 +3801,8 @@
     }
 
     function updateSelectedTracksCounter() {
-      const checkedCount = document.querySelectorAll('.playlist-track-checkbox:checked').length;
-      const counter = document.getElementById('playlist-selected-count');
-      if (counter) counter.textContent = `${checkedCount} قطعه انتخاب شده`;
+      const count = document.querySelectorAll('.playlist-track-checkbox:checked').length;
+      document.getElementById('playlist-selected-count').textContent = `${count} قطعه انتخاب شده`;
     }
 
     function openAddPlaylistModal() {

@@ -2568,8 +2568,11 @@
         ACTIVE_ARTIST = artist;
 
         if (!artist.tracks || artist.tracks.length === 0) {
-          artist.tracks = ALL_TRACKS.filter(t => String(t.artist_id) === String(artist.id) || (t.artist && t.artist.trim().toLowerCase() === artist.name.trim().toLowerCase()));
-        }
+artist.tracks = ALL_TRACKS.filter(t => 
+  String(t.artist_id) === String(artist.id) || 
+  (t.artist_ids && t.artist_ids.map(String).includes(String(artist.id))) || 
+  (t.artist && t.artist.trim().toLowerCase().includes(artist.name.trim().toLowerCase()))
+);        }
 
         document.getElementById('artist-page-name').textContent = artist.name;
         document.getElementById('artist-page-img').src = artist.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500';
@@ -3135,15 +3138,19 @@
       const container = document.getElementById('search-results-container');
       if (!container) return;
 
+      // جستجو در عنوان، خواننده، آلبوم و کلمات کلیدی مخفی فارسی/انگلیسی
       const filteredTracks = ALL_TRACKS.filter(t => 
         (t.title && t.title.toLowerCase().includes(q)) || 
         (t.artist && t.artist.toLowerCase().includes(q)) ||
-        (t.album && t.album.toLowerCase().includes(q))
+        (t.album && t.album.toLowerCase().includes(q)) ||
+        (t.search_keywords && t.search_keywords.toLowerCase().includes(q))
       );
 
+      // جستجو در نام، سبک‌ها و کلمات کلیدی مخفی هنرمندان
       const filteredArtists = ARTISTS_DB.filter(a => 
         (a.name && a.name.toLowerCase().includes(q)) || 
-        (a.genre_names && a.genre_names.toLowerCase().includes(q))
+        (a.genre_names && a.genre_names.toLowerCase().includes(q)) ||
+        (a.search_keywords && a.search_keywords.toLowerCase().includes(q))
       );
 
       const filteredPlaylists = [...PLAYLISTS_DB, ...USER_CUSTOM_PLAYLISTS].filter(p => 

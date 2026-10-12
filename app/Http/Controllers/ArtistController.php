@@ -49,13 +49,14 @@ class ArtistController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'        => 'required|string|max:255',
-            'bio'         => 'nullable|string',
-            'listeners'   => 'nullable|string',
-            'verified'    => 'nullable',
-            'image_file'  => 'nullable|image|max:10240',
-            'image_url'   => 'nullable|string',
-            'genre_ids'   => 'nullable|array',
+            'name'            => 'required|string|max:255',
+            'bio'             => 'nullable|string',
+            'listeners'       => 'nullable|string',
+            'verified'        => 'nullable',
+            'search_keywords' => 'nullable|string',
+            'image_file'      => 'nullable|image|max:10240',
+            'image_url'       => 'nullable|string',
+            'genre_ids'       => 'nullable|array',
         ], [
             'name.required' => 'نام هنرمند الزامی است.',
         ]);
@@ -66,12 +67,13 @@ class ArtistController extends Controller
         }
 
         $artist = Artist::create([
-            'name'      => $request->input('name'),
-            'slug'      => Str::slug($request->input('name')) ?: (string) time(),
-            'bio'       => $request->input('bio'),
-            'listeners' => $request->input('listeners') ?: '۰',
-            'verified'  => filter_var($request->input('verified'), FILTER_VALIDATE_BOOLEAN),
-            'image'     => $imagePath ?: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500',
+            'name'            => $request->input('name'),
+            'slug'            => Str::slug($request->input('name')) ?: (string) time(),
+            'bio'             => $request->input('bio'),
+            'listeners'       => $request->input('listeners') ?: '۰',
+            'verified'        => filter_var($request->input('verified'), FILTER_VALIDATE_BOOLEAN),
+            'image'           => $imagePath ?: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500',
+            'search_keywords' => $request->input('search_keywords'),
         ]);
 
         if ($request->has('genre_ids') && is_array($request->genre_ids)) {
@@ -86,13 +88,14 @@ class ArtistController extends Controller
         $artist = Artist::findOrFail($id);
 
         $request->validate([
-            'name'        => 'required|string|max:255',
-            'bio'         => 'nullable|string',
-            'listeners'   => 'nullable|string',
-            'verified'    => 'nullable',
-            'image_file'  => 'nullable|image|max:10240',
-            'image_url'   => 'nullable|string',
-            'genre_ids'   => 'nullable|array',
+            'name'            => 'required|string|max:255',
+            'bio'             => 'nullable|string',
+            'listeners'       => 'nullable|string',
+            'verified'        => 'nullable',
+            'search_keywords' => 'nullable|string',
+            'image_file'      => 'nullable|image|max:10240',
+            'image_url'       => 'nullable|string',
+            'genre_ids'       => 'nullable|array',
         ]);
 
         if ($request->hasFile('image_file')) {
@@ -108,6 +111,7 @@ class ArtistController extends Controller
         $artist->bio = $request->input('bio');
         $artist->listeners = $request->input('listeners') ?: $artist->listeners;
         $artist->verified = filter_var($request->input('verified'), FILTER_VALIDATE_BOOLEAN);
+        $artist->search_keywords = $request->input('search_keywords');
         $artist->save();
 
         $genreIds = $request->input('genre_ids', []);

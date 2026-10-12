@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class TrackController extends Controller
 {
-    // دریافت لیست همه آهنگ‌ها (همراه با خوانندگان فیت)
+    // دریافت لیست همه آهنگ‌ها (همراه با خوانندگان فیت و کلمات کلیدی مخفی)
     public function index()
     {
         $tracks = Track::with('artists')->latest()->get()->map(function ($track) {
@@ -22,6 +22,10 @@ class TrackController extends Controller
             if ($artists->isNotEmpty()) {
                 $track->artist = $artists->pluck('name')->join(' & ');
                 $track->artist_ids = $artists->pluck('id')->toArray();
+
+                // ترکیب کلمات کلیدی آهنگ با کلمات کلیدی خواننده‌ها جهت جستجوی هوشمند
+                $artistKeywords = $artists->pluck('search_keywords')->filter()->join(' ');
+                $track->search_keywords = trim(($track->search_keywords ?? '') . ' ' . $artistKeywords);
             } else {
                 $track->artist_ids = $track->artist_id ? [$track->artist_id] : [];
             }
@@ -32,21 +36,22 @@ class TrackController extends Controller
         return response()->json($tracks);
     }
 
-    // ایجاد آهنگ جدید (پشتیبانی کامل از فیت و فایل صوتی)
+    // ایجاد آهنگ جدید (پشتیبانی کامل از فیت، فایل صوتی و کلمات کلیدی مخفی)
     public function store(Request $request)
     {
         $request->validate([
-            'title'        => 'required|string|max:255',
-            'artist_id'    => 'nullable',
-            'artist_ids'   => 'nullable|array',
-            'album'        => 'nullable|string|max:255',
-            'genre'        => 'nullable|string|max:100',
-            'duration'     => 'nullable|string',
-            'duration_sec' => 'nullable|numeric',
-            'audio_file'   => 'required|file|max:102400',
-            'cover_file'   => 'nullable|image|max:10240',
-            'cover_url'    => 'nullable|string',
-            'is_lossless'  => 'nullable',
+            'title'           => 'required|string|max:255',
+            'artist_id'       => 'nullable',
+            'artist_ids'      => 'nullable|array',
+            'album'           => 'nullable|string|max:255',
+            'genre'           => 'nullable|string|max:100',
+            'duration'        => 'nullable|string',
+            'duration_sec'    => 'nullable|numeric',
+            'search_keywords' => 'nullable|string',
+            'audio_file'      => 'required|file|max:102400',
+            'cover_file'      => 'nullable|image|max:10240',
+            'cover_url'       => 'nullable|string',
+            'is_lossless'     => 'nullable',
         ], [
             'title.required'      => 'عنوان ترانه الزامی است.',
             'audio_file.required' => 'فایل صوتی ترانه را انتخاب نکرده‌اید.',
@@ -91,19 +96,20 @@ class TrackController extends Controller
 
         // درج رکورد آهنگ در دیتابیس
         $track = Track::create([
-            'title'        => $request->input('title'),
-            'artist'       => $artistNames,
-            'artist_id'    => $primaryArtistId,
-            'album'        => $request->input('album') ?: $request->input('title'),
-            'genre'        => $request->input('genre') ?: 'پاپ مدرن',
-            'duration'     => $duration,
-            'duration_sec' => $durationSec,
-            'cover'        => $coverPath ?: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500',
-            'audio_path'   => $audioPath,
-            'is_lossless'  => filter_var($request->input('is_lossless'), FILTER_VALIDATE_BOOLEAN),
-            'streams'      => 0,
-            'lyrics'       => [],
-            'favorited'    => false,
+            'title'           => $request->input('title'),
+            'artist'          => $artistNames,
+            'artist_id'       => $primaryArtistId,
+            'album'           => $request->input('album') ?: $request->input('title'),
+            'genre'           => $request->input('genre') ?: 'پاپ مدرن',
+            'duration'        => $duration,
+            'duration_sec'    => $durationSec,
+            'search_keywords' => $request->input('search_keywords'),
+            'cover'           => $coverPath ?: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=500',
+            'audio_path'      => $audioPath,
+            'is_lossless'     => filter_var($request->input('is_lossless'), FILTER_VALIDATE_BOOLEAN),
+            'streams'         => 0,
+            'lyrics'          => [],
+            'favorited'       => false,
         ]);
 
         // ذخیره خوانندگان فیت در جدول واسط با زمان دقیق
@@ -125,17 +131,18 @@ class TrackController extends Controller
         $track = Track::findOrFail($id);
 
         $request->validate([
-            'title'        => 'required|string|max:255',
-            'artist_id'    => 'nullable',
-            'artist_ids'   => 'nullable|array',
-            'album'        => 'nullable|string|max:255',
-            'genre'        => 'nullable|string|max:100',
-            'duration'     => 'nullable|string',
-            'duration_sec' => 'nullable|numeric',
-            'audio_file'   => 'nullable|file|max:102400',
-            'cover_file'   => 'nullable|image|max:10240',
-            'cover_url'    => 'nullable|string',
-            'is_lossless'  => 'nullable',
+            'title'           => 'required|string|max:255',
+            'artist_id'       => 'nullable',
+            'artist_ids'      => 'nullable|array',
+            'album'           => 'nullable|string|max:255',
+            'genre'           => 'nullable|string|max:100',
+            'duration'        => 'nullable|string',
+            'duration_sec'    => 'nullable|numeric',
+            'search_keywords' => 'nullable|string',
+            'audio_file'      => 'nullable|file|max:102400',
+            'cover_file'      => 'nullable|image|max:10240',
+            'cover_url'       => 'nullable|string',
+            'is_lossless'     => 'nullable',
         ]);
 
         if ($request->hasFile('audio_file')) {
@@ -174,6 +181,8 @@ class TrackController extends Controller
         $track->title = $request->input('title');
         $track->album = $request->input('album') ?: $request->input('title');
         $track->genre = $request->input('genre') ?: $track->genre;
+        $track->search_keywords = $request->input('search_keywords');
+
         if ($request->filled('duration')) $track->duration = $request->input('duration');
         if ($request->filled('duration_sec')) $track->duration_sec = (int) $request->input('duration_sec');
         if ($request->has('is_lossless')) {
