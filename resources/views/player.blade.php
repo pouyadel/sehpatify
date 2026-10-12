@@ -503,7 +503,14 @@
       background: rgba(255, 255, 255, 0.09);
       border-color: var(--border-light);
     }
-
+    /* استایل دکمه فعال فیلترهای جستجو */
+    .search-tags-row button.active {
+      background: var(--brand) !important;
+      color: #052410 !important;
+      font-weight: 800 !important;
+      border-color: var(--brand) !important;
+      box-shadow: 0 0 14px var(--brand-glow) !important;
+    }
     .grid-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
@@ -1758,6 +1765,13 @@
           </a>
         </li>
         <li>
+          <a class="nav-link" id="nav-albums" onclick="switchView('albums')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
+            <span>آلبوم‌ها</span>
+            <span class="badge-count" id="nav-albums-count">۰</span>
+          </a>
+        </li>
+        <li>
           <a class="nav-link" id="nav-search" onclick="switchView('search')">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             <span>جستجوی پیشرفته</span>
@@ -1855,7 +1869,12 @@
               <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
             </button>
           </div>
-
+          <!-- آلبوم‌های برگزیده -->
+          <div class="section-header">
+            <h2 class="section-title">آلبوم‌های برگزیده و رسمی</h2>
+            <a class="section-see-all" onclick="switchView('albums')">مشاهده همه</a>
+          </div>
+          <div class="grid-container mobile-carousel-row" id="home-albums-grid"></div>
           <!-- هنرمندان منتخب -->
           <div class="section-header">
             <h2 class="section-title">هنرمندان منتخب و جریان‌ساز</h2>
@@ -1900,17 +1919,68 @@
           </div>
           <div class="grid-container" id="artists-page-grid"></div>
         </section>
+        <!-- VIEW: ALL ALBUMS -->
+        <section class="view-panel" id="view-albums">
+          <div class="section-header">
+            <div>
+              <h2 class="section-title">تمام آلبوم‌های موسیقی</h2>
+              <p style="font-size:12px; color:var(--muted); margin-top:4px;">آرشیو رسمی آلبوم‌های منتشر شده هنرمندان</p>
+            </div>
+            <button class="btn-secondary" onclick="switchView('home')" style="padding:8px 16px; font-size:12px;">بازگشت به خانه</button>
+          </div>
+          <div class="grid-container" id="albums-page-grid"></div>
+        </section>
 
+        <!-- VIEW: ALBUM DETAIL -->
+        <section class="view-panel" id="view-album">
+          <div class="artist-header-box playlist-header-box">
+            <div class="playlist-cover-lg">
+              <img id="album-page-img" src="" alt="کاور آلبوم" />
+            </div>
+            <div class="artist-info-col">
+              <span class="artist-verified-tag">
+                <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                آلبوم رسمی سهپاتیفای
+              </span>
+              <h1 class="artist-name-title" id="album-page-name">عنوان آلبوم</h1>
+              <p class="artist-header-desc" id="album-page-desc"></p>
+              <div class="artist-meta-txt">
+                <span id="album-page-artist" style="color:var(--brand); font-weight:700;">نام هنرمند</span>
+                <span class="meta-bullet">•</span>
+                <span id="album-page-year">سال انتشار</span>
+                <span class="meta-bullet">•</span>
+                <span id="album-page-genre">سبک موسیقی</span>
+                <span class="meta-bullet">•</span>
+                <span id="album-page-track-count">۰ قطعه صوتی</span>
+              </div>
+              <div class="artist-actions-row">
+                <button class="btn-brand" onclick="playAllAlbumTracks()">
+                  <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  <span>پخش تمام آلبوم</span>
+                </button>
+                <button class="btn-secondary" onclick="switchView('albums')">
+                  <span>لیست آلبوم‌ها</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-header">
+            <h2 class="section-title">قطعات این آلبوم</h2>
+          </div>
+          <div class="track-list" id="album-tracks-list"></div>
+        </section>
         <!-- VIEW 4: SEARCH -->
         <section class="view-panel" id="view-search">
           <div class="section-header">
             <h2 class="section-title">جستجو در گنجینه سهپاتیفای</h2>
           </div>
-          <div class="search-tags-row" style="display:flex; gap:8px; margin-bottom:18px;">
+          <div class="search-tags-row" style="display:flex; gap:8px; margin-bottom:18px; overflow-x:auto; padding-bottom:4px;">
             <button class="btn-secondary active" id="search-tag-all" onclick="setSearchFilter('all', this)">همه</button>
-            <button class="btn-secondary" onclick="setSearchFilter('tracks', this)">آهنگ‌ها</button>
-            <button class="btn-secondary" onclick="setSearchFilter('artists', this)">هنرمندان</button>
-            <button class="btn-secondary" onclick="setSearchFilter('playlists', this)">پلی‌لیست‌ها</button>
+            <button class="btn-secondary" id="search-tag-tracks" onclick="setSearchFilter('tracks', this)">آهنگ‌ها</button>
+            <button class="btn-secondary" id="search-tag-albums" onclick="setSearchFilter('albums', this)">آلبوم‌ها</button>
+            <button class="btn-secondary" id="search-tag-artists" onclick="setSearchFilter('artists', this)">هنرمندان</button>
+            <button class="btn-secondary" id="search-tag-playlists" onclick="setSearchFilter('playlists', this)">پلی‌لیست‌ها</button>
           </div>
           <div id="search-results-container"></div>
         </section>
@@ -2285,13 +2355,13 @@
     let ARTISTS_DB = [];
     let GENRES_DB = [];
     let USER_CUSTOM_PLAYLISTS = [];
-
+    let ALBUMS_DB = [];
     let CURRENT_QUEUE = [];
     let currentQueueIndex = 0;
 
     let ACTIVE_PLAYLIST = null;
     let ACTIVE_ARTIST = null;
-
+    let ACTIVE_ALBUM = null;
     let isPlaying = false;
     let currentSeconds = 0;
     let isShuffle = false;
@@ -2324,7 +2394,8 @@
           fetch('/api/tracks'),
           fetch('/api/playlists'),
           fetch('/api/artists'),
-          fetch('/api/genres')
+          fetch('/api/genres'),
+          fetch('/api/albums') // اضافه شود
         ]);
 
         if (results[0].status === 'fulfilled' && results[0].value.ok) {
@@ -2339,7 +2410,8 @@
         if (results[3].status === 'fulfilled' && results[3].value.ok) {
           GENRES_DB = await results[3].value.json();
         }
-
+        if (results[4].status === 'fulfilled' && results[4].value.ok) ALBUMS_DB = await results[4].value.json(); // اضافه شود
+        
         renderAppViews();
 
         if (ALL_TRACKS.length > 0) {
@@ -2426,6 +2498,37 @@
       }
 
       renderFavoritesView();
+      // رندر آلبوم‌ها در صفحه اصلی و صفحه آلبوم‌ها
+      const homeAlbumsGrid = document.getElementById('home-albums-grid');
+      const albumsPageGrid = document.getElementById('albums-page-grid');
+      const navAlbumsCount = document.getElementById('nav-albums-count');
+      if (navAlbumsCount) navAlbumsCount.textContent = ALBUMS_DB.length;
+
+      const albumsHtml = (ALBUMS_DB && ALBUMS_DB.length > 0)
+        ? ALBUMS_DB.map(alb => `
+            <div class="music-card" onclick="openAlbumPage('${alb.id}')">
+              <div class="card-art-box">
+                <img class="card-art-img" src="${alb.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300'}" alt="${escapeHtml(alb.title)}" />
+                <button class="card-play-overlay"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+              </div>
+              <div class="card-title">${escapeHtml(alb.title)}</div>
+              <div class="card-subtitle">${escapeHtml(alb.artist_name || 'نامشخص')} • ${(alb.tracks ? alb.tracks.length : 0)} قطعه</div>
+            </div>
+          `).join('')
+        : `<div style="grid-column: 1/-1; text-align:center; padding:24px; color:var(--muted); font-size:12.5px;">هنوز آلبومی ثبت نشده است.</div>`;
+
+      if (homeAlbumsGrid) homeAlbumsGrid.innerHTML = (ALBUMS_DB.slice(0, 6).map(alb => `
+            <div class="music-card" onclick="openAlbumPage('${alb.id}')">
+              <div class="card-art-box">
+                <img class="card-art-img" src="${alb.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300'}" alt="${escapeHtml(alb.title)}" />
+                <button class="card-play-overlay"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+              </div>
+              <div class="card-title">${escapeHtml(alb.title)}</div>
+              <div class="card-subtitle">${escapeHtml(alb.artist_name || 'نامشخص')}</div>
+            </div>
+      `).join('')) || `<div style="grid-column: 1/-1; text-align:center; padding:20px; color:var(--muted);">آلبومی وجود ندارد.</div>`;
+
+      if (albumsPageGrid) albumsPageGrid.innerHTML = albumsHtml;
     }
 
     function renderPlaylistsDirectory() {
@@ -2532,7 +2635,58 @@
         showToast('خطا در باز کردن پلی‌لیست');
       }
     }
+    async function openAlbumPage(albumId) {
+      try {
+        let album = ALBUMS_DB.find(a => String(a.id) === String(albumId));
+        if (!album) {
+          const res = await fetch(`/api/albums/${albumId}`);
+          if (res.ok) album = await res.json();
+        }
 
+        if (!album) {
+          showToast('آلبوم یافت نشد.');
+          return;
+        }
+
+        ACTIVE_ALBUM = album;
+
+        // فیلتر آهنگ‌های متصل به آلبوم
+        if (!album.tracks || album.tracks.length === 0) {
+          album.tracks = ALL_TRACKS.filter(t => String(t.album_id) === String(album.id) || (t.album && t.album.trim().toLowerCase() === album.title.trim().toLowerCase()));
+        }
+
+        document.getElementById('album-page-name').textContent = album.title;
+        document.getElementById('album-page-img').src = album.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500';
+        document.getElementById('album-page-desc').textContent = album.description || 'آلبوم رسمی استودیو سهپاتیفای';
+        document.getElementById('album-page-artist').textContent = album.artist_name || 'هنرمند رسمی';
+        document.getElementById('album-page-year').textContent = album.release_year || 'انتشار جدید';
+        document.getElementById('album-page-genre').textContent = album.genre || 'عمومی';
+        document.getElementById('album-page-track-count').textContent = `${album.tracks.length} قطعه صوتی`;
+
+        renderTracksTableList(album.tracks, 'album-tracks-list', 'playTrackInAlbum');
+        switchView('album');
+      } catch (e) {
+        showToast('خطا در باز کردن آلبوم');
+      }
+    }
+
+    function playAllAlbumTracks() {
+      if (!ACTIVE_ALBUM || !ACTIVE_ALBUM.tracks || ACTIVE_ALBUM.tracks.length === 0) {
+        showToast('هنوز قطعه‌ای در این آلبوم ثبت نشده است.');
+        return;
+      }
+      CURRENT_QUEUE = [...ACTIVE_ALBUM.tracks];
+      currentQueueIndex = 0;
+      playCurrentQueue();
+      showToast(`پخش آلبوم «${ACTIVE_ALBUM.title}» آغاز شد ✓`);
+    }
+
+    function playTrackInAlbum(idx) {
+      if (!ACTIVE_ALBUM || !ACTIVE_ALBUM.tracks) return;
+      CURRENT_QUEUE = [...ACTIVE_ALBUM.tracks];
+      currentQueueIndex = idx;
+      playCurrentQueue();
+    }
     function playAllPlaylistTracks() {
       if (!ACTIVE_PLAYLIST || !ACTIVE_PLAYLIST.tracks || ACTIVE_PLAYLIST.tracks.length === 0) {
         showToast('هنوز قطعه‌ای در این پلی‌لیست قرار نگرفته است.');
@@ -3130,7 +3284,7 @@ artist.tracks = ALL_TRACKS.filter(t =>
 
     function handleSearchInput(query) {
       const searchPanel = document.getElementById('view-search');
-      if (query.trim().length > 0 && searchPanel && !searchPanel.classList.contains('active')) {
+      if (query && query.trim().length > 0 && searchPanel && !searchPanel.classList.contains('active')) {
         switchView('search');
       }
 
@@ -3138,51 +3292,96 @@ artist.tracks = ALL_TRACKS.filter(t =>
       const container = document.getElementById('search-results-container');
       if (!container) return;
 
-      // جستجو در عنوان، خواننده، آلبوم و کلمات کلیدی مخفی فارسی/انگلیسی
+      // ۱. فیلتر ترانه‌ها (شامل کلمات کلیدی فارسی و انگلیسی)
       const filteredTracks = ALL_TRACKS.filter(t => 
+        !q || 
         (t.title && t.title.toLowerCase().includes(q)) || 
         (t.artist && t.artist.toLowerCase().includes(q)) ||
         (t.album && t.album.toLowerCase().includes(q)) ||
         (t.search_keywords && t.search_keywords.toLowerCase().includes(q))
       );
 
-      // جستجو در نام، سبک‌ها و کلمات کلیدی مخفی هنرمندان
-      const filteredArtists = ARTISTS_DB.filter(a => 
+      // ۲. فیلتر آلبوم‌ها (شامل کلمات کلیدی فارسی و انگلیسی)
+      const filteredAlbums = (ALBUMS_DB || []).filter(alb => 
+        !q || 
+        (alb.title && alb.title.toLowerCase().includes(q)) || 
+        (alb.artist_name && alb.artist_name.toLowerCase().includes(q)) ||
+        (alb.genre && alb.genre.toLowerCase().includes(q)) ||
+        (alb.search_keywords && alb.search_keywords.toLowerCase().includes(q))
+      );
+
+      // ۳. فیلتر هنرمندان
+      const filteredArtists = (ARTISTS_DB || []).filter(a => 
+        !q || 
         (a.name && a.name.toLowerCase().includes(q)) || 
         (a.genre_names && a.genre_names.toLowerCase().includes(q)) ||
         (a.search_keywords && a.search_keywords.toLowerCase().includes(q))
       );
 
+      // ۴. فیلتر پلی‌لیست‌ها
       const filteredPlaylists = [...PLAYLISTS_DB, ...USER_CUSTOM_PLAYLISTS].filter(p => 
+        !q || 
         (p.title && p.title.toLowerCase().includes(q)) || 
         (p.desc && p.desc.toLowerCase().includes(q))
       );
 
       let html = '';
 
+      // رندر بخش ترانه‌ها
       if ((currentSearchFilter === 'all' || currentSearchFilter === 'tracks') && filteredTracks.length > 0) {
-        html += `<h3 style="margin:16px 0 10px; font-weight:800;">قطعات منطبق (${filteredTracks.length})</h3><div class="track-list" id="search-tracks-list"></div>`;
+        const title = q ? `قطعات منطبق (${filteredTracks.length})` : 'آهنگ‌ها و قطعات';
+        html += `<h3 style="margin:16px 0 10px; font-weight:800;">${title}</h3><div class="track-list" id="search-tracks-list"></div>`;
       }
 
+      // رندر بخش آلبوم‌ها
+      if ((currentSearchFilter === 'all' || currentSearchFilter === 'albums') && filteredAlbums.length > 0) {
+        const title = q ? `آلبوم‌های منطبق (${filteredAlbums.length})` : 'آلبوم‌های موسیقی';
+        html += `<h3 style="margin:24px 0 10px; font-weight:800;">${title}</h3><div class="grid-container" id="search-albums-grid"></div>`;
+      }
+
+      // رندر بخش هنرمندان
       if ((currentSearchFilter === 'all' || currentSearchFilter === 'artists') && filteredArtists.length > 0) {
-        html += `<h3 style="margin:20px 0 10px; font-weight:800;">هنرمندان (${filteredArtists.length})</h3><div class="grid-container" id="search-artists-grid"></div>`;
+        const title = q ? `هنرمندان (${filteredArtists.length})` : 'هنرمندان و خوانندگان';
+        html += `<h3 style="margin:24px 0 10px; font-weight:800;">${title}</h3><div class="grid-container" id="search-artists-grid"></div>`;
       }
 
+      // رندر بخش پلی‌لیست‌ها
       if ((currentSearchFilter === 'all' || currentSearchFilter === 'playlists') && filteredPlaylists.length > 0) {
-        html += `<h3 style="margin:20px 0 10px; font-weight:800;">پلی‌لیست‌ها (${filteredPlaylists.length})</h3><div class="grid-container" id="search-playlists-grid"></div>`;
+        const title = q ? `پلی‌لیست‌ها (${filteredPlaylists.length})` : 'پلی‌لیست‌ها و مجموعه‌ها';
+        html += `<h3 style="margin:24px 0 10px; font-weight:800;">${title}</h3><div class="grid-container" id="search-playlists-grid"></div>`;
       }
 
+      // در صورت عدم وجود نتیجه
       if (!html) {
-        container.innerHTML = `<div style="text-align:center; padding:40px; color:var(--muted);">موردی منطبق با «${escapeHtml(query)}» یافت نشد.</div>`;
+        const emptyMsg = q 
+          ? `موردی منطبق با «${escapeHtml(query)}» در این بخش یافت نشد.`
+          : 'موردی برای نمایش در این بخش وجود ندارد.';
+        container.innerHTML = `<div style="text-align:center; padding:48px 16px; color:var(--muted); font-size:13px;">${emptyMsg}</div>`;
         return;
       }
 
       container.innerHTML = html;
 
+      // درج قطعات در جدول
       if (filteredTracks.length > 0 && document.getElementById('search-tracks-list')) {
         renderTracksTableList(filteredTracks, 'search-tracks-list');
       }
 
+      // درج کارت‌های آلبوم
+      if (filteredAlbums.length > 0 && document.getElementById('search-albums-grid')) {
+        document.getElementById('search-albums-grid').innerHTML = filteredAlbums.map(alb => `
+          <div class="music-card" onclick="openAlbumPage('${alb.id}')">
+            <div class="card-art-box">
+              <img class="card-art-img" src="${alb.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300'}" alt="${escapeHtml(alb.title)}" />
+              <button class="card-play-overlay"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+            </div>
+            <div class="card-title">${escapeHtml(alb.title)}</div>
+            <div class="card-subtitle">${escapeHtml(alb.artist_name || 'نامشخص')} • ${(alb.tracks ? alb.tracks.length : 0)} قطعه</div>
+          </div>
+        `).join('');
+      }
+
+      // درج کارت‌های هنرمندان
       if (filteredArtists.length > 0 && document.getElementById('search-artists-grid')) {
         document.getElementById('search-artists-grid').innerHTML = filteredArtists.map(a => `
           <div class="music-card artist-card" onclick="openArtistPage('${a.id}')">
@@ -3193,6 +3392,7 @@ artist.tracks = ALL_TRACKS.filter(t =>
         `).join('');
       }
 
+      // درج کارت‌های پلی‌لیست‌ها
       if (filteredPlaylists.length > 0 && document.getElementById('search-playlists-grid')) {
         document.getElementById('search-playlists-grid').innerHTML = filteredPlaylists.map(p => `
           <div class="music-card" onclick="openPlaylistPage('${p.id}')">
@@ -3201,6 +3401,48 @@ artist.tracks = ALL_TRACKS.filter(t =>
             <div class="card-subtitle">${(p.tracks ? p.tracks.length : 0)} قطعه</div>
           </div>
         `).join('');
+      }
+    }
+
+    function setSearchFilter(filter, btn) {
+      currentSearchFilter = filter;
+      document.querySelectorAll('.search-tags-row button').forEach(b => b.classList.remove('active'));
+      if (btn) {
+        btn.classList.add('active');
+      } else {
+        const targetBtn = document.getElementById(`search-tag-${filter}`);
+        if (targetBtn) targetBtn.classList.add('active');
+      }
+      const val = document.getElementById('global-search-input')?.value || '';
+      handleSearchInput(val);
+    }
+
+    function switchView(viewId) {
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+      document.querySelectorAll('.mobile-nav-btn').forEach(m => m.classList.remove('active'));
+
+      const target = document.getElementById(`view-${viewId}`);
+      if (target) target.classList.add('active');
+
+      document.getElementById(`nav-${viewId}`)?.classList.add('active');
+      document.getElementById(`mob-${viewId}`)?.classList.add('active');
+      document.getElementById('viewport').scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (viewId === 'search') {
+        const allBtn = document.getElementById('search-tag-all');
+        setSearchFilter('all', allBtn);
+      } else {
+        const searchInput = document.getElementById('global-search-input');
+        if (searchInput && searchInput.value) {
+          searchInput.value = '';
+          const searchContainer = document.getElementById('search-results-container');
+          if (searchContainer) searchContainer.innerHTML = '';
+        }
+      }
+
+      if (viewId === 'favorites') {
+        renderFavoritesView();
       }
     }
 
