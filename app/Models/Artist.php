@@ -25,4 +25,8 @@ class Artist extends Model
     {
         return $this->belongsToMany(Track::class, 'artist_track')->withTimestamps();
     }
+    public function albums()
+{
+    return $this->hasMany(Album::class);
+}
 }

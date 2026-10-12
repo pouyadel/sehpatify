@@ -1528,11 +1528,19 @@
 
       <div class="nav-label">مجموعه‌ها و تعامل</div>
       <ul class="nav-list">
+        
         <li>
           <a class="nav-link" id="nav-playlists" onclick="switchAdminView('playlists')">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
             <span>پلی‌لیست‌ها</span>
             <span class="nav-badge-pill" id="badge-playlist-count">۰</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-link" id="nav-albums" onclick="switchAdminView('albums')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>
+            <span>آلبوم‌ها</span>
+            <span class="nav-badge-pill" id="badge-albums-count">۰</span>
           </a>
         </li>
         <li>
@@ -1881,7 +1889,38 @@
           </div>
           <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:18px;" id="playlists-admin-grid"></div>
         </section>
+        <!-- VIEW: ALBUMS -->
+        <section class="admin-panel-view" id="view-albums">
+          <div class="section-title-row">
+            <div>
+              <h2 class="section-title">مدیریت آلبوم‌های موسیقی</h2>
+              <p style="font-size:12px; color:var(--muted); margin-top:2px;">افزودن آلبوم، انتساب به خواننده، سبک، بارگذاری کاور و چینش قطعات</p>
+            </div>
+            <button class="btn-quick-action" onclick="openAddAlbumModal()">
+              <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+              <span>افزودن آلبوم جدید</span>
+            </button>
+          </div>
 
+          <div class="panel-card">
+            <div class="table-wrapper">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th style="width: 45px;">#</th>
+                    <th>کاور و عنوان آلبوم</th>
+                    <th>هنرمند / گروه</th>
+                    <th>سبک / ژانر</th>
+                    <th>سال انتشار</th>
+                    <th>تعداد قطعات</th>
+                    <th style="width: 120px;">عملیات</th>
+                  </tr>
+                </thead>
+                <tbody id="albums-table-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
         <!-- VIEW 5: ARTISTS -->
         <section class="admin-panel-view" id="view-artists">
           <div class="section-title-row">
@@ -2320,7 +2359,90 @@
         </div>
       </div>
     </div>
+     <!-- MODAL: ADD / EDIT ALBUM -->
+    <div class="modal-backdrop" id="modal-album">
+      <div class="modal-container">
+        <div class="modal-head">
+          <h3 class="modal-title" id="modal-album-title">افزودن آلبوم جدید</h3>
+          <button class="btn-table-action" onclick="closeModal('modal-album')">✕</button>
+        </div>
 
+        <input type="hidden" id="album-form-id" />
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">عنوان آلبوم *</label>
+            <input type="text" class="form-control" id="album-form-title" placeholder="مثال: A Night at the Opera" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">خواننده آلبوم *</label>
+            <select class="form-control" id="album-form-artist-id"></select>
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">سبک / ژانر آلبوم</label>
+            <select class="form-control" id="album-form-genre"></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">سال انتشار</label>
+            <input type="text" class="form-control" id="album-form-year" placeholder="مثال: 2024 یا ۱۴۰۳" />
+          </div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">انتخاب فایل کاور آلبوم</label>
+            <input type="file" class="form-control" id="album-form-cover-file" accept="image/*" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">یا آدرس اینترنتی کاور (URL)</label>
+            <input type="text" class="form-control" id="album-form-cover" placeholder="https://..." value="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">معرفی و توضیحات آلبوم</label>
+          <textarea class="form-control" id="album-form-desc" rows="2" placeholder="توضیحاتی پیرامون این اثر..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" style="font-weight: 800; color: var(--accent-blue);">کلمات کلیدی جستجو (مخفی):</label>
+          <input type="text" class="form-control" id="album-form-keywords" placeholder="مثال: کوئین، راک، البوم جدید (جهت سرچ فارسی)" />
+        </div>
+
+        <!-- انتخاب آهنگ‌های آلبوم با سرچ بار زنده -->
+        <div class="form-group" style="margin-top: 10px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+            <label class="form-label" style="font-weight: 800; color: var(--brand); margin-bottom: 0;">انتخاب آهنگ‌های این آلبوم:</label>
+            <span style="font-size:11px; color:var(--muted);" id="album-selected-count">۰ قطعه انتخاب شده</span>
+          </div>
+
+          <div style="position: relative; margin-bottom: 8px;">
+            <input 
+              type="text" 
+              id="album-tracks-search" 
+              class="form-control" 
+              style="padding: 8px 36px 8px 12px; font-size: 12px;" 
+              placeholder="جستجوی سریع عنوان ترانه یا خواننده جهت افزودن به آلبوم..." 
+              oninput="filterAlbumTracksSelector(this.value)"
+            />
+            <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none;">
+              <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </span>
+          </div>
+
+          <div id="album-tracks-selector" style="max-height: 200px; overflow-y: auto; background: var(--surface-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 8px; display: flex; flex-direction: column; gap: 6px;">
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-secondary" onclick="closeModal('modal-album')">انصراف</button>
+          <button class="btn-quick-action" id="btn-save-album" onclick="saveAlbumFromModal()">ذخیره آلبوم</button>
+        </div>
+      </div>
+    </div>           
     <div class="toast-container" id="toast-shelf"></div>
 
   </div>
@@ -2338,6 +2460,7 @@
     let ARTISTS_DB = [];
     let GENRES_DB = [];
     let USERS_DB = [];
+    let ALBUMS_DB = [];
 
     let currentUsersFilter = 'all';
     let currentUsersSearchQuery = '';
@@ -2364,7 +2487,7 @@
       document.querySelectorAll('.admin-panel-view').forEach(panel => panel.classList.remove('active'));
       document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
       document.querySelectorAll('.mobile-bar-btn').forEach(btn => btn.classList.remove('active'));
-
+      
       const targetView = document.getElementById(`view-${viewKey}`);
       if (targetView) targetView.classList.add('active');
 
@@ -2377,6 +2500,7 @@
       const titles = {
         dashboard: { title: "داشبورد و آمار تحلیلی", crumb: "سهپاتیفای استودیو / پنل مدیریت اصلی" },
         tracks: { title: "مدیریت آهنگ‌ها و فایل‌ها", crumb: "سهپاتیفای استودیو / مخزن صوت و متادیتا" },
+        albums: { title: "مدیریت آلبوم‌ها", crumb: "سهپاتیفای استودیو / آلبوم‌های رسمی" }, // اضافه شود
         genres: { title: "مدیریت سبک‌ها و ژانرها", crumb: "سهپاتیفای استودیو / دسته‌بندی و سبک‌های موسیقی" },
         lyrics: { title: "استودیو همگام‌ساز لیریکس", crumb: "سهپاتیفای استودیو / ویرایشگر زنده کارائوکه" },
         playlists: { title: "مدیریت پلی‌لیست‌ها", crumb: "سهپاتیفای استودیو / کالکشن‌های عمومی و VIP" },
@@ -2397,6 +2521,7 @@
       if (viewKey === 'genres') renderGenresAdmin();
       if (viewKey === 'lyrics') renderStudioView();
       if (viewKey === 'dashboard') drawStreamsChart(currentChartPeriod);
+      if (viewKey === 'albums') renderAlbumsAdmin(); // اضافه شود
     }
 
     function toggleMobileSidebar() {
@@ -4207,10 +4332,226 @@
     window.addEventListener('DOMContentLoaded', async () => {
       await fetchGenresAndArtists();
       await fetchTracksFromBackend();
+      await fetchAlbumsFromBackend(); // این خط را اضافه کنید
       await fetchPlaylistsFromBackend();
       await fetchUsersFromBackend();
       await fetchDashboardStats();
     });
+    async function fetchAlbumsFromBackend() {
+      try {
+        const res = await fetch('/api/albums');
+        if (res.ok) ALBUMS_DB = await res.json();
+      } catch (e) {
+        ALBUMS_DB = [];
+      }
+      renderAlbumsAdmin();
+    }
+
+    function renderAlbumsAdmin() {
+      const tbody = document.getElementById('albums-table-body');
+      if (!tbody) return;
+
+      const badge = document.getElementById('badge-albums-count');
+      if (badge) badge.textContent = ALBUMS_DB.length;
+
+      if (!ALBUMS_DB || ALBUMS_DB.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:32px; color:var(--muted);">هنوز هیچ آلبومی ثبت نشده است. روی دکمه «افزودن آلبوم جدید» کلیک کنید.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = ALBUMS_DB.map((alb, idx) => `
+        <tr>
+          <td><span style="color:var(--muted); font-weight:700; font-family:monospace;">${idx + 1}</span></td>
+          <td>
+            <div class="track-meta-cell">
+              <img class="track-cover-thumb" src="${alb.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=100'}" alt="${escapeHtml(alb.title)}" />
+              <div style="font-weight:800; font-size:13.5px; color:#fff;">${escapeHtml(alb.title)}</div>
+            </div>
+          </td>
+          <td><span style="font-weight:700; color:var(--text);">${escapeHtml(alb.artist_name || 'نامشخص')}</span></td>
+          <td><span style="background:rgba(255,255,255,0.05); padding:2px 8px; border-radius:4px; font-size:11px;">${escapeHtml(alb.genre || 'عمومی')}</span></td>
+          <td><span style="color:var(--muted); font-family:monospace;">${escapeHtml(alb.release_year || '-')}</span></td>
+          <td><span style="color:var(--brand); font-weight:700;">${alb.tracks_count || 0} قطعه</span></td>
+          <td>
+            <div class="table-actions-cell">
+              <button class="btn-table-action" onclick="openEditAlbumModal(${alb.id})" title="ویرایش آلبوم">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+              </button>
+              <button class="btn-table-action danger" onclick="deleteAlbum(${alb.id})" title="حذف آلبوم">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderAlbumTracksSelector(selectedTrackIds = []) {
+      const container = document.getElementById('album-tracks-selector');
+      if (!container) return;
+
+      const selectedSet = new Set(selectedTrackIds.map(Number));
+
+      container.innerHTML = TRACKS_DB.map(t => {
+        const isChecked = selectedSet.has(Number(t.id)) ? 'checked' : '';
+        const searchTarget = `${t.title || ''} ${t.artist || ''} ${t.search_keywords || ''}`.toLowerCase();
+
+        return `
+          <label class="album-track-item" data-search="${escapeHtml(searchTarget)}" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 8px; border-radius:6px; background:rgba(255,255,255,0.02); cursor:pointer;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" class="album-track-checkbox" value="${t.id}" ${isChecked} onchange="updateAlbumSelectedTracksCounter()" style="accent-color:var(--brand); width:16px; height:16px;" />
+              <img src="${t.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=80'}" style="width:30px; height:30px; border-radius:4px; object-fit:cover;" />
+              <div>
+                <div style="font-size:12px; font-weight:700;">${escapeHtml(t.title)}</div>
+                <div style="font-size:10px; color:var(--muted);">${escapeHtml(t.artist || 'نامشخص')}</div>
+              </div>
+            </div>
+            <span style="font-size:11px; color:var(--muted); direction:ltr;">${t.duration || '03:30'}</span>
+          </label>
+        `;
+      }).join('');
+
+      updateAlbumSelectedTracksCounter();
+    }
+
+    function filterAlbumTracksSelector(query) {
+      const q = (query || '').toLowerCase().trim();
+      document.querySelectorAll('#album-tracks-selector .album-track-item').forEach(item => {
+        const searchData = item.getAttribute('data-search') || '';
+        item.style.display = (!q || searchData.includes(q)) ? 'flex' : 'none';
+      });
+    }
+
+    function updateAlbumSelectedTracksCounter() {
+      const count = document.querySelectorAll('.album-track-checkbox:checked').length;
+      document.getElementById('album-selected-count').textContent = `${count} قطعه انتخاب شده`;
+    }
+
+    function openAddAlbumModal() {
+      document.getElementById('modal-album-title').textContent = "افزودن آلبوم جدید";
+      document.getElementById('album-form-id').value = "";
+      document.getElementById('album-form-title').value = "";
+      document.getElementById('album-form-year').value = new Date().getFullYear();
+      document.getElementById('album-form-desc').value = "";
+      document.getElementById('album-form-keywords').value = "";
+      document.getElementById('album-form-cover').value = "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500";
+      document.getElementById('album-form-cover-file').value = "";
+      document.getElementById('album-tracks-search').value = "";
+
+      const artistSel = document.getElementById('album-form-artist-id');
+      artistSel.innerHTML = ARTISTS_DB.map(a => `<option value="${a.id}">${escapeHtml(a.name)}</option>`).join('');
+
+      const genreSel = document.getElementById('album-form-genre');
+      genreSel.innerHTML = GENRES_DB.map(g => `<option value="${escapeHtml(g.name)}">${escapeHtml(g.name)}</option>`).join('');
+
+      renderAlbumTracksSelector([]);
+      openModal('modal-album');
+    }
+
+    function openEditAlbumModal(albumId) {
+      const alb = ALBUMS_DB.find(item => item.id === albumId);
+      if (!alb) return;
+
+      document.getElementById('modal-album-title').textContent = `ویرایش آلبوم: ${alb.title}`;
+      document.getElementById('album-form-id').value = alb.id;
+      document.getElementById('album-form-title').value = alb.title;
+      document.getElementById('album-form-year').value = alb.release_year || "";
+      document.getElementById('album-form-desc').value = alb.description || "";
+      document.getElementById('album-form-keywords').value = alb.search_keywords || "";
+      document.getElementById('album-form-cover').value = alb.cover || "";
+      document.getElementById('album-form-cover-file').value = "";
+      document.getElementById('album-tracks-search').value = "";
+
+      const artistSel = document.getElementById('album-form-artist-id');
+      artistSel.innerHTML = ARTISTS_DB.map(a => `<option value="${a.id}" ${a.id == alb.artist_id ? 'selected' : ''}>${escapeHtml(a.name)}</option>`).join('');
+
+      const genreSel = document.getElementById('album-form-genre');
+      genreSel.innerHTML = GENRES_DB.map(g => `<option value="${escapeHtml(g.name)}" ${g.name == alb.genre ? 'selected' : ''}>${escapeHtml(g.name)}</option>`).join('');
+
+      const selectedTrackIds = alb.tracks ? alb.tracks.map(t => t.id) : [];
+      renderAlbumTracksSelector(selectedTrackIds);
+      openModal('modal-album');
+    }
+
+    async function saveAlbumFromModal() {
+      const albumId = document.getElementById('album-form-id').value;
+      const title = document.getElementById('album-form-title').value.trim();
+      const artistId = document.getElementById('album-form-artist-id').value;
+
+      if (!title || !artistId) {
+        showToast('عنوان آلبوم و خواننده الزامی هستند.');
+        return;
+      }
+
+      const saveBtn = document.getElementById('btn-save-album');
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'در حال ذخیره‌سازی...';
+
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('artist_id', artistId);
+      formData.append('genre', document.getElementById('album-form-genre').value);
+      formData.append('release_year', document.getElementById('album-form-year').value.trim());
+      formData.append('description', document.getElementById('album-form-desc').value.trim());
+      formData.append('search_keywords', document.getElementById('album-form-keywords').value.trim());
+
+      const coverInput = document.getElementById('album-form-cover-file');
+      if (coverInput.files && coverInput.files[0]) {
+        formData.append('cover_file', coverInput.files[0]);
+      } else {
+        formData.append('cover_url', document.getElementById('album-form-cover').value);
+      }
+
+      document.querySelectorAll('.album-track-checkbox:checked').forEach(cb => {
+        formData.append('track_ids[]', cb.value);
+      });
+
+      const endpoint = albumId ? `/api/admin/albums/${albumId}` : '/api/admin/albums';
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: formData
+        });
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok) throw new Error(data?.message || 'خطا در ثبت آلبوم');
+
+        showToast(albumId ? 'آلبوم با موفقیت ویرایش شد ✓' : `آلبوم «${data.title}» ساخته شد ✓`);
+        closeModal('modal-album');
+        await fetchAlbumsFromBackend();
+        await fetchTracksFromBackend();
+      } catch (err) {
+        showToast(err.message || 'خطا در برقراری ارتباط');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = albumId ? 'ذخیره تغییرات' : 'ذخیره آلبوم';
+      }
+    }
+
+    async function deleteAlbum(albumId) {
+      if (!confirm('آیا از حذف این آلبوم اطمینان دارید؟ (آهنگ‌های داخل آن پاک نخواهند شد)')) return;
+
+      try {
+        const res = await fetch(`/api/admin/albums/${albumId}`, {
+          method: 'DELETE',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          }
+        });
+
+        if (!res.ok) throw new Error();
+        showToast('آلبوم با موفقیت حذف شد.');
+        await fetchAlbumsFromBackend();
+      } catch (e) {
+        showToast('خطا در حذف آلبوم');
+      }
+    }
   </script>
 </body>
 </html>

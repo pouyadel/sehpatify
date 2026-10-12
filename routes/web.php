@@ -6,6 +6,7 @@ use App\Http\Controllers\ArtistController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AlbumController;
 
 // جلوگیری از خطای ریدایرکت لاگین در لاراول
 Route::get('/login', function () {
@@ -55,4 +56,15 @@ Route::prefix('api')->group(function () {
     Route::post('/admin/users/{id}/toggle-status', [UserController::class, 'toggleStatus']);
     Route::delete('/admin/users/{id}', [UserController::class, 'destroy']);
     Route::get('/admin/dashboard-stats', [TrackController::class, 'dashboardStats']);
+});
+
+Route::prefix('api')->group(function () {
+    Route::get('/albums', [AlbumController::class, 'index']);
+    Route::get('/albums/{id}', [AlbumController::class, 'show']);
+    
+    Route::prefix('admin')->group(function () {
+        Route::post('/albums', [AlbumController::class, 'store']);
+        Route::post('/albums/{id}', [AlbumController::class, 'update']);
+        Route::delete('/albums/{id}', [AlbumController::class, 'destroy']);
+    });
 });
