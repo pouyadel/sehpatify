@@ -2416,6 +2416,9 @@
     let isPlaying = false;
     let currentSeconds = 0;
     let isShuffle = false;
+    let isRepeat = false;
+    let shufflePool = []; // مخزن برای شافل بدون تکرار
+    let drawerZIndex = 45; // اولویت لایه‌های لیریکس و صف پخش
     let repeatMode = 0;
     let isUserScrubbing = false;
     let currentSearchFilter = 'all';
@@ -2753,11 +2756,22 @@
 
       ACTIVE_GENRE = genre;
 
-      // فیلتر آهنگ‌های مخصوص این سبک
-      const genreTracks = ALL_TRACKS.filter(t => 
-        (t.genre_id && String(t.genre_id) === String(genre.id)) || 
-        (t.genre && t.genre.trim().toLowerCase() === genre.name.trim().toLowerCase())
-      );
+      const norm = s => String(s || '').trim().toLowerCase().replace(/ي/g, 'ی').replace(/ك/g, 'ک');
+      const gName = norm(genre.name);
+      const gSlug = norm(genre.slug);
+
+      // استخراج قطعی تمام آهنگ‌های مربوط به این سبک
+      const genreTracks = ALL_TRACKS.filter(t => {
+        if (t.genre_id && String(t.genre_id) === String(genre.id)) return true;
+        if (t.genre) {
+          const tGenre = norm(t.genre);
+          if (tGenre === gName || (gSlug && tGenre === gSlug) || tGenre.includes(gName) || gName.includes(tGenre)) {
+            return true;
+          }
+        }
+        if (t.search_keywords && norm(t.search_keywords).includes(gName)) return true;
+        return false;
+      });
 
       genre.tracks = genreTracks;
 
@@ -2765,7 +2779,7 @@
       document.getElementById('genre-page-img').src = genre.cover || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500';
       document.getElementById('genre-page-track-count').textContent = `${genreTracks.length} قطعه صوتی`;
 
-      // رندر لیست ترانه‌ها و اتصال دکمه‌های پخش به آهنگ‌های همین سبک
+      // ایجاد صف پخش و لیست ترانه‌ها فقط از آهنگ‌های این سبک
       renderTracksTableList(genreTracks, 'genre-tracks-list', 'playTrackInGenre');
       switchView('genre');
     }
@@ -2777,25 +2791,17 @@
       }
       CURRENT_QUEUE = [...ACTIVE_GENRE.tracks];
       currentQueueIndex = 0;
+      resetShufflePool();
       playCurrentQueue();
       showToast(`پخش قطعات سبک «${ACTIVE_GENRE.name}» آغاز شد ✓`);
     }
 
     function playTrackInGenre(idx) {
-      if (!ACTIVE_GENRE || !ACTIVE_GENRE.tracks) return;
+      if (!ACTIVE_GENRE || !ACTIVE_GENRE.tracks || !ACTIVE_GENRE.tracks[idx]) return;
       CURRENT_QUEUE = [...ACTIVE_GENRE.tracks];
       currentQueueIndex = idx;
+      resetShufflePool();
       playCurrentQueue();
-    }
-    function playAllPlaylistTracks() {
-      if (!ACTIVE_PLAYLIST || !ACTIVE_PLAYLIST.tracks || ACTIVE_PLAYLIST.tracks.length === 0) {
-        showToast('هنوز قطعه‌ای در این پلی‌لیست قرار نگرفته است.');
-        return;
-      }
-      CURRENT_QUEUE = [...ACTIVE_PLAYLIST.tracks];
-      currentQueueIndex = 0;
-      playCurrentQueue();
-      showToast(`پخش پلی‌لیست «${ACTIVE_PLAYLIST.title}» آغاز شد ✓`);
     }
 
     function playTrackInPlaylist(idx) {
@@ -3138,26 +3144,45 @@ artist.tracks = ALL_TRACKS.filter(t =>
       nextTrack();
     };
 
+    // الگوریتم شافل بدون تکرار
+    function resetShufflePool() {
+      if (!CURRENT_QUEUE || CURRENT_QUEUE.length === 0) {
+        shufflePool = [];
+        return;
+      }
+      shufflePool = CURRENT_QUEUE.map((_, i) => i).filter(i => i !== currentQueueIndex);
+      for (let i = shufflePool.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shufflePool[i], shufflePool[j]] = [shufflePool[j], shufflePool[i]];
+      }
+    }
+
+    // پایان آهنگ
+    realPlayer.onended = () => {
+      // اگر ریپیت فعال باشد، همان آهنگ مجدداً پخش می‌شود
+      if (isRepeat) {
+        seekToSeconds(0);
+        playCurrentQueue();
+      } else {
+        nextTrack();
+      }
+    };
+
     function nextTrack() {
       if (!CURRENT_QUEUE || CURRENT_QUEUE.length === 0) return;
 
-      if (repeatMode === 2) {
-        seekToSeconds(0);
-        playCurrentQueue();
-        return;
-      }
-
-      let nextIdx = isShuffle 
-        ? Math.floor(Math.random() * CURRENT_QUEUE.length) 
-        : currentQueueIndex + 1;
-
-      if (nextIdx >= CURRENT_QUEUE.length) {
-        if (repeatMode === 1) {
+      let nextIdx;
+      if (isShuffle) {
+        // شافل تصادفی بدون تکرار تا اتمام همه قطعات لیست
+        if (shufflePool.length === 0) {
+          resetShufflePool();
+        }
+        nextIdx = shufflePool.length > 0 ? shufflePool.pop() : 0;
+      } else {
+        // وقتی شافل خاموش است، پس از آهنگ آخر به آهنگ اول (اندیس ۰) برمی‌گردد
+        nextIdx = currentQueueIndex + 1;
+        if (nextIdx >= CURRENT_QUEUE.length) {
           nextIdx = 0;
-        } else {
-          pauseTrack();
-          seekToSeconds(0);
-          return;
         }
       }
 
@@ -3537,7 +3562,6 @@ artist.tracks = ALL_TRACKS.filter(t =>
         renderFavoritesView();
       }
     }
-
     // تابع انتخاب فیلتر سرچ (دکمه‌های تگ)
     function setSearchFilter(filter, btn) {
       currentSearchFilter = filter || 'all';
@@ -3690,22 +3714,49 @@ artist.tracks = ALL_TRACKS.filter(t =>
       const modal = document.getElementById('full-player-modal');
       if (modal) modal.classList.toggle('active'); 
     }
-    function toggleLyricsDrawer() { document.getElementById('lyrics-drawer').classList.toggle('open'); }
-    function toggleQueueDrawer() { document.getElementById('queue-drawer').classList.toggle('open'); }
+    function toggleLyricsDrawer() {
+      const lyrics = document.getElementById('lyrics-drawer');
+      const queue = document.getElementById('queue-drawer');
+      if (!lyrics) return;
 
+      if (!lyrics.classList.contains('open')) {
+        queue?.classList.remove('open');
+        drawerZIndex++;
+        lyrics.style.zIndex = drawerZIndex;
+        lyrics.classList.add('open');
+      } else {
+        lyrics.classList.remove('open');
+      }
+    }    function toggleQueueDrawer() {
+      const lyrics = document.getElementById('lyrics-drawer');
+      const queue = document.getElementById('queue-drawer');
+      if (!queue) return;
+
+      if (!queue.classList.contains('open')) {
+        lyrics?.classList.remove('open');
+        drawerZIndex++;
+        queue.style.zIndex = drawerZIndex;
+        queue.classList.add('open');
+      } else {
+        queue.classList.remove('open');
+      }
+    }
     function toggleShuffle() {
       isShuffle = !isShuffle;
+      if (isShuffle) {
+        resetShufflePool();
+      }
       document.getElementById('ctrl-shuffle')?.classList.toggle('active', isShuffle);
       document.getElementById('full-ctrl-shuffle')?.classList.toggle('active', isShuffle);
+      showToast(isShuffle ? 'پخش تصادفی (بدون تکرار) فعال شد 🔀' : 'پخش تصادفی غیرفعال شد');
     }
 
     function toggleRepeat() {
-      repeatMode = (repeatMode + 1) % 3;
-      const isAct = repeatMode > 0;
-      document.getElementById('ctrl-repeat')?.classList.toggle('active', isAct);
-      document.getElementById('full-ctrl-repeat')?.classList.toggle('active', isAct);
+      isRepeat = !isRepeat;
+      document.getElementById('ctrl-repeat')?.classList.toggle('active', isRepeat);
+      document.getElementById('full-ctrl-repeat')?.classList.toggle('active', isRepeat);
+      showToast(isRepeat ? 'تکرار قطعه فعال شد 🔂' : 'تکرار قطعه غیرفعال شد');
     }
-
     function formatSeconds(s) {
       const m = Math.floor(s / 60);
       const sec = s % 60;
