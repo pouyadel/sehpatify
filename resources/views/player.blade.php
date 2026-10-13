@@ -2073,15 +2073,31 @@
                  oninput="handleSearchInput(this.value)" />
         </div>
 
-        <!-- دکمه پروفایل -->
+        <!-- دکمه پروفایل و وضعیت ورود کاربر -->
         <div class="topbar-actions">
-          <button class="user-pill-badge" id="user-profile-btn" title="پروفایل کاربری" aria-label="پروفایل کاربری">
-            <div class="user-avatar-dot">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-              </svg>
+          @auth
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:12px; font-weight:700; color:var(--brand); background:var(--brand-dim); border:1px solid var(--border-brand); padding:5px 12px; border-radius:var(--radius-full);">
+                {{ auth()->user()->username ?? auth()->user()->name }}
+              </span>
+              <form action="/auth/logout" method="POST" style="margin:0;">
+                @csrf
+                <button type="submit" class="user-pill-badge" title="خروج از حساب کاربری">
+                  <div class="user-avatar-dot" style="color:#f87171;">
+                    <svg width="17" height="17" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                  </div>
+                </button>
+              </form>
             </div>
-          </button>
+          @else
+            <a href="/auth" class="user-pill-badge" id="user-profile-btn" title="ورود / ثبت‌نام">
+              <div class="user-avatar-dot">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+              </div>
+            </a>
+          @endauth
         </div>
       </header>
 

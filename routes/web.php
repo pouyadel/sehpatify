@@ -7,6 +7,7 @@ use App\Http\Controllers\TrackController;
 use App\Http\Controllers\PlaylistController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AlbumController;
+use App\Http\Controllers\AuthController;
 
 // جلوگیری از خطای ریدایرکت لاگین در لاراول
 Route::get('/login', function () {
@@ -68,3 +69,8 @@ Route::prefix('api')->group(function () {
         Route::delete('/albums/{id}', [AlbumController::class, 'destroy']);
     });
 });
+
+Route::get('/auth', [AuthController::class, 'showAuthForm'])->name('login');
+Route::post('/auth/register', [AuthController::class, 'register']);
+Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/logout', [AuthController::class, 'logout'])->name('logout');
