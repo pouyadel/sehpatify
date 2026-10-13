@@ -1545,9 +1545,74 @@
       }
     }
 
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      z-index: 85;
+    }
+    .sidebar-backdrop.active {
+      display: block;
+    }
+
+    .mobile-quick-pills {
+      display: none;
+    }
+
     @media (max-width: 768px) {
       .sidebar {
+        position: fixed;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 270px;
+        height: 100dvh;
+        background: var(--surface-glass-heavy);
+        transform: translateX(100%);
+        z-index: 90;
+        box-shadow: -10px 0 35px rgba(0, 0, 0, 0.85);
+        padding-bottom: 30px;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      /* نوار کپسولی دسترسی سریع مخصوص موبایل (سبک اسپاتیفای) */
+      .mobile-quick-pills {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 10px 14px 4px;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        flex-shrink: 0;
+      }
+      .mobile-quick-pills::-webkit-scrollbar {
         display: none;
+      }
+      .quick-pill-item {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 600;
+        padding: 6px 14px;
+        border-radius: var(--radius-full);
+        white-space: nowrap;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        flex-shrink: 0;
+      }
+      .quick-pill-item.active {
+        background: var(--brand);
+        color: #052410;
+        font-weight: 800;
+        border-color: var(--brand);
+        box-shadow: 0 0 12px var(--brand-glow);
       }
       .mobile-bottom-nav {
         display: flex;
@@ -1724,11 +1789,179 @@
       border-color: var(--brand) !important;
       box-shadow: 0 0 14px var(--brand-glow) !important;
     }
+    /* غیرفعال‌سازی کامل نوتیفیکیشن‌ها */
+    .toast-container {
+      display: none !important;
+    }
+
+    /* جلوگیری از دو خطی شدن متن تمام دکمه‌ها */
+    .btn-brand, .btn-secondary {
+      white-space: nowrap !important;
+      flex-shrink: 0;
+    }
+
+    /* استایل هماهنگ هدر صفحات (تمام قطعات، آلبوم‌ها و هنرمندان) */
+    .page-top-header {
+      display: flex;
+      align-items: center !important;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .page-header-text {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .section-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .page-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .btn-header-action {
+      height: 38px !important;
+      min-height: 38px !important;
+      padding: 0 18px !important;
+      font-size: 12.5px !important;
+      font-weight: 700 !important;
+      border-radius: var(--radius-full) !important;
+      white-space: nowrap !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 6px !important;
+      flex-shrink: 0 !important;
+    }
+
+    @media (max-width: 768px) {
+      .page-top-header {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+      }
+
+      .page-header-text {
+        width: 100%;
+      }
+
+      .page-header-text .section-title {
+        font-size: 15px !important;
+        white-space: nowrap !important;
+      }
+
+      .section-subtitle {
+        font-size: 11px !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        width: 100%;
+      }
+
+      .page-header-actions {
+        width: 100%;
+        display: flex;
+        gap: 8px;
+      }
+
+      .btn-header-action {
+        flex: 1;
+        height: 35px !important;
+        min-height: 35px !important;
+        padding: 0 12px !important;
+        font-size: 11.5px !important;
+      }
+    }
+    /* استایل بخش آلبوم‌های پروفایل هنرمند و حالت بدون آلبوم (Empty State) */
+    .artist-section-badge {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--brand);
+      background: var(--brand-dim);
+      border: 1px solid var(--border-brand);
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+    }
+
+    .artist-empty-albums {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 22px;
+      background: linear-gradient(135deg, rgba(22, 22, 34, 0.75) 0%, rgba(14, 14, 23, 0.9) 100%);
+      border: 1px dashed rgba(255, 255, 255, 0.14);
+      border-radius: var(--radius-md);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .artist-empty-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: rgba(16, 185, 84, 0.1);
+      border: 1px solid var(--border-brand);
+      color: var(--brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 0 20px rgba(16, 185, 84, 0.15);
+    }
+
+    .artist-empty-text {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-width: 0;
+    }
+
+    .artist-empty-title {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .artist-empty-sub {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+      .artist-empty-albums {
+        padding: 14px 16px;
+        gap: 12px;
+      }
+      .artist-empty-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+      }
+      .artist-empty-title {
+        font-size: 12.5px;
+      }
+      .artist-empty-sub {
+        font-size: 11px;
+      }
+    }
   </style>
 </head>
 <body>
   <div id="app">
-
+    <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleMobileMenu()"></div>
     <!-- سایدبار ناوبری دسکتاپ -->
     <aside class="sidebar" id="sidebar">
       <a class="brand-header" onclick="switchView('home')" title="سهپاتیفای — صفحه اصلی">
@@ -1814,8 +2047,12 @@
 
     <main class="main-wrapper">
       <header class="topbar">
-        <div class="topbar-mobile-logo" onclick="switchView('home')">
-          <div class="brand-logo-wrap">
+        <div class="topbar-mobile-logo">
+          <!-- دکمه باز کردن منوی کامل در موبایل -->
+          <button onclick="toggleMobileMenu()" style="width:36px; height:36px; border-radius:9px; background:rgba(255,255,255,0.06); border:1px solid var(--border); color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer;">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <div class="brand-logo-wrap" onclick="switchView('home')">
             <svg class="brand-logo-svg" viewBox="0 0 320 240" fill="none">
               <path d="M 68 126 C 68 148, 86 172, 116 172 C 146 172, 142 64, 160 64 C 178 64, 174 172, 204 172 C 234 172, 252 148, 252 126" stroke="#10B954" stroke-width="26" stroke-linecap="round" />
               <circle cx="68" cy="126" r="14" fill="#4ADE80" />
@@ -1836,7 +2073,7 @@
                  oninput="handleSearchInput(this.value)" />
         </div>
 
-        <!-- دکمه پروفایل متقارن با آیکون پیش‌فرض آدمک کاربر هماهنگ با تم سایت -->
+        <!-- دکمه پروفایل -->
         <div class="topbar-actions">
           <button class="user-pill-badge" id="user-profile-btn" title="پروفایل کاربری" aria-label="پروفایل کاربری">
             <div class="user-avatar-dot">
@@ -1847,6 +2084,17 @@
           </button>
         </div>
       </header>
+
+      <!-- نوار کپسولی دسترسی سریع به تمام صفحات در موبایل -->
+      <div class="mobile-quick-pills">
+        <button class="quick-pill-item active" id="pill-home" onclick="switchView('home')">خانه</button>
+        <button class="quick-pill-item" id="pill-all-tracks" onclick="switchView('all-tracks')">تمام آهنگ‌ها</button>
+        <button class="quick-pill-item" id="pill-albums" onclick="switchView('albums')">آلبوم‌ها</button>
+        <button class="quick-pill-item" id="pill-discover" onclick="switchView('discover')">سبک‌ها و ژانرها</button>
+        <button class="quick-pill-item" id="pill-artists" onclick="switchView('artists')">هنرمندان</button>
+        <button class="quick-pill-item" id="pill-playlists" onclick="switchView('playlists')">پلی‌لیست‌ها</button>
+        <button class="quick-pill-item" id="pill-favorites" onclick="switchView('favorites')">موردعلاقه‌ها</button>
+      </div>
 
       <div class="content-viewport" id="viewport">
 
@@ -1897,19 +2145,21 @@
           <div class="grid-container mobile-carousel-row" id="home-artists-grid"></div>
         </section>
 
-        <!-- VIEW: ALL TRACKS -->
+       <!-- VIEW: ALL TRACKS -->
         <section class="view-panel" id="view-all-tracks">
-          <div class="section-header">
-            <div>
+          <div class="section-header page-top-header">
+            <div class="page-header-text">
               <h2 class="section-title">تمام قطعات و ترانه‌ها</h2>
-              <p style="font-size:12px; color:var(--muted); margin-top:4px;">آرشیو کامل قطعات صوتی به همراه امکان دانلود و پخش آنلاین</p>
+              <p class="section-subtitle">آرشیو کامل قطعات صوتی با امکان دانلود و پخش آنلاین</p>
             </div>
-            <div style="display:flex; gap:10px; align-items:center;">
-              <button class="btn-brand" onclick="playDefaultQueue()" style="padding:8px 18px; font-size:12px;">
+            <div class="page-header-actions">
+              <button class="btn-brand btn-header-action" onclick="playDefaultQueue()">
                 <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 <span>پخش همه</span>
               </button>
-              <button class="btn-secondary" onclick="switchView('home')" style="padding:8px 16px; font-size:12px;">بازگشت به خانه</button>
+              <button class="btn-secondary btn-header-action" onclick="switchView('home')">
+                <span>بازگشت به خانه</span>
+              </button>
             </div>
           </div>
           <div class="track-list" id="all-tracks-list"></div>
@@ -1925,22 +2175,23 @@
 
         <!-- VIEW 3: ARTISTS DIRECTORY -->
         <section class="view-panel" id="view-artists">
-          <div class="section-header">
-            <div>
+          <div class="section-header page-top-header">
+            <div class="page-header-text">
               <h2 class="section-title">تمام هنرمندان و خوانندگان پلتفرم</h2>
-              <p style="font-size:12px; color:var(--muted); margin-top:4px;">برای مشاهده پروفایل و تمام ترانه‌ها روی خواننده مورد نظر کلیک کنید</p>
+              <p class="section-subtitle">برای مشاهده پروفایل و تمام ترانه‌ها روی خواننده مورد نظر کلیک کنید</p>
             </div>
           </div>
           <div class="grid-container" id="artists-page-grid"></div>
         </section>
+
         <!-- VIEW: ALL ALBUMS -->
         <section class="view-panel" id="view-albums">
-          <div class="section-header">
-            <div>
+          <div class="section-header page-top-header">
+            <div class="page-header-text">
               <h2 class="section-title">تمام آلبوم‌های موسیقی</h2>
-              <p style="font-size:12px; color:var(--muted); margin-top:4px;">آرشیو رسمی آلبوم‌های منتشر شده هنرمندان</p>
+              <p class="section-subtitle">آرشیو رسمی آلبوم‌های منتشر شده هنرمندان</p>
             </div>
-            <button class="btn-secondary" onclick="switchView('home')" style="padding:8px 16px; font-size:12px;">بازگشت به خانه</button>
+           
           </div>
           <div class="grid-container" id="albums-page-grid"></div>
         </section>
@@ -2128,6 +2379,14 @@
             </div>
           </div>
 
+          <!-- بخش مجزای آلبوم‌های این هنرمند -->
+          <div class="section-header" style="align-items:center;">
+            <h2 class="section-title">آلبوم‌های رسمی این هنرمند</h2>
+            <span class="artist-section-badge" id="artist-albums-count-badge">۰ آلبوم</span>
+          </div>
+          <div class="grid-container mobile-carousel-row" id="artist-albums-grid" style="margin-bottom: 28px;"></div>
+
+          <!-- بخش ترانه‌های این هنرمند -->
           <div class="section-header">
             <h2 class="section-title">تمام ترانه‌های این هنرمند</h2>
           </div>
@@ -2828,11 +3087,12 @@
         ACTIVE_ARTIST = artist;
 
         if (!artist.tracks || artist.tracks.length === 0) {
-artist.tracks = ALL_TRACKS.filter(t => 
-  String(t.artist_id) === String(artist.id) || 
-  (t.artist_ids && t.artist_ids.map(String).includes(String(artist.id))) || 
-  (t.artist && t.artist.trim().toLowerCase().includes(artist.name.trim().toLowerCase()))
-);        }
+          artist.tracks = ALL_TRACKS.filter(t => 
+            String(t.artist_id) === String(artist.id) || 
+            (t.artist_ids && t.artist_ids.map(String).includes(String(artist.id))) || 
+            (t.artist && t.artist.trim().toLowerCase().includes(artist.name.trim().toLowerCase()))
+          );
+        }
 
         document.getElementById('artist-page-name').textContent = artist.name;
         document.getElementById('artist-page-img').src = artist.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500';
@@ -2842,6 +3102,54 @@ artist.tracks = ALL_TRACKS.filter(t =>
 
         const badge = document.getElementById('artist-page-badge');
         if (badge) badge.style.display = artist.verified ? 'inline-flex' : 'none';
+
+        // استخراج و رندر آلبوم‌های متعلق به این هنرمند
+        const artistAlbums = (ALBUMS_DB || []).filter(alb => 
+          String(alb.artist_id) === String(artist.id) || 
+          (alb.artist_name && alb.artist_name.trim().toLowerCase() === artist.name.trim().toLowerCase())
+        );
+
+        const albumsBadge = document.getElementById('artist-albums-count-badge');
+        if (albumsBadge) {
+          albumsBadge.textContent = artistAlbums.length > 0 ? `${artistAlbums.length} آلبوم` : 'تک‌آهنگ‌ها';
+        }
+
+        const albumsGrid = document.getElementById('artist-albums-grid');
+        if (albumsGrid) {
+          if (artistAlbums.length > 0) {
+            albumsGrid.classList.add('mobile-carousel-row');
+            albumsGrid.innerHTML = artistAlbums.map(alb => {
+              const tCount = alb.tracks ? alb.tracks.length : (alb.tracks_count || 0);
+              const subText = alb.release_year ? `${alb.release_year} • ${tCount} قطعه` : `${tCount} قطعه صوتی`;
+              return `
+                <div class="music-card" onclick="openAlbumPage('${alb.id}')">
+                  <div class="card-art-box">
+                    <img class="card-art-img" src="${alb.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300'}" alt="${escapeHtml(alb.title)}" />
+                    <button class="card-play-overlay"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+                  </div>
+                  <div class="card-title">${escapeHtml(alb.title)}</div>
+                  <div class="card-subtitle">${escapeHtml(subText)}</div>
+                </div>
+              `;
+            }).join('');
+          } else {
+            albumsGrid.classList.remove('mobile-carousel-row');
+            albumsGrid.innerHTML = `
+              <div class="artist-empty-albums">
+                <div class="artist-empty-icon">
+                  <svg width="26" height="26" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="9" stroke-width="1.8"></circle>
+                    <circle cx="12" cy="12" r="3" stroke-width="1.8"></circle>
+                  </svg>
+                </div>
+                <div class="artist-empty-text">
+                  <div class="artist-empty-title">آلبوم مستقلی برای این هنرمند ثبت نشده است</div>
+                  <div class="artist-empty-sub">آثار این خواننده به‌صورت تک‌آهنگ منتشر شده و در فهرست زیر قابل پخش هستند.</div>
+                </div>
+              </div>
+            `;
+          }
+        }
 
         renderTracksTableList(artist.tracks || [], 'artist-tracks-list', 'playTrackInArtist');
         switchView('artist');
@@ -3767,15 +4075,8 @@ function escapeHtml(str) {
       return String(str ?? '').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); 
     }
     function showToast(msg) {
-      const shelf = document.getElementById('toast-shelf');
-      if (!shelf) return;
-      const t = document.createElement('div');
-      t.className = 'toast-msg';
-      t.textContent = msg;
-      shelf.appendChild(t);
-      setTimeout(() => t.remove(), 2800);
+      // تمام نوتیفیکیشن‌ها به درخواست شما غیرفعال شدند
     }
-
     function initSliders() {
       const bind = (elem, cb) => {
         if (!elem) return;
@@ -3845,6 +4146,48 @@ function escapeHtml(str) {
       initTouchGestures();
       initAppData();
     });
+    function toggleMobileMenu() {
+      document.getElementById('sidebar')?.classList.toggle('open');
+      document.getElementById('sidebar-backdrop')?.classList.toggle('active');
+    }
+
+    function switchView(viewId) {
+      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+      document.querySelectorAll('.mobile-nav-btn').forEach(m => m.classList.remove('active'));
+      document.querySelectorAll('.quick-pill-item').forEach(pill => pill.classList.remove('active'));
+
+      const target = document.getElementById(`view-${viewId}`);
+      if (target) target.classList.add('active');
+
+      document.getElementById(`nav-${viewId}`)?.classList.add('active');
+      document.getElementById(`mob-${viewId}`)?.classList.add('active');
+      document.getElementById(`pill-${viewId}`)?.classList.add('active');
+      document.getElementById('viewport').scrollTo({ top: 0, behavior: 'smooth' });
+
+      // بستن خودکار منوی کشویی در موبایل پس از انتخاب صفحه
+      document.getElementById('sidebar')?.classList.remove('open');
+      document.getElementById('sidebar-backdrop')?.classList.remove('active');
+
+      if (viewId === 'search') {
+        currentSearchFilter = 'all';
+        document.querySelectorAll('.search-tags-row button').forEach(b => b.classList.remove('active'));
+        document.getElementById('search-tag-all')?.classList.add('active');
+        const val = document.getElementById('global-search-input')?.value || '';
+        handleSearchInput(val);
+      } else {
+        const searchInput = document.getElementById('global-search-input');
+        if (searchInput && searchInput.value) {
+          searchInput.value = '';
+          const searchContainer = document.getElementById('search-results-container');
+          if (searchContainer) searchContainer.innerHTML = '';
+        }
+      }
+
+      if (viewId === 'favorites') {
+        renderFavoritesView();
+      }
+    }
   </script>
 </body>
 </html>
