@@ -2206,6 +2206,17 @@
           <input type="text" class="form-control" id="genre-form-name" placeholder="مثال: Hip Hop, Rock, Pop, تلفیقی..." />
         </div>
 
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">انتخاب فایل کاور سبک</label>
+            <input type="file" class="form-control" id="genre-form-cover-file" accept="image/*" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">یا آدرس اینترنتی کاور (URL)</label>
+            <input type="text" class="form-control" id="genre-form-cover" placeholder="https://..." value="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500" />
+          </div>
+        </div>
+
         <div class="modal-actions">
           <button class="btn-secondary" onclick="closeModal('modal-genre')">انصراف</button>
           <button class="btn-quick-action" id="btn-save-genre" onclick="saveGenreFromModal()">ذخیره سبک</button>
@@ -2556,15 +2567,21 @@
       if (badge) badge.textContent = GENRES_DB.length;
 
       if (!GENRES_DB || GENRES_DB.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:30px; color:var(--muted);">هنوز هیچ سبکی ثبت نشده است. روی دکمه «افزودن سبک جدید» کلیک کنید.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:30px; color:var(--muted);">هنوز هیچ سبکی ثبت نشده است. روی دکمه «افزودن سبک جدید» کلیک کنید.</td></tr>`;
         return;
       }
 
       tbody.innerHTML = GENRES_DB.map((g, idx) => `
         <tr>
           <td><span style="color:var(--muted); font-weight:700;">${idx + 1}</span></td>
-          <td style="font-weight:700; color:#fff;">${escapeHtml(g.name)}</td>
+          <td>
+            <div class="track-meta-cell">
+              <img class="track-cover-thumb" src="${g.cover || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=100'}" alt="${escapeHtml(g.name)}" />
+              <div style="font-weight:800; color:#fff;">${escapeHtml(g.name)}</div>
+            </div>
+          </td>
           <td><span style="font-family:monospace; color:var(--muted); font-size:12px;">${escapeHtml(g.slug || '-')}</span></td>
+          <td><span style="color:var(--brand); font-weight:700;">${g.tracks_count || 0} قطعه</span></td>
           <td>
             <div class="table-actions-cell">
               <button class="btn-table-action" onclick="openEditGenreModal(${g.id})" title="ویرایش سبک">
@@ -2583,6 +2600,8 @@
       document.getElementById('modal-genre-title').textContent = "افزودن سبک موسیقی جدید";
       document.getElementById('genre-form-id').value = "";
       document.getElementById('genre-form-name').value = "";
+      document.getElementById('genre-form-cover').value = "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500";
+      document.getElementById('genre-form-cover-file').value = "";
       document.getElementById('btn-save-genre').textContent = "افزودن سبک";
       openModal('modal-genre');
     }
@@ -2593,6 +2612,8 @@
       document.getElementById('modal-genre-title').textContent = `ویرایش سبک: ${g.name}`;
       document.getElementById('genre-form-id').value = g.id;
       document.getElementById('genre-form-name').value = g.name;
+      document.getElementById('genre-form-cover').value = g.cover || "";
+      document.getElementById('genre-form-cover-file').value = "";
       document.getElementById('btn-save-genre').textContent = "ذخیره تغییرات";
       openModal('modal-genre');
     }
@@ -2610,18 +2631,30 @@
       saveBtn.disabled = true;
       saveBtn.textContent = 'در حال ذخیره‌سازی...';
 
+      const formData = new FormData();
+      formData.append('name', name);
+
+      const fileInput = document.getElementById('genre-form-cover-file');
+      if (fileInput.files && fileInput.files[0]) {
+        formData.append('cover_file', fileInput.files[0]);
+      } else {
+        formData.append('cover_url', document.getElementById('genre-form-cover').value);
+      }
+
+      if (genreId) {
+        formData.append('_method', 'PUT');
+      }
+
       const endpoint = genreId ? `/api/genres/${genreId}` : '/api/genres';
-      const method = genreId ? 'PUT' : 'POST';
 
       try {
         const res = await fetch(endpoint, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
             'Accept': 'application/json',
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
           },
-          body: JSON.stringify({ name: name, _method: method })
+          body: formData
         });
 
         const data = await res.json().catch(() => null);
