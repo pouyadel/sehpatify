@@ -79,7 +79,6 @@
         var(--bg);
     }
 
-    /* دکمه بازگشت به صفحه اصلی */
     .back-home-pill {
       position: absolute;
       top: 22px;
@@ -106,7 +105,6 @@
       border-color: var(--border-brand);
     }
 
-    /* کارت اصلی شیشه‌ای */
     .auth-glass-card {
       width: 100%;
       max-width: 440px;
@@ -127,7 +125,6 @@
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* هدر لوگو */
     .auth-brand-box {
       display: flex;
       flex-direction: column;
@@ -168,7 +165,6 @@
       margin-top: 2px;
     }
 
-    /* سوییچر تب ورود / ثبت‌نام */
     .auth-tabs-switcher {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -198,7 +194,6 @@
       box-shadow: 0 2px 14px var(--brand-glow);
     }
 
-    /* نمایش خطا یا پیام */
     .auth-alert {
       display: none;
       padding: 10px 14px;
@@ -223,7 +218,6 @@
       color: var(--brand);
     }
 
-    /* فرم‌ها */
     .auth-form-panel {
       display: none;
       flex-direction: column;
@@ -259,6 +253,19 @@
       font-size: 10.5px;
       font-weight: 500;
       color: var(--muted-dark);
+    }
+
+    .forgot-link {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--brand);
+      cursor: pointer;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .forgot-link:hover {
+      text-decoration: underline;
     }
 
     .input-box {
@@ -324,7 +331,6 @@
       color: var(--text);
     }
 
-    /* دکمه ثبت */
     .btn-submit-auth {
       margin-top: 6px;
       width: 100%;
@@ -376,7 +382,6 @@
       text-decoration: underline;
     }
 
-    /* واکنش‌گرایی مخصوص موبایل */
     @media (max-width: 480px) {
       .auth-page-wrapper {
         padding: 16px 12px;
@@ -439,7 +444,7 @@
       </div>
 
       <!-- تب ورود و ثبت‌نام -->
-      <div class="auth-tabs-switcher">
+      <div class="auth-tabs-switcher" id="auth-tabs-bar">
         <button type="button" class="auth-tab-btn active" id="tab-btn-login" onclick="switchAuthTab('login')">ورود به حساب</button>
         <button type="button" class="auth-tab-btn" id="tab-btn-register" onclick="switchAuthTab('register')">ثبت‌نام رایگان</button>
       </div>
@@ -464,6 +469,7 @@
         <div class="field-group">
           <label class="field-label">
             <span>رمز عبور</span>
+            <a class="forgot-link" onclick="switchAuthTab('forgot')">رمز عبور را فراموش کرده‌اید؟</a>
           </label>
           <div class="input-box">
             <span class="input-icon">
@@ -485,7 +491,7 @@
         </div>
       </form>
 
-      <!-- ۲. فرم ثبت‌نام (فقط یوزرنیم، ایمیل، شماره تلفن و رمز) -->
+      <!-- ۲. فرم ثبت‌نام -->
       <form class="auth-form-panel" id="form-register" onsubmit="submitRegister(event)">
         <div class="field-group">
           <label class="field-label">
@@ -550,6 +556,34 @@
         </div>
       </form>
 
+      <!-- ۳. فرم بازیابی رمز عبور (ارسال به ایمیل) -->
+      <form class="auth-form-panel" id="form-forgot" onsubmit="submitForgot(event)">
+        <div style="text-align:center; margin-bottom: 4px;">
+          <h3 style="font-size:15px; font-weight:800; color:var(--text);">بازیابی رمز عبور</h3>
+          <p style="font-size:12px; color:var(--muted); margin-top:4px;">آدرس ایمیل ثبت‌شده خود را وارد کنید تا رمز عبور جدید برایتان ایمیل شود.</p>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">
+            <span>آدرس ایمیل حساب شما</span>
+          </label>
+          <div class="input-box">
+            <span class="input-icon">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </span>
+            <input type="email" class="auth-input" id="forgot-email" placeholder="example@gmail.com" required />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit-auth" id="btn-forgot-submit">
+          <span>ارسال رمز عبور جدید به ایمیل</span>
+        </button>
+
+        <div class="auth-footer-note">
+          رمزتان را به خاطر آوردید؟ <a onclick="switchAuthTab('login')">بازگشت به صفحه ورود</a>
+        </div>
+      </form>
+
     </div>
   </div>
 
@@ -559,11 +593,17 @@
       alertBox.className = 'auth-alert';
       alertBox.textContent = '';
 
+      const tabsBar = document.getElementById('auth-tabs-bar');
+      if (tabsBar) {
+        tabsBar.style.display = (tab === 'forgot') ? 'none' : 'grid';
+      }
+
       document.getElementById('tab-btn-login').classList.toggle('active', tab === 'login');
       document.getElementById('tab-btn-register').classList.toggle('active', tab === 'register');
 
       document.getElementById('form-login').classList.toggle('active', tab === 'login');
       document.getElementById('form-register').classList.toggle('active', tab === 'register');
+      document.getElementById('form-forgot').classList.toggle('active', tab === 'forgot');
     }
 
     function togglePasswordVisibility(inputId, btn) {
@@ -651,6 +691,42 @@
       } finally {
         btn.disabled = false;
         btn.textContent = 'تکمیل ثبت‌نام و ورود';
+      }
+    }
+
+    async function submitForgot(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-forgot-submit');
+      btn.disabled = true;
+      btn.textContent = 'در حال ارسال ایمیل...';
+
+      try {
+        const res = await fetch('/auth/forgot-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+          },
+          body: JSON.stringify({
+            email: document.getElementById('forgot-email').value.trim()
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          const firstError = data.errors ? Object.values(data.errors)[0][0] : data.message;
+          showAuthAlert(firstError || 'خطا در بازیابی رمز عبور', 'error');
+        } else {
+          showAuthAlert(data.message, 'success');
+          document.getElementById('forgot-email').value = '';
+        }
+      } catch (err) {
+        showAuthAlert('خطا در ارتباط با سرور', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'ارسال رمز عبور جدید به ایمیل';
       }
     }
   </script>

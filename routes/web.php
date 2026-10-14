@@ -74,3 +74,4 @@ Route::get('/auth', [AuthController::class, 'showAuthForm'])->name('login');
 Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
