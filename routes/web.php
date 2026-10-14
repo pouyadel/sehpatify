@@ -78,4 +78,11 @@ Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
 Route::middleware('auth')->group(function () {
     Route::post('/auth/profile', [AuthController::class, 'updateProfile']);
     Route::post('/auth/password', [AuthController::class, 'updatePassword']);
+
+    // مسیرهای پلی‌لیست‌های شخصی هر اکانت (تا سقف ۱۰ پلی‌لیست)
+    Route::post('/api/my-playlists', [PlaylistController::class, 'storeUserPlaylist']);
+    Route::post('/api/my-playlists/{id}', [PlaylistController::class, 'updateUserPlaylist']);
+    Route::delete('/api/my-playlists/{id}', [PlaylistController::class, 'destroyUserPlaylist']);
+    Route::post('/api/my-playlists/{id}/add-track', [PlaylistController::class, 'addTrackToUserPlaylist']);
+    Route::post('/api/my-playlists/{id}/remove-track', [PlaylistController::class, 'removeTrackFromUserPlaylist']);
 });

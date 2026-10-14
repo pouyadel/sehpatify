@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="/logo.png" />
 
   <style>
     :root {
@@ -134,22 +135,24 @@
     }
 
     .auth-logo-wrap {
-      width: 56px;
-      height: 56px;
+      width: 64px;
+      height: 64px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, rgba(16, 185, 84, 0.24), rgba(18, 18, 28, 0.95));
+      background: linear-gradient(135deg, rgba(16, 185, 84, 0.18), rgba(14, 14, 23, 0.9));
       border: 1px solid var(--border-brand);
-      border-radius: 16px;
+      border-radius: 18px;
       box-shadow: 0 0 24px var(--brand-glow-lg);
       margin-bottom: 12px;
+      padding: 8px;
     }
 
     .auth-logo-svg {
-      width: 38px;
-      height: 38px;
-      filter: drop-shadow(0 0 8px rgba(16, 185, 84, 0.85));
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(16, 185, 84, 0.7));
     }
 
     .auth-brand-title {
@@ -433,11 +436,7 @@
       <!-- هدر و لوگو -->
       <div class="auth-brand-box">
         <div class="auth-logo-wrap">
-          <svg class="auth-logo-svg" viewBox="0 0 320 240" fill="none">
-            <path d="M 68 126 C 68 148, 86 172, 116 172 C 146 172, 142 64, 160 64 C 178 64, 174 172, 204 172 C 234 172, 252 148, 252 126" stroke="#10B954" stroke-width="26" stroke-linecap="round" />
-            <circle cx="68" cy="126" r="14" fill="#4ADE80" />
-            <circle cx="252" cy="126" r="14" fill="#10B954" />
-          </svg>
+          <img src="/logo.png" class="auth-logo-svg" alt="Sehpatify Logo" />
         </div>
         <h1 class="auth-brand-title">SEHPATIFY</h1>
         <p class="auth-brand-sub">ریتم، درون تو زنده است</p>
@@ -729,6 +728,7 @@
         btn.textContent = 'ارسال رمز عبور جدید به ایمیل';
       }
     }
+    
   </script>
 </body>
 </html>

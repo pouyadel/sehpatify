@@ -12,8 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="manifest" href="/manifest.json">
-
+  <link rel="icon" type="image/png" href="/logo.png" />
   <style>
     :root {
       --brand: #10B954;
@@ -131,24 +130,23 @@
       cursor: pointer;
     }
 
+    /* اگر می‌خواهید کادر شیشه‌ای تیره دور لوگو باشد */
     .brand-logo-wrap {
-      position: relative;
       width: 44px;
       height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, rgba(16, 185, 84, 0.22), rgba(18, 18, 28, 0.95));
-      border: 1px solid var(--border-brand);
-      border-radius: 12px;
-      box-shadow: 0 0 16px var(--brand-glow-lg);
-      flex-shrink: 0;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
     }
-
+    
     .brand-logo-svg {
-      width: 32px;
-      height: 32px;
-      filter: drop-shadow(0 0 6px rgba(16, 185, 84, 0.8));
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 8px rgba(16, 185, 84, 0.65));
     }
 
     .brand-text-col {
@@ -305,8 +303,8 @@
     }
 
     .topbar-mobile-logo .brand-logo-svg {
-      width: 24px;
-      height: 24px;
+      width: 100%;
+      height: 100%;
     }
 
     .search-container {
@@ -2098,11 +2096,7 @@
     <aside class="sidebar" id="sidebar">
       <a class="brand-header" onclick="switchView('home')" title="سهپاتیفای — صفحه اصلی">
         <div class="brand-logo-wrap">
-          <svg class="brand-logo-svg" viewBox="0 0 320 240" fill="none">
-            <path d="M 68 126 C 68 148, 86 172, 116 172 C 146 172, 142 64, 160 64 C 178 64, 174 172, 204 172 C 234 172, 252 148, 252 126" stroke="#10B954" stroke-width="26" stroke-linecap="round" />
-            <circle cx="68" cy="126" r="14" fill="#4ADE80" />
-            <circle cx="252" cy="126" r="14" fill="#10B954" />
-          </svg>
+          <img src="/logo.png" class="brand-logo-svg" alt="Sehpatify Logo" />
         </div>
         <div class="brand-text-col">
           <div class="brand-title"><span class="en">SEHPATIFY</span></div>
@@ -2191,11 +2185,7 @@
             <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
           </button>
           <div class="brand-logo-wrap" onclick="switchView('home')">
-            <svg class="brand-logo-svg" viewBox="0 0 320 240" fill="none">
-              <path d="M 68 126 C 68 148, 86 172, 116 172 C 146 172, 142 64, 160 64 C 178 64, 174 172, 204 172 C 234 172, 252 148, 252 126" stroke="#10B954" stroke-width="26" stroke-linecap="round" />
-              <circle cx="68" cy="126" r="14" fill="#4ADE80" />
-              <circle cx="252" cy="126" r="14" fill="#10B954" />
-            </svg>
+            <img src="/logo.png" class="brand-logo-svg" alt="Sehpatify Logo" />
           </div>
         </div>
 
@@ -2492,6 +2482,17 @@
                   <svg width="17" height="17" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                   <span>پخش تمام قطعات</span>
                 </button>
+                <!-- دکمه‌های مخصوص صاحب پلی‌لیست برای ویرایش آهنگ‌ها/نام و حذف -->
+                <div id="playlist-owner-actions" style="display:none; gap:10px; flex-wrap:wrap;">
+                  <button class="btn-secondary" onclick="openEditUserPlaylistModal()">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
+                    <span>ویرایش پلی‌لیست و آهنگ‌ها</span>
+                  </button>
+                  <button class="btn-secondary" onclick="deleteCurrentUserPlaylist()" style="color:#f87171; border-color:rgba(248,113,113,0.35);">
+                    <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    <span>حذف پلی‌لیست</span>
+                  </button>
+                </div>
                 <button class="btn-secondary" onclick="switchView('playlists')">
                   <span>بازگشت به لیست</span>
                 </button>
@@ -2900,20 +2901,53 @@
       <div id="queue-container" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px;"></div>
     </div>
 
-    <!-- مودال ساخت پلی‌لیست شخصی -->
+    <!-- مودال ساخت و ویرایش پلی‌لیست شخصی (همراه با انتخابگر آهنگ‌ها) -->
     <div class="modal-overlay" id="modal-create-playlist">
-      <div class="modal-glass-box">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
-          <h3 style="font-size:16px; font-weight:800;">ساخت پلی‌لیست شخصی جدید</h3>
+      <div class="modal-glass-box" style="max-width: 540px; max-height: 90vh; overflow-y: auto;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="font-size:16px; font-weight:800;" id="custom-playlist-modal-title">ساخت پلی‌لیست شخصی جدید</h3>
           <button class="action-icon-btn" onclick="closeCreatePlaylistModal()">✕</button>
         </div>
-        <p style="font-size:12px; color:var(--muted); margin-bottom:14px;">هر کاربر می‌تواند حداکثر ۱۰ پلی‌لیست شخصی داشته باشد.</p>
+        <p style="font-size:11.5px; color:var(--muted); margin-bottom:14px;">هر حساب کاربری می‌تواند تا ۱۰ پلی‌لیست شخصی بسازد (فقط برای شما قابل نمایش است مگر آنکه مدیریت آن را به اشتراک بگذارد).</p>
+
+        <input type="hidden" id="custom-playlist-id" value="" />
+
         <div style="display:flex; flex-direction:column; gap:12px;">
-          <input type="text" id="custom-playlist-title" class="search-input" style="padding:10px 14px;" placeholder="نام پلی‌لیست (مثال: شب‌های بارانی)..." />
-          <textarea id="custom-playlist-desc" class="search-input" style="padding:10px 14px; border-radius:12px; height:80px; resize:none;" placeholder="توضیحات کوتاه درباره این مجموعه..."></textarea>
+          <div>
+            <label style="font-size:11.5px; font-weight:700; color:var(--muted); display:block; margin-bottom:4px;">نام پلی‌لیست *</label>
+            <input type="text" id="custom-playlist-title" class="search-input" style="padding:10px 14px; border-radius:10px;" placeholder="مثال: شب‌های بارانی..." />
+          </div>
+
+          <div>
+            <label style="font-size:11.5px; font-weight:700; color:var(--muted); display:block; margin-bottom:4px;">توضیحات کوتاه</label>
+            <input type="text" id="custom-playlist-desc" class="search-input" style="padding:10px 14px; border-radius:10px;" placeholder="توضیحات درباره حال و هوای این پلی‌لیست..." />
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div>
+              <label style="font-size:11.5px; font-weight:700; color:var(--muted); display:block; margin-bottom:4px;">آپلود تصویر کاور</label>
+              <input type="file" id="custom-playlist-cover-file" accept="image/*" class="search-input" style="padding:7px 10px; border-radius:10px; font-size:11.5px;" />
+            </div>
+            <div>
+              <label style="font-size:11.5px; font-weight:700; color:var(--muted); display:block; margin-bottom:4px;">یا لینک تصویر کاور</label>
+              <input type="text" id="custom-playlist-cover-url" class="search-input" style="padding:10px 12px; border-radius:10px; direction:ltr; text-align:left;" placeholder="https://..." />
+            </div>
+          </div>
+
+          <!-- انتخاب و حذف آهنگ‌ها از قطعات موجود در پلتفرم -->
+          <div style="margin-top:4px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <label style="font-size:12px; font-weight:800; color:var(--brand);">انتخاب آهنگ‌های داخل پلی‌لیست:</label>
+              <span style="font-size:11px; color:var(--muted);" id="custom-playlist-selected-count">۰ آهنگ انتخاب شده</span>
+            </div>
+            <input type="text" id="custom-playlist-tracks-search" class="search-input" style="padding:8px 14px; border-radius:10px; font-size:12px; margin-bottom:8px;" placeholder="جستجوی سریع نام آهنگ یا خواننده..." oninput="filterUserPlaylistTracksPicker(this.value)" />
+            
+            <div id="custom-playlist-tracks-picker" style="max-height:190px; overflow-y:auto; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; padding:8px; display:flex; flex-direction:column; gap:6px;"></div>
+          </div>
+
           <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:8px;">
-            <button class="btn-secondary" onclick="closeCreatePlaylistModal()">انصراف</button>
-            <button class="btn-brand" onclick="saveCustomPlaylist()">ایجاد پلی‌لیست</button>
+            <button type="button" class="btn-secondary" onclick="closeCreatePlaylistModal()">انصراف</button>
+            <button type="button" class="btn-brand" id="btn-save-custom-playlist" onclick="saveCustomPlaylist()">ذخیره پلی‌لیست</button>
           </div>
         </div>
       </div>
@@ -2963,6 +2997,7 @@
   </div>
 
   <script>
+    const IS_USER_LOGGED_IN = {{ auth()->check() ? 'true' : 'false' }};
     let realPlayer = new Audio();
 
     let ALL_TRACKS = [];
@@ -2983,33 +3018,24 @@
     let currentSeconds = 0;
     let isShuffle = false;
     let isRepeat = false;
-    let shufflePool = []; // مخزن برای شافل بدون تکرار
-    let drawerZIndex = 45; // اولویت لایه‌های لیریکس و صف پخش
-    let repeatMode = 0;
+    let shufflePool = [];
+    let drawerZIndex = 45;
     let isUserScrubbing = false;
     let currentSearchFilter = 'all';
 
-    function loadCustomPlaylistsFromStorage() {
-      try {
-        const stored = localStorage.getItem('sehpatify_custom_user_playlists');
-        USER_CUSTOM_PLAYLISTS = stored ? JSON.parse(stored) : [];
-      } catch (e) {
-        USER_CUSTOM_PLAYLISTS = [];
-      }
+    // تفکیک پلی‌لیست‌های شخصی اکانت کاربر از کل پلی‌لیست‌های دریافتی دیتابیس
+    function syncUserAndPublicPlaylists() {
+      USER_CUSTOM_PLAYLISTS = (PLAYLISTS_DB || []).filter(p => p.is_mine);
     }
 
-    function saveCustomPlaylistsToStorage() {
-      localStorage.setItem('sehpatify_custom_user_playlists', JSON.stringify(USER_CUSTOM_PLAYLISTS));
-    }
-
-   function onSearchInputFocus() {
+    function onSearchInputFocus() {
       if (!document.getElementById('view-search')?.classList.contains('active')) {
         switchView('search');
       }
     }
 
     async function initAppData() {
-      loadCustomPlaylistsFromStorage();
+      localStorage.removeItem('sehpatify_custom_user_playlists');
 
       try {
         const results = await Promise.allSettled([
@@ -3017,7 +3043,7 @@
           fetch('/api/playlists'),
           fetch('/api/artists'),
           fetch('/api/genres'),
-          fetch('/api/albums') // اضافه شود
+          fetch('/api/albums')
         ]);
 
         if (results[0].status === 'fulfilled' && results[0].value.ok) {
@@ -3025,6 +3051,7 @@
         }
         if (results[1].status === 'fulfilled' && results[1].value.ok) {
           PLAYLISTS_DB = await results[1].value.json();
+          syncUserAndPublicPlaylists();
         }
         if (results[2].status === 'fulfilled' && results[2].value.ok) {
           ARTISTS_DB = await results[2].value.json();
@@ -3032,8 +3059,10 @@
         if (results[3].status === 'fulfilled' && results[3].value.ok) {
           GENRES_DB = await results[3].value.json();
         }
-        if (results[4].status === 'fulfilled' && results[4].value.ok) ALBUMS_DB = await results[4].value.json(); // اضافه شود
-        
+        if (results[4].status === 'fulfilled' && results[4].value.ok) {
+          ALBUMS_DB = await results[4].value.json();
+        }
+
         renderAppViews();
 
         if (ALL_TRACKS.length > 0) {
@@ -3046,15 +3075,30 @@
       }
     }
 
+    async function refreshUserPlaylistsFromServer() {
+      try {
+        const res = await fetch('/api/playlists');
+        if (res.ok) {
+          PLAYLISTS_DB = await res.json();
+          syncUserAndPublicPlaylists();
+          renderAppViews();
+          updateProfileStatsView();
+        }
+      } catch (e) {}
+    }
+
     function renderAppViews() {
+      syncUserAndPublicPlaylists();
+
+      // ۱. رندر پلی‌لیست‌های عمومی در صفحه اصلی
       const homePlaylists = document.getElementById('home-playlists-grid');
-      const combinedPlaylists = [...PLAYLISTS_DB, ...USER_CUSTOM_PLAYLISTS];
+      const publicPlaylists = PLAYLISTS_DB.filter(p => p.is_public);
 
       if (homePlaylists) {
-        if (combinedPlaylists.length === 0) {
+        if (publicPlaylists.length === 0) {
           homePlaylists.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:24px; color:var(--muted); font-size:12.5px;">هنوز پلی‌لیستی ثبت نشده است.</div>`;
         } else {
-          homePlaylists.innerHTML = combinedPlaylists.map(p => `
+          homePlaylists.innerHTML = publicPlaylists.map(p => `
             <div class="music-card" onclick="openPlaylistPage('${p.id}')">
               <div class="card-art-box">
                 <img class="card-art-img" src="${p.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300'}" alt="${escapeHtml(p.title)}" />
@@ -3067,6 +3111,7 @@
         }
       }
 
+      // ۲. پیشنهادها
       const featured = document.getElementById('home-featured-grid');
       if (featured) {
         featured.innerHTML = ALL_TRACKS.slice(0, 6).map((t, idx) => `
@@ -3084,6 +3129,7 @@
       renderTracksTableList(ALL_TRACKS.slice(0, 6), 'home-recent-tracks');
       renderTracksTableList(ALL_TRACKS, 'all-tracks-list');
 
+      // ۳. هنرمندان
       const artistsGrid = document.getElementById('home-artists-grid');
       const artistsPageGrid = document.getElementById('artists-page-grid');
       const navArtistsCount = document.getElementById('nav-artists-count');
@@ -3104,9 +3150,10 @@
       if (artistsGrid) artistsGrid.innerHTML = artistsHtml;
       if (artistsPageGrid) artistsPageGrid.innerHTML = artistsHtml;
 
+      // ۴. پلی‌لیست‌ها و کتابخانه شخصی
       renderPlaylistsDirectory();
 
-      // رندر سبک‌ها در صفحه اصلی و صفحه اکتشاف با کاور اختصاصی
+      // ۵. سبک‌ها و ژانرها
       const discGrid = document.getElementById('discover-genres-grid');
       const homeGenresGrid = document.getElementById('home-genres-grid');
 
@@ -3126,8 +3173,10 @@
       if (discGrid) discGrid.innerHTML = genresHtml;
       if (homeGenresGrid) homeGenresGrid.innerHTML = genresHtml;
 
+      // ۶. علاقه‌مندی‌ها
       renderFavoritesView();
-      // رندر آلبوم‌ها در صفحه اصلی و صفحه آلبوم‌ها
+
+      // ۷. آلبوم‌ها
       const homeAlbumsGrid = document.getElementById('home-albums-grid');
       const albumsPageGrid = document.getElementById('albums-page-grid');
       const navAlbumsCount = document.getElementById('nav-albums-count');
@@ -3146,7 +3195,8 @@
           `).join('')
         : `<div style="grid-column: 1/-1; text-align:center; padding:24px; color:var(--muted); font-size:12.5px;">هنوز آلبومی ثبت نشده است.</div>`;
 
-      if (homeAlbumsGrid) homeAlbumsGrid.innerHTML = (ALBUMS_DB.slice(0, 6).map(alb => `
+      if (homeAlbumsGrid) {
+        homeAlbumsGrid.innerHTML = (ALBUMS_DB.slice(0, 6).map(alb => `
             <div class="music-card" onclick="openAlbumPage('${alb.id}')">
               <div class="card-art-box">
                 <img class="card-art-img" src="${alb.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300'}" alt="${escapeHtml(alb.title)}" />
@@ -3155,36 +3205,53 @@
               <div class="card-title">${escapeHtml(alb.title)}</div>
               <div class="card-subtitle">${escapeHtml(alb.artist_name || 'نامشخص')}</div>
             </div>
-      `).join('')) || `<div style="grid-column: 1/-1; text-align:center; padding:20px; color:var(--muted);">آلبومی وجود ندارد.</div>`;
+        `).join('')) || `<div style="grid-column: 1/-1; text-align:center; padding:20px; color:var(--muted);">آلبومی وجود ندارد.</div>`;
+      }
 
       if (albumsPageGrid) albumsPageGrid.innerHTML = albumsHtml;
     }
 
     function renderPlaylistsDirectory() {
+      syncUserAndPublicPlaylists();
       const playlistsGrid = document.getElementById('playlists-grid');
       const libraryGrid = document.getElementById('library-playlists-grid');
       const counterEl = document.getElementById('user-custom-playlist-counter');
       const navCount = document.getElementById('nav-playlists-count');
 
-      const combined = [...PLAYLISTS_DB, ...USER_CUSTOM_PLAYLISTS];
-      if (navCount) navCount.textContent = combined.length;
+      if (navCount) navCount.textContent = PLAYLISTS_DB.length;
       if (counterEl) counterEl.textContent = `پلی‌لیست‌های شخصی شما: ${USER_CUSTOM_PLAYLISTS.length} از ۱۰`;
 
-      const playlistsHtml = combined.length > 0 
-        ? combined.map(p => `
-          <div class="music-card" onclick="openPlaylistPage('${p.id}')">
-            <div class="card-art-box">
-              <img class="card-art-img" src="${p.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300'}" alt="${escapeHtml(p.title)}" />
-              <button class="card-play-overlay"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+      // صفحه پلی‌لیست‌ها (عمومی‌ها + پلی‌لیست‌های خود کاربر)
+      if (playlistsGrid) {
+        playlistsGrid.innerHTML = PLAYLISTS_DB.length > 0 
+          ? PLAYLISTS_DB.map(p => `
+            <div class="music-card" onclick="openPlaylistPage('${p.id}')">
+              <div class="card-art-box">
+                <img class="card-art-img" src="${p.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300'}" alt="${escapeHtml(p.title)}" />
+                <button class="card-play-overlay"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+              </div>
+              <div class="card-title">${escapeHtml(p.title)}</div>
+              <div class="card-subtitle">${(p.tracks ? p.tracks.length : 0)} قطعه • ${p.is_mine ? (p.is_public ? 'عمومی شما' : 'شخصی شما') : escapeHtml(p.owner_name || 'رسمی')}</div>
             </div>
-            <div class="card-title">${escapeHtml(p.title)}</div>
-            <div class="card-subtitle">${(p.tracks ? p.tracks.length : 0)} قطعه صوتی</div>
-          </div>
-        `).join('')
-        : `<div style="grid-column: 1/-1; text-align:center; padding:30px; color:var(--muted);">پلی‌لیستی برای نمایش وجود ندارد.</div>`;
+          `).join('')
+          : `<div style="grid-column: 1/-1; text-align:center; padding:30px; color:var(--muted);">پلی‌لیستی برای نمایش وجود ندارد.</div>`;
+      }
 
-      if (playlistsGrid) playlistsGrid.innerHTML = playlistsHtml;
-      if (libraryGrid) libraryGrid.innerHTML = playlistsHtml;
+      // صفحه کتابخانه من (فقط پلی‌لیست‌های شخصی اکانت کاربر)
+      if (libraryGrid) {
+        libraryGrid.innerHTML = USER_CUSTOM_PLAYLISTS.length > 0
+          ? USER_CUSTOM_PLAYLISTS.map(p => `
+            <div class="music-card" onclick="openPlaylistPage('${p.id}')">
+              <div class="card-art-box">
+                <img class="card-art-img" src="${p.cover || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300'}" alt="${escapeHtml(p.title)}" />
+                <button class="card-play-overlay"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+              </div>
+              <div class="card-title">${escapeHtml(p.title)}</div>
+              <div class="card-subtitle">${(p.tracks ? p.tracks.length : 0)} قطعه • ${p.is_public ? '🌐 عمومی شده' : '🔒 خصوصی'}</div>
+            </div>
+          `).join('')
+          : `<div style="grid-column: 1/-1; text-align:center; padding:30px; color:var(--muted);">شما هنوز پلی‌لیست شخصی نساخته‌اید. روی دکمه «+ ساخت پلی‌لیست شخصی» کلیک کنید.</div>`;
+      }
     }
 
     function renderTracksTableList(tracks, containerId, customOnClick = null) {
@@ -3235,35 +3302,281 @@
 
     async function openPlaylistPage(playlistId) {
       try {
-        let playlist = [...PLAYLISTS_DB, ...USER_CUSTOM_PLAYLISTS].find(p => String(p.id) === String(playlistId));
+        let playlist = PLAYLISTS_DB.find(p => String(p.id) === String(playlistId));
 
-        if (!playlist || !playlist.is_custom) {
-          try {
-            const res = await fetch(`/api/playlists/${playlistId}`);
-            if (res.ok) playlist = await res.json();
-          } catch (e) {}
-        }
+        try {
+          const res = await fetch(`/api/playlists/${playlistId}`);
+          if (res.ok) playlist = await res.json();
+        } catch (e) {}
 
-        if (!playlist) {
-          showToast('پلی‌لیست مورد نظر یافت نشد.');
-          return;
-        }
+        if (!playlist) return;
 
         ACTIVE_PLAYLIST = playlist;
 
         document.getElementById('playlist-page-name').textContent = playlist.title;
-        document.getElementById('playlist-page-desc').textContent = playlist.desc || 'کالکشن اختصاصی استودیو سهپاتیفای با بهترین قطعات برگزیده';
+        document.getElementById('playlist-page-desc').textContent = playlist.desc || 'کالکشن اختصاصی سهپاتیفای';
         document.getElementById('playlist-page-img').src = playlist.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500';
         
         const count = playlist.tracks ? playlist.tracks.length : 0;
         document.getElementById('playlist-page-track-count').textContent = `${count} قطعه صوتی`;
 
+        // نمایش دکمه‌های ویرایش و حذف فقط برای صاحب پلی‌لیست
+        const ownerActions = document.getElementById('playlist-owner-actions');
+        if (ownerActions) {
+          ownerActions.style.display = playlist.is_mine ? 'inline-flex' : 'none';
+        }
+
         renderTracksTableList(playlist.tracks || [], 'playlist-tracks-list', 'playTrackInPlaylist');
         switchView('playlist');
-      } catch (err) {
-        showToast('خطا در باز کردن پلی‌لیست');
+      } catch (err) {}
+    }
+
+    function playAllPlaylistTracks() {
+      if (!ACTIVE_PLAYLIST || !ACTIVE_PLAYLIST.tracks || ACTIVE_PLAYLIST.tracks.length === 0) return;
+      CURRENT_QUEUE = [...ACTIVE_PLAYLIST.tracks];
+      currentQueueIndex = 0;
+      resetShufflePool();
+      playCurrentQueue();
+    }
+
+    function playTrackInPlaylist(idx) {
+      if (!ACTIVE_PLAYLIST || !ACTIVE_PLAYLIST.tracks) return;
+      CURRENT_QUEUE = [...ACTIVE_PLAYLIST.tracks];
+      currentQueueIndex = idx;
+      resetShufflePool();
+      playCurrentQueue();
+    }
+
+    // رندر لیست انتخاب آهنگ‌ها در مودال پلی‌لیست شخصی کاربر
+    function renderUserPlaylistTracksPicker(selectedTrackIds = []) {
+      const container = document.getElementById('custom-playlist-tracks-picker');
+      if (!container) return;
+
+      const selectedSet = new Set(selectedTrackIds.map(Number));
+
+      if (!ALL_TRACKS || ALL_TRACKS.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:14px; color:var(--muted); font-size:12px;">آهنگی در پلتفرم موجود نیست.</div>`;
+        return;
+      }
+
+      container.innerHTML = ALL_TRACKS.map(t => {
+        const checked = selectedSet.has(Number(t.id)) ? 'checked' : '';
+        const searchStr = `${t.title || ''} ${t.artist || ''} ${t.album || ''} ${t.search_keywords || ''}`.toLowerCase();
+        return `
+          <label class="user-pl-track-item" data-search="${escapeHtml(searchStr)}" style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 8px; border-radius:8px; background:rgba(255,255,255,0.02); cursor:pointer;">
+            <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+              <input type="checkbox" class="user-pl-track-cb" value="${t.id}" ${checked} onchange="updateUserPlaylistSelectedCount()" style="accent-color:var(--brand); width:16px; height:16px; cursor:pointer;" />
+              <img src="${t.cover || ''}" style="width:32px; height:32px; border-radius:6px; object-fit:cover; flex-shrink:0;" />
+              <div style="min-width:0;">
+                <div style="font-size:12.5px; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(t.title)}</div>
+                <div style="font-size:10.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(t.artist)}</div>
+              </div>
+            </div>
+            <span style="font-size:11px; color:var(--muted); direction:ltr;">${t.duration || '03:30'}</span>
+          </label>
+        `;
+      }).join('');
+
+      updateUserPlaylistSelectedCount();
+    }
+
+    function filterUserPlaylistTracksPicker(query) {
+      const q = (query || '').toLowerCase().trim();
+      document.querySelectorAll('#custom-playlist-tracks-picker .user-pl-track-item').forEach(item => {
+        const s = item.getAttribute('data-search') || '';
+        item.style.display = (!q || s.includes(q)) ? 'flex' : 'none';
+      });
+    }
+
+    function updateUserPlaylistSelectedCount() {
+      const c = document.querySelectorAll('.user-pl-track-cb:checked').length;
+      const el = document.getElementById('custom-playlist-selected-count');
+      if (el) el.textContent = `${c} آهنگ انتخاب شده`;
+    }
+
+    function openCreatePlaylistModal() {
+      if (!IS_USER_LOGGED_IN) {
+        window.location.href = '/auth';
+        return;
+      }
+
+      syncUserAndPublicPlaylists();
+      if (USER_CUSTOM_PLAYLISTS.length >= 10) {
+        alert('شما به سقف مجاز ساخت ۱۰ پلی‌لیست شخصی رسیده‌اید.');
+        return;
+      }
+
+      document.getElementById('custom-playlist-modal-title').textContent = 'ساخت پلی‌لیست شخصی جدید';
+      document.getElementById('custom-playlist-id').value = '';
+      document.getElementById('custom-playlist-title').value = '';
+      document.getElementById('custom-playlist-desc').value = '';
+      document.getElementById('custom-playlist-cover-file').value = '';
+      document.getElementById('custom-playlist-cover-url').value = '';
+      document.getElementById('custom-playlist-tracks-search').value = '';
+      document.getElementById('btn-save-custom-playlist').textContent = 'ایجاد پلی‌لیست';
+
+      renderUserPlaylistTracksPicker([]);
+      document.getElementById('modal-create-playlist').classList.add('open');
+    }
+
+    function openEditUserPlaylistModal() {
+      if (!ACTIVE_PLAYLIST || !ACTIVE_PLAYLIST.is_mine) return;
+
+      document.getElementById('custom-playlist-modal-title').textContent = `ویرایش پلی‌لیست: ${ACTIVE_PLAYLIST.title}`;
+      document.getElementById('custom-playlist-id').value = ACTIVE_PLAYLIST.id;
+      document.getElementById('custom-playlist-title').value = ACTIVE_PLAYLIST.title || '';
+      document.getElementById('custom-playlist-desc').value = ACTIVE_PLAYLIST.desc || '';
+      document.getElementById('custom-playlist-cover-file').value = '';
+      document.getElementById('custom-playlist-cover-url').value = ACTIVE_PLAYLIST.cover || '';
+      document.getElementById('custom-playlist-tracks-search').value = '';
+      document.getElementById('btn-save-custom-playlist').textContent = 'ذخیره تغییرات';
+
+      const currentTrackIds = ACTIVE_PLAYLIST.tracks ? ACTIVE_PLAYLIST.tracks.map(t => Number(t.id)) : [];
+      renderUserPlaylistTracksPicker(currentTrackIds);
+      document.getElementById('modal-create-playlist').classList.add('open');
+    }
+
+    function closeCreatePlaylistModal() {
+      document.getElementById('modal-create-playlist').classList.remove('open');
+    }
+
+    async function saveCustomPlaylist() {
+      const playlistId = document.getElementById('custom-playlist-id').value;
+      const title = document.getElementById('custom-playlist-title').value.trim();
+      const desc = document.getElementById('custom-playlist-desc').value.trim();
+
+      if (!title) {
+        alert('لطفاً نام پلی‌لیست را وارد کنید.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-save-custom-playlist');
+      btn.disabled = true;
+      btn.textContent = 'در حال ذخیره‌سازی...';
+
+      const formData = new FormData();
+      formData.append('title', title);
+      formData.append('desc', desc);
+
+      const coverFile = document.getElementById('custom-playlist-cover-file');
+      if (coverFile.files && coverFile.files[0]) {
+        formData.append('cover_file', coverFile.files[0]);
+      } else {
+        formData.append('cover_url', document.getElementById('custom-playlist-cover-url').value.trim());
+      }
+
+      document.querySelectorAll('.user-pl-track-cb:checked').forEach(cb => {
+        formData.append('track_ids[]', cb.value);
+      });
+
+      const endpoint = playlistId ? `/api/my-playlists/${playlistId}` : '/api/my-playlists';
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+          },
+          body: formData
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          alert(data.message || 'خطا در ذخیره پلی‌لیست');
+          return;
+        }
+
+        closeCreatePlaylistModal();
+        await refreshUserPlaylistsFromServer();
+
+        if (playlistId) {
+          await openPlaylistPage(playlistId);
+        }
+      } catch (e) {
+        alert('خطا در ارتباط با سرور');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = playlistId ? 'ذخیره تغییرات' : 'ایجاد پلی‌لیست';
       }
     }
+
+    async function deleteCurrentUserPlaylist() {
+      if (!ACTIVE_PLAYLIST || !ACTIVE_PLAYLIST.is_mine) return;
+      if (!confirm(`آیا از حذف پلی‌لیست «${ACTIVE_PLAYLIST.title}» مطمئن هستید؟`)) return;
+
+      try {
+        const res = await fetch(`/api/my-playlists/${ACTIVE_PLAYLIST.id}`, {
+          method: 'DELETE',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+          }
+        });
+
+        if (res.ok) {
+          ACTIVE_PLAYLIST = null;
+          await refreshUserPlaylistsFromServer();
+          switchView('library');
+        }
+      } catch (e) {}
+    }
+
+    function openAddToPlaylistModal(trackId, event) {
+      if (event) event.stopPropagation();
+
+      if (!IS_USER_LOGGED_IN) {
+        window.location.href = '/auth';
+        return;
+      }
+
+      syncUserAndPublicPlaylists();
+      document.getElementById('add-to-playlist-track-id').value = trackId;
+      const container = document.getElementById('user-custom-playlists-picker');
+      
+      if (!USER_CUSTOM_PLAYLISTS || USER_CUSTOM_PLAYLISTS.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--muted); font-size:12.5px;">هنوز پلی‌لیست شخصی نساخته‌اید. ابتدا با زدن دکمه زیر یک پلی‌لیست ایجاد کنید.</div>`;
+      } else {
+        container.innerHTML = USER_CUSTOM_PLAYLISTS.map(p => `
+          <div onclick="addTrackToSpecificCustomPlaylist('${p.id}')" style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; cursor:pointer; transition:var(--transition-fast);">
+            <div style="font-weight:700; font-size:13px; color:var(--text);">${escapeHtml(p.title)}</div>
+            <span style="font-size:11px; color:var(--brand);">${(p.tracks ? p.tracks.length : 0)} قطعه</span>
+          </div>
+        `).join('');
+      }
+
+      document.getElementById('modal-add-to-playlist').classList.add('open');
+    }
+
+    function closeAddToPlaylistModal() {
+      document.getElementById('modal-add-to-playlist').classList.remove('open');
+    }
+
+    async function addTrackToSpecificCustomPlaylist(playlistId) {
+      const trackId = document.getElementById('add-to-playlist-track-id').value;
+
+      try {
+        const res = await fetch(`/api/my-playlists/${playlistId}/add-track`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+          },
+          body: JSON.stringify({ track_id: trackId })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          alert(data.message || 'خطا در افزودن آهنگ');
+        } else {
+          await refreshUserPlaylistsFromServer();
+        }
+      } catch (e) {}
+
+      closeAddToPlaylistModal();
+    }
+
     async function openAlbumPage(albumId) {
       try {
         let album = ALBUMS_DB.find(a => String(a.id) === String(albumId));
@@ -3272,14 +3585,10 @@
           if (res.ok) album = await res.json();
         }
 
-        if (!album) {
-          showToast('آلبوم یافت نشد.');
-          return;
-        }
+        if (!album) return;
 
         ACTIVE_ALBUM = album;
 
-        // فیلتر آهنگ‌های متصل به آلبوم
         if (!album.tracks || album.tracks.length === 0) {
           album.tracks = ALL_TRACKS.filter(t => String(t.album_id) === String(album.id) || (t.album && t.album.trim().toLowerCase() === album.title.trim().toLowerCase()));
         }
@@ -3294,28 +3603,25 @@
 
         renderTracksTableList(album.tracks, 'album-tracks-list', 'playTrackInAlbum');
         switchView('album');
-      } catch (e) {
-        showToast('خطا در باز کردن آلبوم');
-      }
+      } catch (e) {}
     }
 
     function playAllAlbumTracks() {
-      if (!ACTIVE_ALBUM || !ACTIVE_ALBUM.tracks || ACTIVE_ALBUM.tracks.length === 0) {
-        showToast('هنوز قطعه‌ای در این آلبوم ثبت نشده است.');
-        return;
-      }
+      if (!ACTIVE_ALBUM || !ACTIVE_ALBUM.tracks || ACTIVE_ALBUM.tracks.length === 0) return;
       CURRENT_QUEUE = [...ACTIVE_ALBUM.tracks];
       currentQueueIndex = 0;
+      resetShufflePool();
       playCurrentQueue();
-      showToast(`پخش آلبوم «${ACTIVE_ALBUM.title}» آغاز شد ✓`);
     }
 
     function playTrackInAlbum(idx) {
       if (!ACTIVE_ALBUM || !ACTIVE_ALBUM.tracks) return;
       CURRENT_QUEUE = [...ACTIVE_ALBUM.tracks];
       currentQueueIndex = idx;
+      resetShufflePool();
       playCurrentQueue();
     }
+
     function openGenrePage(genreId) {
       const genre = GENRES_DB.find(g => String(g.id) === String(genreId));
       if (!genre) return;
@@ -3326,7 +3632,6 @@
       const gName = norm(genre.name);
       const gSlug = norm(genre.slug);
 
-      // استخراج قطعی تمام آهنگ‌های مربوط به این سبک
       const genreTracks = ALL_TRACKS.filter(t => {
         if (t.genre_id && String(t.genre_id) === String(genre.id)) return true;
         if (t.genre) {
@@ -3345,21 +3650,16 @@
       document.getElementById('genre-page-img').src = genre.cover || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500';
       document.getElementById('genre-page-track-count').textContent = `${genreTracks.length} قطعه صوتی`;
 
-      // ایجاد صف پخش و لیست ترانه‌ها فقط از آهنگ‌های این سبک
       renderTracksTableList(genreTracks, 'genre-tracks-list', 'playTrackInGenre');
       switchView('genre');
     }
 
     function playAllGenreTracks() {
-      if (!ACTIVE_GENRE || !ACTIVE_GENRE.tracks || ACTIVE_GENRE.tracks.length === 0) {
-        showToast('هنوز آهنگی در این سبک ثبت نشده است.');
-        return;
-      }
+      if (!ACTIVE_GENRE || !ACTIVE_GENRE.tracks || ACTIVE_GENRE.tracks.length === 0) return;
       CURRENT_QUEUE = [...ACTIVE_GENRE.tracks];
       currentQueueIndex = 0;
       resetShufflePool();
       playCurrentQueue();
-      showToast(`پخش قطعات سبک «${ACTIVE_GENRE.name}» آغاز شد ✓`);
     }
 
     function playTrackInGenre(idx) {
@@ -3367,13 +3667,6 @@
       CURRENT_QUEUE = [...ACTIVE_GENRE.tracks];
       currentQueueIndex = idx;
       resetShufflePool();
-      playCurrentQueue();
-    }
-
-    function playTrackInPlaylist(idx) {
-      if (!ACTIVE_PLAYLIST || !ACTIVE_PLAYLIST.tracks) return;
-      CURRENT_QUEUE = [...ACTIVE_PLAYLIST.tracks];
-      currentQueueIndex = idx;
       playCurrentQueue();
     }
 
@@ -3386,10 +3679,7 @@
           if (res.ok) artist = await res.json();
         } catch (e) {}
 
-        if (!artist) {
-          showToast('هنرمند مورد نظر یافت نشد.');
-          return;
-        }
+        if (!artist) return;
 
         ACTIVE_ARTIST = artist;
 
@@ -3410,7 +3700,6 @@
         const badge = document.getElementById('artist-page-badge');
         if (badge) badge.style.display = artist.verified ? 'inline-flex' : 'none';
 
-        // استخراج و رندر آلبوم‌های متعلق به این هنرمند
         const artistAlbums = (ALBUMS_DB || []).filter(alb => 
           String(alb.artist_id) === String(artist.id) || 
           (alb.artist_name && alb.artist_name.trim().toLowerCase() === artist.name.trim().toLowerCase())
@@ -3460,26 +3749,22 @@
 
         renderTracksTableList(artist.tracks || [], 'artist-tracks-list', 'playTrackInArtist');
         switchView('artist');
-      } catch (err) {
-        showToast('خطا در بارگذاری اطلاعات هنرمند');
-      }
+      } catch (err) {}
     }
 
     function playAllArtistTracks() {
-      if (!ACTIVE_ARTIST || !ACTIVE_ARTIST.tracks || ACTIVE_ARTIST.tracks.length === 0) {
-        showToast('هنوز قطعه‌ای برای این هنرمند ثبت نشده است.');
-        return;
-      }
+      if (!ACTIVE_ARTIST || !ACTIVE_ARTIST.tracks || ACTIVE_ARTIST.tracks.length === 0) return;
       CURRENT_QUEUE = [...ACTIVE_ARTIST.tracks];
       currentQueueIndex = 0;
+      resetShufflePool();
       playCurrentQueue();
-      showToast(`پخش تمام آثار «${ACTIVE_ARTIST.name}» آغاز شد ✓`);
     }
 
     function playTrackInArtist(idx) {
       if (!ACTIVE_ARTIST || !ACTIVE_ARTIST.tracks) return;
       CURRENT_QUEUE = [...ACTIVE_ARTIST.tracks];
       currentQueueIndex = idx;
+      resetShufflePool();
       playCurrentQueue();
     }
 
@@ -3492,14 +3777,11 @@
 
     function playAllFavorites() {
       const favs = ALL_TRACKS.filter(t => t.favorited);
-      if (favs.length === 0) {
-        showToast('هنوز ترانه‌ای به علاقه‌مندی‌های خود اضافه نکرده‌اید.');
-        return;
-      }
+      if (favs.length === 0) return;
       CURRENT_QUEUE = [...favs];
       currentQueueIndex = 0;
+      resetShufflePool();
       playCurrentQueue();
-      showToast('پخش ترانه‌های موردعلاقه آغاز شد ✓');
     }
 
     function playTrackInFavorites(idx) {
@@ -3507,92 +3789,8 @@
       if (favs.length === 0) return;
       CURRENT_QUEUE = [...favs];
       currentQueueIndex = idx;
+      resetShufflePool();
       playCurrentQueue();
-    }
-
-    function openCreatePlaylistModal() {
-      if (USER_CUSTOM_PLAYLISTS.length >= 10) {
-        showToast('شما به سقف مجاز (حداکثر ۱۰ پلی‌لیست شخصی) رسیده‌اید.');
-        return;
-      }
-      document.getElementById('custom-playlist-title').value = '';
-      document.getElementById('custom-playlist-desc').value = '';
-      document.getElementById('modal-create-playlist').classList.add('open');
-    }
-
-    function closeCreatePlaylistModal() {
-      document.getElementById('modal-create-playlist').classList.remove('open');
-    }
-
-    function saveCustomPlaylist() {
-      const title = document.getElementById('custom-playlist-title').value.trim();
-      const desc = document.getElementById('custom-playlist-desc').value.trim();
-
-      if (!title) {
-        showToast('عنوان پلی‌لیست را وارد کنید.');
-        return;
-      }
-
-      const newPlaylist = {
-        id: 'custom_' + Date.now(),
-        title: title,
-        desc: desc || 'پلی‌لیست اختصاصی شما',
-        cover: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=500',
-        is_custom: true,
-        tracks: []
-      };
-
-      USER_CUSTOM_PLAYLISTS.push(newPlaylist);
-      saveCustomPlaylistsToStorage();
-      renderPlaylistsDirectory();
-      closeCreatePlaylistModal();
-      showToast(`پلی‌لیست «${title}» با موفقیت ایجاد شد ✓`);
-    }
-
-    function openAddToPlaylistModal(trackId, event) {
-      if (event) event.stopPropagation();
-      document.getElementById('add-to-playlist-track-id').value = trackId;
-      const container = document.getElementById('user-custom-playlists-picker');
-      
-      if (!USER_CUSTOM_PLAYLISTS || USER_CUSTOM_PLAYLISTS.length === 0) {
-        container.innerHTML = `<div style="text-align:center; padding:20px; color:var(--muted); font-size:12.5px;">هنوز پلی‌لیست شخصی نساخته‌اید. ابتدا با زدن دکمه زیر یک پلی‌لیست ایجاد کنید.</div>`;
-      } else {
-        container.innerHTML = USER_CUSTOM_PLAYLISTS.map(p => `
-          <div onclick="addTrackToSpecificCustomPlaylist('${p.id}')" style="display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:10px; cursor:pointer; transition:var(--transition-fast);">
-            <div style="font-weight:700; font-size:13px; color:var(--text);">${escapeHtml(p.title)}</div>
-            <span style="font-size:11px; color:var(--brand);">${(p.tracks ? p.tracks.length : 0)} قطعه</span>
-          </div>
-        `).join('');
-      }
-
-      document.getElementById('modal-add-to-playlist').classList.add('open');
-    }
-
-    function closeAddToPlaylistModal() {
-      document.getElementById('modal-add-to-playlist').classList.remove('open');
-    }
-
-    function addTrackToSpecificCustomPlaylist(playlistId) {
-      const trackId = document.getElementById('add-to-playlist-track-id').value;
-      const track = ALL_TRACKS.find(t => String(t.id) === String(trackId));
-      const playlist = USER_CUSTOM_PLAYLISTS.find(p => String(p.id) === String(playlistId));
-
-      if (!track || !playlist) return;
-
-      if (!playlist.tracks) playlist.tracks = [];
-
-      const exists = playlist.tracks.some(t => String(t.id) === String(track.id));
-      if (exists) {
-        showToast('این قطعه از قبل در این پلی‌لیست وجود دارد.');
-        closeAddToPlaylistModal();
-        return;
-      }
-
-      playlist.tracks.push(track);
-      saveCustomPlaylistsToStorage();
-      renderPlaylistsDirectory();
-      closeAddToPlaylistModal();
-      showToast(`قطعه «${track.title}» به «${playlist.title}» افزوده شد ✓`);
     }
 
     async function downloadTrack(trackId, event) {
@@ -3601,12 +3799,8 @@
       if (!track) return;
 
       const audioUrl = track.stream_url || (track.audio_path ? `/api/tracks/${track.id}/stream` : null);
-      if (!audioUrl) {
-        showToast('فایل صوتی برای دانلود یافت نشد.');
-        return;
-      }
+      if (!audioUrl) return;
 
-      showToast(`در حال آغاز دانلود: ${track.title}...`);
       const filename = `${track.title} - ${track.artist} - sehpatify.ir.mp3`;
 
       try {
@@ -3655,6 +3849,7 @@
     function playFromTrackList(list, idx) {
       CURRENT_QUEUE = [...list];
       currentQueueIndex = idx;
+      resetShufflePool();
       playCurrentQueue();
     }
 
@@ -3662,6 +3857,7 @@
       if (ALL_TRACKS.length > 0) {
         CURRENT_QUEUE = [...ALL_TRACKS];
         currentQueueIndex = 0;
+        resetShufflePool();
         playCurrentQueue();
       }
     }
@@ -3705,9 +3901,7 @@
       if (!track) return;
 
       const audioUrl = track.stream_url || (track.audio_path ? `/api/tracks/${track.id}/stream` : `/api/tracks/${track.id}/stream`);
-
       if (!audioUrl) {
-        showToast('فایل صوتی این قطعه هنوز آپلود نشده است.');
         pauseTrack();
         return;
       }
@@ -3726,7 +3920,6 @@
           wrapper.classList.remove('paused');
           wrapper.classList.add('pulsing');
         }
-        showToast(`در حال پخش: ${track.title}`);
       }).catch(() => {
         pauseTrack();
       });
@@ -3755,11 +3948,6 @@
       }
     }
 
-    realPlayer.onended = () => {
-      nextTrack();
-    };
-
-    // الگوریتم شافل بدون تکرار
     function resetShufflePool() {
       if (!CURRENT_QUEUE || CURRENT_QUEUE.length === 0) {
         shufflePool = [];
@@ -3772,9 +3960,7 @@
       }
     }
 
-    // پایان آهنگ
     realPlayer.onended = () => {
-      // اگر ریپیت فعال باشد، همان آهنگ مجدداً پخش می‌شود
       if (isRepeat) {
         seekToSeconds(0);
         playCurrentQueue();
@@ -3788,13 +3974,11 @@
 
       let nextIdx;
       if (isShuffle) {
-        // شافل تصادفی بدون تکرار تا اتمام همه قطعات لیست
         if (shufflePool.length === 0) {
           resetShufflePool();
         }
         nextIdx = shufflePool.length > 0 ? shufflePool.pop() : 0;
       } else {
-        // وقتی شافل خاموش است، پس از آهنگ آخر به آهنگ اول (اندیس ۰) برمی‌گردد
         nextIdx = currentQueueIndex + 1;
         if (nextIdx >= CURRENT_QUEUE.length) {
           nextIdx = 0;
@@ -3878,7 +4062,7 @@
       if (fullContainer) fullContainer.innerHTML = content;
     }
 
-    function syncLyricsHighlight(sec, forceScroll = false) {
+    function syncLyricsHighlight(sec) {
       const track = CURRENT_QUEUE[currentQueueIndex];
       if (!track || !track.lyrics || track.lyrics.length === 0) return;
 
@@ -3896,9 +4080,7 @@
         const isTarget = (idx === activeIndex);
         if (fl.classList.contains('active') !== isTarget) {
           fl.classList.toggle('active', isTarget);
-          if (isTarget) {
-            fl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
+          if (isTarget) fl.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       });
 
@@ -3906,9 +4088,7 @@
         const isTarget = (idx === activeIndex);
         if (dl.classList.contains('active') !== isTarget) {
           dl.classList.toggle('active', isTarget);
-          if (isTarget) {
-            dl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          }
+          if (isTarget) dl.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       });
     }
@@ -3982,8 +4162,6 @@
       updateFavoriteBadges();
       renderFavoritesView();
 
-      showToast(newFavStatus ? 'به موردعلاقه‌ها افزوده شد ♥' : 'از موردعلاقه‌ها برداشته شد');
-
       try {
         await fetch(`/api/tracks/${trackId}/favorite`, {
           method: 'POST',
@@ -4022,8 +4200,7 @@
       document.getElementById('fav-count').textContent = count;
     }
 
-    // تابع موتور جستجوی هوشمند
-    // تابع موتور جستجوی هوشمند
+    // موتور جستجوی هوشمند
     function handleSearchInput(query) {
       const searchPanel = document.getElementById('view-search');
       if (query && query.trim().length > 0 && searchPanel && !searchPanel.classList.contains('active')) {
@@ -4057,7 +4234,7 @@
         (a.search_keywords && String(a.search_keywords).toLowerCase().includes(q))
       );
 
-      const filteredPlaylists = [...PLAYLISTS_DB, ...USER_CUSTOM_PLAYLISTS].filter(p => 
+      const filteredPlaylists = PLAYLISTS_DB.filter(p => 
         !q || 
         (p.title && String(p.title).toLowerCase().includes(q)) || 
         (p.desc && String(p.desc).toLowerCase().includes(q))
@@ -4146,17 +4323,34 @@
       handleSearchInput(val);
     }
 
+    function filterByGenreName(genreName) {
+      switchView('search');
+      const input = document.getElementById('global-search-input');
+      if (input) input.value = genreName;
+      setSearchFilter('all', document.getElementById('search-tag-all'));
+    }
+
+    function toggleMobileMenu() {
+      document.getElementById('sidebar')?.classList.toggle('open');
+      document.getElementById('sidebar-backdrop')?.classList.toggle('active');
+    }
+
     function switchView(viewId) {
       document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
       document.querySelectorAll('.mobile-nav-btn').forEach(m => m.classList.remove('active'));
+      document.querySelectorAll('.quick-pill-item').forEach(pill => pill.classList.remove('active'));
 
       const target = document.getElementById(`view-${viewId}`);
       if (target) target.classList.add('active');
 
       document.getElementById(`nav-${viewId}`)?.classList.add('active');
       document.getElementById(`mob-${viewId}`)?.classList.add('active');
+      document.getElementById(`pill-${viewId}`)?.classList.add('active');
       document.getElementById('viewport').scrollTo({ top: 0, behavior: 'smooth' });
+
+      document.getElementById('sidebar')?.classList.remove('open');
+      document.getElementById('sidebar-backdrop')?.classList.remove('active');
 
       if (viewId === 'search') {
         currentSearchFilter = 'all';
@@ -4180,158 +4374,12 @@
         updateProfileStatsView();
       }
     }
-    // تابع انتخاب فیلتر سرچ (دکمه‌های تگ)
-    function setSearchFilter(filter, btn) {
-      currentSearchFilter = filter || 'all';
-
-      // به‌روزرسانی وضعیت کلاس active روی دکمه‌ها
-      document.querySelectorAll('.search-tags-row button').forEach(b => b.classList.remove('active'));
-
-      if (btn) {
-        btn.classList.add('active');
-      } else {
-        const targetBtn = document.getElementById(`search-tag-${currentSearchFilter}`);
-        if (targetBtn) targetBtn.classList.add('active');
-      }
-
-      const val = document.getElementById('global-search-input')?.value || '';
-      handleSearchInput(val);
-    }
-
-    // فیلتر با کلیک روی ژانر
-    function filterByGenreName(genreName) {
-      switchView('search');
-      const input = document.getElementById('global-search-input');
-      if (input) {
-        input.value = genreName;
-      }
-      setSearchFilter('all', document.getElementById('search-tag-all'));
-    }
-
-    // جابه‌جایی بین صفحات با فعال‌سازی پیش‌فرض 'همه' در جستجو
-    function switchView(viewId) {
-      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-      document.querySelectorAll('.mobile-nav-btn').forEach(m => m.classList.remove('active'));
-
-      const target = document.getElementById(`view-${viewId}`);
-      if (target) target.classList.add('active');
-
-      document.getElementById(`nav-${viewId}`)?.classList.add('active');
-      document.getElementById(`mob-${viewId}`)?.classList.add('active');
-      document.getElementById('viewport').scrollTo({ top: 0, behavior: 'smooth' });
-
-      if (viewId === 'search') {
-        currentSearchFilter = 'all';
-        document.querySelectorAll('.search-tags-row button').forEach(b => b.classList.remove('active'));
-        document.getElementById('search-tag-all')?.classList.add('active');
-        const val = document.getElementById('global-search-input')?.value || '';
-        handleSearchInput(val);
-      } else {
-        const searchInput = document.getElementById('global-search-input');
-        if (searchInput && searchInput.value) {
-          searchInput.value = '';
-          const searchContainer = document.getElementById('search-results-container');
-          if (searchContainer) searchContainer.innerHTML = '';
-        }
-      }
-
-      if (viewId === 'favorites') {
-        renderFavoritesView();
-      }
-    }
-
-    function setSearchFilter(filter, btn) {
-      currentSearchFilter = filter;
-      document.querySelectorAll('.search-tags-row button').forEach(b => b.classList.remove('active'));
-      if (btn) {
-        btn.classList.add('active');
-      } else {
-        const targetBtn = document.getElementById(`search-tag-${filter}`);
-        if (targetBtn) targetBtn.classList.add('active');
-      }
-      const val = document.getElementById('global-search-input')?.value || '';
-      handleSearchInput(val);
-    }
-
-    function switchView(viewId) {
-      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-      document.querySelectorAll('.mobile-nav-btn').forEach(m => m.classList.remove('active'));
-
-      const target = document.getElementById(`view-${viewId}`);
-      if (target) target.classList.add('active');
-
-      document.getElementById(`nav-${viewId}`)?.classList.add('active');
-      document.getElementById(`mob-${viewId}`)?.classList.add('active');
-      document.getElementById('viewport').scrollTo({ top: 0, behavior: 'smooth' });
-
-      if (viewId === 'search') {
-        const allBtn = document.getElementById('search-tag-all');
-        setSearchFilter('all', allBtn);
-      } else {
-        const searchInput = document.getElementById('global-search-input');
-        if (searchInput && searchInput.value) {
-          searchInput.value = '';
-          const searchContainer = document.getElementById('search-results-container');
-          if (searchContainer) searchContainer.innerHTML = '';
-        }
-      }
-
-      if (viewId === 'favorites') {
-        renderFavoritesView();
-      }
-    }
-
-    function setSearchFilter(filter, btn) {
-      currentSearchFilter = filter;
-      document.querySelectorAll('.search-tags-row button').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      handleSearchInput(document.getElementById('global-search-input').value);
-    }
-
-    function filterByGenreName(genreName) {
-      switchView('search');
-      const input = document.getElementById('global-search-input');
-      if (input) {
-        input.value = genreName;
-      }
-      handleSearchInput(genreName);
-    }
-
-    function switchView(viewId) {
-      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-      document.querySelectorAll('.mobile-nav-btn').forEach(m => m.classList.remove('active'));
-
-      const target = document.getElementById(`view-${viewId}`);
-      if (target) target.classList.add('active');
-
-      document.getElementById(`nav-${viewId}`)?.classList.add('active');
-      document.getElementById(`mob-${viewId}`)?.classList.add('active');
-      document.getElementById('viewport').scrollTo({ top: 0, behavior: 'smooth' });
-
-      if (viewId !== 'search') {
-        const searchInput = document.getElementById('global-search-input');
-        if (searchInput && searchInput.value) {
-          searchInput.value = '';
-          const searchContainer = document.getElementById('search-results-container');
-          if (searchContainer) searchContainer.innerHTML = '';
-        }
-      } else {
-        const allBtn = document.getElementById('search-tag-all');
-        if (allBtn) setSearchFilter('all', allBtn);
-      }
-
-      if (viewId === 'favorites') {
-        renderFavoritesView();
-      }
-    }
 
     function toggleFullPlayer() { 
       const modal = document.getElementById('full-player-modal');
       if (modal) modal.classList.toggle('active'); 
     }
+
     function toggleLyricsDrawer() {
       const lyrics = document.getElementById('lyrics-drawer');
       const queue = document.getElementById('queue-drawer');
@@ -4345,7 +4393,9 @@
       } else {
         lyrics.classList.remove('open');
       }
-    }    function toggleQueueDrawer() {
+    }
+
+    function toggleQueueDrawer() {
       const lyrics = document.getElementById('lyrics-drawer');
       const queue = document.getElementById('queue-drawer');
       if (!queue) return;
@@ -4359,6 +4409,7 @@
         queue.classList.remove('open');
       }
     }
+
     function toggleShuffle() {
       isShuffle = !isShuffle;
       if (isShuffle) {
@@ -4366,27 +4417,26 @@
       }
       document.getElementById('ctrl-shuffle')?.classList.toggle('active', isShuffle);
       document.getElementById('full-ctrl-shuffle')?.classList.toggle('active', isShuffle);
-      showToast(isShuffle ? 'پخش تصادفی (بدون تکرار) فعال شد 🔀' : 'پخش تصادفی غیرفعال شد');
     }
 
     function toggleRepeat() {
       isRepeat = !isRepeat;
       document.getElementById('ctrl-repeat')?.classList.toggle('active', isRepeat);
       document.getElementById('full-ctrl-repeat')?.classList.toggle('active', isRepeat);
-      showToast(isRepeat ? 'تکرار قطعه فعال شد 🔂' : 'تکرار قطعه غیرفعال شد');
     }
+
     function formatSeconds(s) {
       const m = Math.floor(s / 60);
       const sec = s % 60;
       return `${m}:${sec < 10 ? '0' : ''}${sec}`;
     }
 
-function escapeHtml(str) { 
+    function escapeHtml(str) { 
       return String(str ?? '').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); 
     }
-    function showToast(msg) {
-      // تمام نوتیفیکیشن‌ها به درخواست شما غیرفعال شدند
-    }
+
+    function showToast(msg) {}
+
     function initSliders() {
       const bind = (elem, cb) => {
         if (!elem) return;
@@ -4420,24 +4470,16 @@ function escapeHtml(str) {
       let startY = 0;
       let currentY = 0;
 
-      const handleTouchStart = (e) => {
-        startY = e.touches[0].clientY;
-      };
-
+      const handleTouchStart = (e) => { startY = e.touches[0].clientY; };
       const handleTouchMove = (e) => {
         currentY = e.touches[0].clientY;
         const delta = currentY - startY;
-        if (delta > 0 && delta < 250) {
-          modal.style.transform = `translateY(${delta}px)`;
-        }
+        if (delta > 0 && delta < 250) modal.style.transform = `translateY(${delta}px)`;
       };
-
       const handleTouchEnd = () => {
         const delta = currentY - startY;
         modal.style.transform = '';
-        if (delta > 90) {
-          toggleFullPlayer();
-        }
+        if (delta > 90) toggleFullPlayer();
         startY = 0;
         currentY = 0;
       };
@@ -4451,54 +4493,6 @@ function escapeHtml(str) {
       });
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      initSliders();
-      initTouchGestures();
-      initAppData();
-    });
-    function toggleMobileMenu() {
-      document.getElementById('sidebar')?.classList.toggle('open');
-      document.getElementById('sidebar-backdrop')?.classList.toggle('active');
-    }
-
-    function switchView(viewId) {
-      document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
-      document.querySelectorAll('.mobile-nav-btn').forEach(m => m.classList.remove('active'));
-      document.querySelectorAll('.quick-pill-item').forEach(pill => pill.classList.remove('active'));
-
-      const target = document.getElementById(`view-${viewId}`);
-      if (target) target.classList.add('active');
-
-      document.getElementById(`nav-${viewId}`)?.classList.add('active');
-      document.getElementById(`mob-${viewId}`)?.classList.add('active');
-      document.getElementById(`pill-${viewId}`)?.classList.add('active');
-      document.getElementById('viewport').scrollTo({ top: 0, behavior: 'smooth' });
-
-      // بستن خودکار منوی کشویی در موبایل پس از انتخاب صفحه
-      document.getElementById('sidebar')?.classList.remove('open');
-      document.getElementById('sidebar-backdrop')?.classList.remove('active');
-
-      if (viewId === 'search') {
-        currentSearchFilter = 'all';
-        document.querySelectorAll('.search-tags-row button').forEach(b => b.classList.remove('active'));
-        document.getElementById('search-tag-all')?.classList.add('active');
-        const val = document.getElementById('global-search-input')?.value || '';
-        handleSearchInput(val);
-      } else {
-        const searchInput = document.getElementById('global-search-input');
-        if (searchInput && searchInput.value) {
-          searchInput.value = '';
-          const searchContainer = document.getElementById('search-results-container');
-          if (searchContainer) searchContainer.innerHTML = '';
-        }
-      }
-
-      if (viewId === 'favorites') {
-        renderFavoritesView();
-      }
-    }
-    // بروزرسانی آمار نمایش‌داده‌شده در پروفایل کاربر
     function updateProfileStatsView() {
       const favEl = document.getElementById('profile-stat-favs');
       const plEl = document.getElementById('profile-stat-playlists');
@@ -4513,7 +4507,6 @@ function escapeHtml(str) {
       el.textContent = msg;
     }
 
-    // ارسال فرم ویرایش اطلاعات شخصی
     async function submitUserProfileUpdate(e) {
       e.preventDefault();
       const btn = document.getElementById('btn-save-profile-info');
@@ -4546,7 +4539,6 @@ function escapeHtml(str) {
           showProfileBoxAlert(alertId, err || 'خطا در بروزرسانی اطلاعات', 'error');
         } else {
           showProfileBoxAlert(alertId, data.message, 'success');
-          // بروزرسانی آنی نام و یوزرنیم در هدر و پروفایل بدون نیاز به رفرش
           if (data.user) {
             const topLabel = document.getElementById('topbar-username-label');
             if (topLabel) topLabel.textContent = data.user.username || data.user.name;
@@ -4566,7 +4558,6 @@ function escapeHtml(str) {
       }
     }
 
-    // ارسال فرم تغییر رمز عبور
     async function submitUserPasswordUpdate(e) {
       e.preventDefault();
       const btn = document.getElementById('btn-save-profile-pass');
@@ -4610,13 +4601,11 @@ function escapeHtml(str) {
       }
     }
 
-    function clearAllCustomUserPlaylists() {
-      if (!confirm('آیا از حذف تمام پلی‌لیست‌های شخصی ساخته‌شده در مرورگر مطمئن هستید؟')) return;
-      USER_CUSTOM_PLAYLISTS = [];
-      saveCustomPlaylistsToStorage();
-      renderAppViews();
-      updateProfileStatsView();
-    }
+    window.addEventListener('DOMContentLoaded', () => {
+      initSliders();
+      initTouchGestures();
+      initAppData();
+    });
   </script>
 </body>
 </html>

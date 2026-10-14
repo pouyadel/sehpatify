@@ -12,6 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" />
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="/logo.png" />
 
   <style>
     :root {
@@ -155,12 +156,15 @@
       border-radius: 12px;
       box-shadow: 0 0 16px var(--brand-glow-lg);
       flex-shrink: 0;
+      overflow: hidden;
     }
 
     .brand-logo-svg {
-      width: 32px;
-      height: 32px;
-      filter: drop-shadow(0 0 6px rgba(16, 185, 84, 0.8));
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+      filter: drop-shadow(0 0 6px rgba(16, 185, 84, 0.5));
     }
 
     .brand-text-col {
@@ -1472,19 +1476,7 @@
     <aside class="admin-sidebar" id="admin-sidebar">
       <a class="brand-header" onclick="switchAdminView('dashboard')" title="سهپاتیفای استودیو">
         <div class="brand-logo-wrap">
-          <svg class="brand-logo-svg" viewBox="0 0 320 240" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="pulseGlowGrad" x1="40" y1="40" x2="280" y2="200" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stop-color="#4ADE80" />
-                <stop offset="50%" stop-color="#10B954" />
-                <stop offset="100%" stop-color="#056B30" />
-              </linearGradient>
-            </defs>
-            <path d="M 68 126 C 68 148, 86 172, 116 172 C 146 172, 142 64, 160 64 C 178 64, 174 172, 204 172 C 234 172, 252 148, 252 126" 
-                  stroke="url(#pulseGlowGrad)" stroke-width="26" stroke-linecap="round" stroke-linejoin="round" />
-            <circle cx="68" cy="126" r="14" fill="#4ADE80" />
-            <circle cx="252" cy="126" r="14" fill="#10B954" />
-          </svg>
+          <img src="/logo.png" class="brand-logo-svg" alt="Sehpatify Studio Logo" />
         </div>
         <div class="brand-text-col">
           <div class="brand-title">
@@ -3834,10 +3826,10 @@
     function openModal(id) { const m = document.getElementById(id); if (m) m.classList.add('open'); }
     function closeModal(id) { const m = document.getElementById(id); if (m) m.classList.remove('open'); }
 
-    // ۶. مدیریت پلی‌لیست‌ها با سرچ‌بار
+    // ۶. مدیریت پلی‌لیست‌ها (رسمی و ساخته شده توسط کاربران)
     async function fetchPlaylistsFromBackend() {
       try {
-        const res = await fetch('/api/playlists');
+        const res = await fetch('/api/admin/playlists-all');
         if (!res.ok) throw new Error();
         PLAYLISTS_DB = await res.json();
       } catch (err) {
@@ -3868,9 +3860,21 @@
           ? p.tracks.slice(0, 3).map(t => `<span style="font-size:11px; color:var(--text); background:rgba(255,255,255,0.05); padding:2px 8px; border-radius:4px; margin-left:4px; display:inline-block; margin-top:4px;">♫ ${escapeHtml(t.title)}</span>`).join('')
           : '<span style="font-size:11px; color:var(--muted);">هنوز آهنگی افزوده نشده</span>';
 
+        const creatorBadge = p.is_user_created
+          ? `<span style="font-size:10.5px; color:var(--accent-blue); background:rgba(56,189,248,0.12); padding:2px 8px; border-radius:99px; border:1px solid rgba(56,189,248,0.3);">👤 کاربر: ${escapeHtml(p.owner_name)}</span>`
+          : `<span style="font-size:10.5px; color:var(--brand); background:var(--brand-dim); padding:2px 8px; border-radius:99px; border:1px solid var(--border-brand);">★ رسمی استودیو</span>`;
+
+        const statusBadge = p.is_public
+          ? `<span class="badge-status synced">● عمومی (منتشر شده)</span>`
+          : `<span class="badge-status empty">🔒 خصوصی کاربر</span>`;
+
         return `
           <div class="panel-card" style="display:flex; flex-direction:column; justify-content:space-between; min-width:0;">
             <div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                ${creatorBadge}
+                ${statusBadge}
+              </div>
               <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
                 <img src="${p.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500'}" style="width:64px; height:64px; border-radius:10px; object-fit:cover; flex-shrink:0;" />
                 <div style="min-width:0;">
@@ -3884,8 +3888,10 @@
                 <div style="display:flex; flex-wrap:wrap;">${tracksPreview}</div>
               </div>
             </div>
-            <div style="display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--border); padding-top:12px;">
-              <span class="badge-status synced">عمومی • رسمی</span>
+            <div style="display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--border); padding-top:12px; gap:8px;">
+              <button class="btn-table-action lyrics-action" onclick="togglePlaylistPublic(${p.id})" title="${p.is_public ? 'تبدیل به حالت خصوصی' : 'انتشار عمومی برای همه کاربران سایت'}">
+                <span>${p.is_public ? 'لغو اشتراک عمومی' : '🌐 اشتراک‌گذاری عمومی'}</span>
+              </button>
               <div style="display:flex; gap:6px;">
                 <button class="btn-table-action" onclick="openEditPlaylistModal(${p.id})" title="ویرایش پلی‌‌لیست و آهنگ‌ها">
                   <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
@@ -3898,6 +3904,24 @@
           </div>
         `;
       }).join('');
+    }
+
+    async function togglePlaylistPublic(playlistId) {
+      try {
+        const res = await fetch(`/api/admin/playlists/${playlistId}/toggle-public`, {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          }
+        });
+        const data = await res.json().catch(() => null);
+        if (!res.ok) throw new Error(data?.message || 'خطا در تغییر وضعیت اشتراک');
+        showToast(data.message);
+        await fetchPlaylistsFromBackend();
+      } catch (err) {
+        showToast(err.message || 'خطا در ارتباط با سرور');
+      }
     }
 
     function renderTracksSelectorInsideModal(selectedTrackIds = []) {

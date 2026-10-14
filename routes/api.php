@@ -43,4 +43,7 @@ Route::prefix('admin')->group(function () {
     Route::post('/users/{id}', [UserController::class, 'update']);
     Route::post('/users/{id}/toggle-status', [UserController::class, 'toggleStatus']);
     Route::delete('/users/{id}', [UserController::class, 'destroy']);
+
+    Route::get('/playlists-all', [PlaylistController::class, 'adminIndex']);
+    Route::post('/playlists/{id}/toggle-public', [PlaylistController::class, 'togglePublic']);
 });
