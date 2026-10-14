@@ -8,10 +8,7 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="description" content="پلتفرم نسل نوین موسیقی ایرانی و بین‌المللی با کیفیت Lossless Hi-Res و تجربه بومی فارسی" />
 
-  <!-- Google Fonts: Vazirmatn -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
   <link rel="icon" type="image/png" href="/logo.png" />
   <style>
     :root {
