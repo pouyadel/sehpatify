@@ -8,7 +8,7 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="description" content="مرکز مدیریت جامع، مانیتورینگ زنده و استودیو فوق‌پیشرفته همگام‌ساز لیریکس سهپاتیفای" />
 
-
+<link rel="stylesheet" href="/css/app.css" />
   <link rel="icon" type="image/png" href="/logo.png" />
 
   <style>

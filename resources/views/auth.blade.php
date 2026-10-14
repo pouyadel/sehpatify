@@ -7,7 +7,7 @@
   <meta name="theme-color" content="#07070C" />
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <link rel="icon" type="image/png" href="/logo.png" />
-
+<link rel="stylesheet" href="/css/app.css" />
   <!-- Google Fonts: Vazirmatn -->
 
   <style>

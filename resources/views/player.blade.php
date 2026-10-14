@@ -8,7 +8,7 @@
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <meta name="description" content="پلتفرم نسل نوین موسیقی ایرانی و بین‌المللی با کیفیت Lossless Hi-Res و تجربه بومی فارسی" />
 
-
+<link rel="stylesheet" href="/css/app.css" />
   <link rel="icon" type="image/png" href="/logo.png" />
   <style>
     :root {
