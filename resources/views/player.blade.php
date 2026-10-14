@@ -2087,6 +2087,153 @@
         justify-content: center;
       }
     }
+    /* اسکرول افقی (Carousel) در دسکتاپ و موبایل برای ردیف‌های صفحه اصلی */
+    .mobile-carousel-row {
+      display: flex !important;
+      overflow-x: auto !important;
+      flex-wrap: nowrap !important;
+      gap: 16px !important;
+      padding-bottom: 12px !important;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      cursor: grab;
+    }
+
+    .mobile-carousel-row.dragging {
+      cursor: grabbing;
+      scroll-behavior: auto;
+      user-select: none;
+    }
+
+    .mobile-carousel-row .music-card {
+      min-width: 180px !important;
+      max-width: 190px !important;
+      flex-shrink: 0 !important;
+    }
+
+    /* استایل نوار صفحه‌بندی (Pagination) هماهنگ با تم شیشه‌ای */
+    .pagination-bar {
+      grid-column: 1 / -1;
+      width: 100%;
+      margin-top: 24px;
+      padding: 12px 18px;
+      background: var(--surface-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .pagination-info {
+      font-size: 12.5px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .pagination-info strong {
+      color: var(--brand);
+      font-weight: 800;
+    }
+
+    .pagination-total {
+      font-size: 11.5px;
+      color: var(--muted-dark);
+      margin-right: 4px;
+    }
+
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .page-numbers-wrap {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .page-num-btn, .page-nav-btn {
+      height: 36px;
+      min-width: 36px;
+      padding: 0 10px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all var(--transition-fast);
+    }
+
+    .page-nav-btn {
+      padding: 0 14px;
+    }
+
+    .page-num-btn:hover:not(.active), .page-nav-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--border-brand);
+      color: var(--brand);
+    }
+
+    .page-num-btn.active {
+      background: var(--brand);
+      color: #052410;
+      border-color: var(--brand);
+      font-weight: 900;
+      box-shadow: 0 0 14px var(--brand-glow);
+    }
+
+    .page-nav-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .page-dots {
+      color: var(--muted-dark);
+      font-size: 13px;
+      padding: 0 4px;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-carousel-row {
+        gap: 12px !important;
+        padding-bottom: 8px !important;
+      }
+      .mobile-carousel-row .music-card {
+        min-width: 142px !important;
+        max-width: 150px !important;
+      }
+      .pagination-bar {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        padding: 12px;
+        gap: 10px;
+      }
+      .pagination-controls {
+        width: 100%;
+        justify-content: center;
+      }
+      .page-num-btn, .page-nav-btn {
+        height: 32px;
+        min-width: 32px;
+        font-size: 11.5px;
+        padding: 0 8px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -2256,6 +2403,7 @@
           <!-- پیشنهادها -->
           <div class="section-header">
             <h2 class="section-title">پیشنهادی برای تو</h2>
+            <a class="section-see-all" onclick="switchView('all-tracks')">مشاهده همه</a>
           </div>
           <div class="grid-container mobile-carousel-row" id="home-featured-grid"></div>
 
@@ -3087,10 +3235,100 @@
       } catch (e) {}
     }
 
+    // وضعیت صفحه‌بندی برای تمام لیست‌ها و گریدها
+    const PAGINATION_STATE = {};
+
+    function toFaDigits(n) {
+      return Number(n || 0).toLocaleString('fa-IR');
+    }
+
+    function buildPaginationBarHtml(containerId, currentPage, totalPages, totalItems, handlerName) {
+      if (totalPages <= 1) return '';
+
+      let pagesHtml = '';
+      const maxVisible = 5;
+      let startPage = Math.max(1, currentPage - 2);
+      let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+      if (endPage - startPage < maxVisible - 1) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+      }
+
+      if (startPage > 1) {
+        pagesHtml += `<button type="button" class="page-num-btn" onclick="${handlerName}('${containerId}', 1)">${toFaDigits(1)}</button>`;
+        if (startPage > 2) pagesHtml += `<span class="page-dots">…</span>`;
+      }
+
+      for (let p = startPage; p <= endPage; p++) {
+        pagesHtml += `<button type="button" class="page-num-btn ${p === currentPage ? 'active' : ''}" onclick="${handlerName}('${containerId}', ${p})">${toFaDigits(p)}</button>`;
+      }
+
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) pagesHtml += `<span class="page-dots">…</span>`;
+        pagesHtml += `<button type="button" class="page-num-btn" onclick="${handlerName}('${containerId}', ${totalPages})">${toFaDigits(totalPages)}</button>`;
+      }
+
+      return `
+        <div class="pagination-bar" onclick="event.stopPropagation();">
+          <div class="pagination-info">
+            صفحه <strong>${toFaDigits(currentPage)}</strong> از <strong>${toFaDigits(totalPages)}</strong>
+            <span class="pagination-total">(${toFaDigits(totalItems)} مورد)</span>
+          </div>
+          <div class="pagination-controls">
+            <button type="button" class="page-nav-btn" ${currentPage <= 1 ? 'disabled' : ''} onclick="${handlerName}('${containerId}', ${currentPage - 1})">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 5l7 7-7 7"/></svg>
+              <span>قبلی</span>
+            </button>
+            <div class="page-numbers-wrap">${pagesHtml}</div>
+            <button type="button" class="page-nav-btn" ${currentPage >= totalPages ? 'disabled' : ''} onclick="${handlerName}('${containerId}', ${currentPage + 1})">
+              <span>بعدی</span>
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M15 19l-7-7 7-7"/></svg>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    // رندر گریدهای صفحه‌بندی شده (۱۲ آیتم در هر صفحه)
+    function renderPaginatedGrid(items, containerId, cardBuilder, emptyMsg = 'موردی برای نمایش وجود ندارد.', perPage = 12, page = 1) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      if (!items || items.length === 0) {
+        container.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:30px; color:var(--muted); font-size:13px;">${emptyMsg}</div>`;
+        return;
+      }
+
+      const totalItems = items.length;
+      const totalPages = Math.ceil(totalItems / perPage);
+      const safePage = Math.max(1, Math.min(page, totalPages));
+
+      PAGINATION_STATE[containerId] = {
+        items,
+        cardBuilder,
+        emptyMsg,
+        perPage,
+        page: safePage
+      };
+
+      const startIdx = (safePage - 1) * perPage;
+      const slicedItems = items.slice(startIdx, startIdx + perPage);
+
+      container.innerHTML = slicedItems.map((item, idx) => cardBuilder(item, startIdx + idx)).join('') +
+        buildPaginationBarHtml(containerId, safePage, totalPages, totalItems, 'changeGridPage');
+    }
+
+    function changeGridPage(containerId, newPage) {
+      const st = PAGINATION_STATE[containerId];
+      if (!st) return;
+      renderPaginatedGrid(st.items, containerId, st.cardBuilder, st.emptyMsg, st.perPage, newPage);
+      const el = document.getElementById(containerId);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
     function renderAppViews() {
       syncUserAndPublicPlaylists();
 
-      // ۱. رندر پلی‌لیست‌های عمومی در صفحه اصلی
+      // ۱. پلی‌لیست‌های برگزیده در صفحه اصلی (حداکثر ۱۰ عدد با اسکرول افقی)
       const homePlaylists = document.getElementById('home-playlists-grid');
       const publicPlaylists = PLAYLISTS_DB.filter(p => p.is_public);
 
@@ -3098,7 +3336,7 @@
         if (publicPlaylists.length === 0) {
           homePlaylists.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding:24px; color:var(--muted); font-size:12.5px;">هنوز پلی‌لیستی ثبت نشده است.</div>`;
         } else {
-          homePlaylists.innerHTML = publicPlaylists.map(p => `
+          homePlaylists.innerHTML = publicPlaylists.slice(0, 10).map(p => `
             <div class="music-card" onclick="openPlaylistPage('${p.id}')">
               <div class="card-art-box">
                 <img class="card-art-img" src="${p.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300'}" alt="${escapeHtml(p.title)}" />
@@ -3111,10 +3349,10 @@
         }
       }
 
-      // ۲. پیشنهادها
+      // ۲. پیشنهادی برای تو در صفحه اصلی (حداکثر ۱۰ آهنگ با اسکرول افقی)
       const featured = document.getElementById('home-featured-grid');
       if (featured) {
-        featured.innerHTML = ALL_TRACKS.slice(0, 6).map((t, idx) => `
+        featured.innerHTML = ALL_TRACKS.slice(0, 10).map((t, idx) => `
           <div class="music-card" onclick="playFromTrackList(ALL_TRACKS, ${idx})">
             <div class="card-art-box">
               <img class="card-art-img" src="${t.cover || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=300'}" alt="${escapeHtml(t.title)}" />
@@ -3126,135 +3364,123 @@
         `).join('');
       }
 
+      // ۳. لیست قطعات برگزیده در صفحه اصلی (۶ قطعه) و صفحه تمام قطعات (صفحه‌بندی ۱۵ تایی)
       renderTracksTableList(ALL_TRACKS.slice(0, 6), 'home-recent-tracks');
       renderTracksTableList(ALL_TRACKS, 'all-tracks-list');
 
-      // ۳. هنرمندان
+      // ۴. هنرمندان در صفحه اصلی (حداکثر ۱۰ هنرمند) و صفحه کل هنرمندان (صفحه‌بندی ۱۲ تایی)
       const artistsGrid = document.getElementById('home-artists-grid');
-      const artistsPageGrid = document.getElementById('artists-page-grid');
       const navArtistsCount = document.getElementById('nav-artists-count');
       if (navArtistsCount) navArtistsCount.textContent = ARTISTS_DB.length;
 
-      const artistsHtml = (ARTISTS_DB && ARTISTS_DB.length > 0)
-        ? ARTISTS_DB.map(a => `
-            <div class="music-card artist-card" onclick="openArtistPage('${a.id}')">
-              <div class="card-art-box">
-                <img class="card-art-img" src="${a.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300'}" alt="${escapeHtml(a.name)}" />
-              </div>
-              <div class="card-title">${escapeHtml(a.name)}</div>
-              <div class="card-subtitle">${escapeHtml(a.genre_names || (a.listeners + ' شنونده'))}</div>
-            </div>
-          `).join('')
-        : `<div style="grid-column: 1/-1; text-align:center; padding:24px; color:var(--muted); font-size:12.5px;">هنوز هنرمندی در سیستم ثبت نشده است.</div>`;
+      const artistCardTemplate = (a) => `
+        <div class="music-card artist-card" onclick="openArtistPage('${a.id}')">
+          <div class="card-art-box">
+            <img class="card-art-img" src="${a.image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300'}" alt="${escapeHtml(a.name)}" />
+          </div>
+          <div class="card-title">${escapeHtml(a.name)}</div>
+          <div class="card-subtitle">${escapeHtml(a.genre_names || (a.listeners + ' شنونده'))}</div>
+        </div>
+      `;
 
-      if (artistsGrid) artistsGrid.innerHTML = artistsHtml;
-      if (artistsPageGrid) artistsPageGrid.innerHTML = artistsHtml;
+      if (artistsGrid) {
+        artistsGrid.innerHTML = (ARTISTS_DB && ARTISTS_DB.length > 0)
+          ? ARTISTS_DB.slice(0, 10).map(artistCardTemplate).join('')
+          : `<div style="grid-column: 1/-1; text-align:center; padding:24px; color:var(--muted); font-size:12.5px;">هنوز هنرمندی در سیستم ثبت نشده است.</div>`;
+      }
 
-      // ۴. پلی‌لیست‌ها و کتابخانه شخصی
+      renderPaginatedGrid(ARTISTS_DB, 'artists-page-grid', artistCardTemplate, 'هنوز هنرمندی در سیستم ثبت نشده است.', 12, 1);
+
+      // ۵. پلی‌لیست‌ها و کتابخانه من (صفحه‌بندی ۱۲ تایی)
       renderPlaylistsDirectory();
 
-      // ۵. سبک‌ها و ژانرها
-      const discGrid = document.getElementById('discover-genres-grid');
+      // ۶. سبک‌ها و ژانرها در صفحه اصلی (حداکثر ۱۰ ژانر) و صفحه اکتشاف (صفحه‌بندی ۱۲ تایی)
       const homeGenresGrid = document.getElementById('home-genres-grid');
+      const genreCardTemplate = (g) => `
+        <div class="music-card" onclick="openGenrePage('${g.id}')">
+          <div class="card-art-box">
+            <img class="card-art-img" src="${g.cover || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300'}" alt="${escapeHtml(g.name)}" />
+            <button class="card-play-overlay"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+          </div>
+          <div class="card-title">${escapeHtml(g.name)}</div>
+          <div class="card-subtitle">${g.tracks_count || 0} قطعه صوتی</div>
+        </div>
+      `;
 
-      const genresHtml = (GENRES_DB && GENRES_DB.length > 0)
-        ? GENRES_DB.map(g => `
-            <div class="music-card" onclick="openGenrePage('${g.id}')">
-              <div class="card-art-box">
-                <img class="card-art-img" src="${g.cover || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300'}" alt="${escapeHtml(g.name)}" />
-                <button class="card-play-overlay"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
-              </div>
-              <div class="card-title">${escapeHtml(g.name)}</div>
-              <div class="card-subtitle">${g.tracks_count || 0} قطعه صوتی</div>
-            </div>
-          `).join('')
-        : `<div style="grid-column: 1/-1; text-align:center; padding:24px; color:var(--muted); font-size:12.5px;">هنوز سبکی ثبت نشده است.</div>`;
+      if (homeGenresGrid) {
+        homeGenresGrid.innerHTML = (GENRES_DB && GENRES_DB.length > 0)
+          ? GENRES_DB.slice(0, 10).map(genreCardTemplate).join('')
+          : `<div style="grid-column: 1/-1; text-align:center; padding:24px; color:var(--muted); font-size:12.5px;">هنوز سبکی ثبت نشده است.</div>`;
+      }
 
-      if (discGrid) discGrid.innerHTML = genresHtml;
-      if (homeGenresGrid) homeGenresGrid.innerHTML = genresHtml;
+      renderPaginatedGrid(GENRES_DB, 'discover-genres-grid', genreCardTemplate, 'هنوز سبکی ثبت نشده است.', 12, 1);
 
-      // ۶. علاقه‌مندی‌ها
+      // ۷. علاقه‌مندی‌ها
       renderFavoritesView();
 
-      // ۷. آلبوم‌ها
+      // ۸. آلبوم‌ها در صفحه اصلی (حداکثر ۱۰ آلبوم) و صفحه کل آلبوم‌ها (صفحه‌بندی ۱۲ تایی)
       const homeAlbumsGrid = document.getElementById('home-albums-grid');
-      const albumsPageGrid = document.getElementById('albums-page-grid');
       const navAlbumsCount = document.getElementById('nav-albums-count');
       if (navAlbumsCount) navAlbumsCount.textContent = ALBUMS_DB.length;
 
-      const albumsHtml = (ALBUMS_DB && ALBUMS_DB.length > 0)
-        ? ALBUMS_DB.map(alb => `
-            <div class="music-card" onclick="openAlbumPage('${alb.id}')">
-              <div class="card-art-box">
-                <img class="card-art-img" src="${alb.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300'}" alt="${escapeHtml(alb.title)}" />
-                <button class="card-play-overlay"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
-              </div>
-              <div class="card-title">${escapeHtml(alb.title)}</div>
-              <div class="card-subtitle">${escapeHtml(alb.artist_name || 'نامشخص')} • ${(alb.tracks ? alb.tracks.length : 0)} قطعه</div>
-            </div>
-          `).join('')
-        : `<div style="grid-column: 1/-1; text-align:center; padding:24px; color:var(--muted); font-size:12.5px;">هنوز آلبومی ثبت نشده است.</div>`;
+      const albumCardTemplate = (alb) => `
+        <div class="music-card" onclick="openAlbumPage('${alb.id}')">
+          <div class="card-art-box">
+            <img class="card-art-img" src="${alb.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300'}" alt="${escapeHtml(alb.title)}" />
+            <button class="card-play-overlay"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+          </div>
+          <div class="card-title">${escapeHtml(alb.title)}</div>
+          <div class="card-subtitle">${escapeHtml(alb.artist_name || 'نامشخص')} • ${(alb.tracks ? alb.tracks.length : 0)} قطعه</div>
+        </div>
+      `;
 
       if (homeAlbumsGrid) {
-        homeAlbumsGrid.innerHTML = (ALBUMS_DB.slice(0, 6).map(alb => `
-            <div class="music-card" onclick="openAlbumPage('${alb.id}')">
-              <div class="card-art-box">
-                <img class="card-art-img" src="${alb.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300'}" alt="${escapeHtml(alb.title)}" />
-                <button class="card-play-overlay"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
-              </div>
-              <div class="card-title">${escapeHtml(alb.title)}</div>
-              <div class="card-subtitle">${escapeHtml(alb.artist_name || 'نامشخص')}</div>
-            </div>
-        `).join('')) || `<div style="grid-column: 1/-1; text-align:center; padding:20px; color:var(--muted);">آلبومی وجود ندارد.</div>`;
+        homeAlbumsGrid.innerHTML = (ALBUMS_DB && ALBUMS_DB.length > 0)
+          ? ALBUMS_DB.slice(0, 10).map(albumCardTemplate).join('')
+          : `<div style="grid-column: 1/-1; text-align:center; padding:20px; color:var(--muted);">آلبومی وجود ندارد.</div>`;
       }
 
-      if (albumsPageGrid) albumsPageGrid.innerHTML = albumsHtml;
+      renderPaginatedGrid(ALBUMS_DB, 'albums-page-grid', albumCardTemplate, 'هنوز آلبومی ثبت نشده است.', 12, 1);
+
+      initDesktopCarouselDrag();
     }
 
     function renderPlaylistsDirectory() {
       syncUserAndPublicPlaylists();
-      const playlistsGrid = document.getElementById('playlists-grid');
-      const libraryGrid = document.getElementById('library-playlists-grid');
       const counterEl = document.getElementById('user-custom-playlist-counter');
       const navCount = document.getElementById('nav-playlists-count');
 
       if (navCount) navCount.textContent = PLAYLISTS_DB.length;
       if (counterEl) counterEl.textContent = `پلی‌لیست‌های شخصی شما: ${USER_CUSTOM_PLAYLISTS.length} از ۱۰`;
 
-      // صفحه پلی‌لیست‌ها (عمومی‌ها + پلی‌لیست‌های خود کاربر)
-      if (playlistsGrid) {
-        playlistsGrid.innerHTML = PLAYLISTS_DB.length > 0 
-          ? PLAYLISTS_DB.map(p => `
-            <div class="music-card" onclick="openPlaylistPage('${p.id}')">
-              <div class="card-art-box">
-                <img class="card-art-img" src="${p.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300'}" alt="${escapeHtml(p.title)}" />
-                <button class="card-play-overlay"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
-              </div>
-              <div class="card-title">${escapeHtml(p.title)}</div>
-              <div class="card-subtitle">${(p.tracks ? p.tracks.length : 0)} قطعه • ${p.is_mine ? (p.is_public ? 'عمومی شما' : 'شخصی شما') : escapeHtml(p.owner_name || 'رسمی')}</div>
-            </div>
-          `).join('')
-          : `<div style="grid-column: 1/-1; text-align:center; padding:30px; color:var(--muted);">پلی‌لیستی برای نمایش وجود ندارد.</div>`;
-      }
+      const publicPlCard = (p) => `
+        <div class="music-card" onclick="openPlaylistPage('${p.id}')">
+          <div class="card-art-box">
+            <img class="card-art-img" src="${p.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300'}" alt="${escapeHtml(p.title)}" />
+            <button class="card-play-overlay"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+          </div>
+          <div class="card-title">${escapeHtml(p.title)}</div>
+          <div class="card-subtitle">${(p.tracks ? p.tracks.length : 0)} قطعه • ${p.is_mine ? (p.is_public ? 'عمومی شما' : 'شخصی شما') : escapeHtml(p.owner_name || 'رسمی')}</div>
+        </div>
+      `;
 
-      // صفحه کتابخانه من (فقط پلی‌لیست‌های شخصی اکانت کاربر)
-      if (libraryGrid) {
-        libraryGrid.innerHTML = USER_CUSTOM_PLAYLISTS.length > 0
-          ? USER_CUSTOM_PLAYLISTS.map(p => `
-            <div class="music-card" onclick="openPlaylistPage('${p.id}')">
-              <div class="card-art-box">
-                <img class="card-art-img" src="${p.cover || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300'}" alt="${escapeHtml(p.title)}" />
-                <button class="card-play-overlay"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
-              </div>
-              <div class="card-title">${escapeHtml(p.title)}</div>
-              <div class="card-subtitle">${(p.tracks ? p.tracks.length : 0)} قطعه • ${p.is_public ? '🌐 عمومی شده' : '🔒 خصوصی'}</div>
-            </div>
-          `).join('')
-          : `<div style="grid-column: 1/-1; text-align:center; padding:30px; color:var(--muted);">شما هنوز پلی‌لیست شخصی نساخته‌اید. روی دکمه «+ ساخت پلی‌لیست شخصی» کلیک کنید.</div>`;
-      }
+      const libraryPlCard = (p) => `
+        <div class="music-card" onclick="openPlaylistPage('${p.id}')">
+          <div class="card-art-box">
+            <img class="card-art-img" src="${p.cover || 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300'}" alt="${escapeHtml(p.title)}" />
+            <button class="card-play-overlay"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+          </div>
+          <div class="card-title">${escapeHtml(p.title)}</div>
+          <div class="card-subtitle">${(p.tracks ? p.tracks.length : 0)} قطعه • ${p.is_public ? '🌐 عمومی شده' : '🔒 خصوصی'}</div>
+        </div>
+      `;
+
+      renderPaginatedGrid(PLAYLISTS_DB, 'playlists-grid', publicPlCard, 'پلی‌لیستی برای نمایش وجود ندارد.', 12, 1);
+      renderPaginatedGrid(USER_CUSTOM_PLAYLISTS, 'library-playlists-grid', libraryPlCard, 'شما هنوز پلی‌لیست شخصی نساخته‌اید. روی دکمه «+ ساخت پلی‌لیست شخصی» کلیک کنید.', 12, 1);
     }
 
-    function renderTracksTableList(tracks, containerId, customOnClick = null) {
+    // رندر لیست آهنگ‌ها همراه با صفحه‌بندی خودکار (۱۵ آهنگ در هر صفحه)
+    function renderTracksTableList(tracks, containerId, customOnClick = null, page = 1) {
       const container = document.getElementById(containerId);
       if (!container) return;
 
@@ -3263,13 +3489,32 @@
         return;
       }
 
-      container.innerHTML = tracks.map((t, idx) => {
+      const isHomeRecent = (containerId === 'home-recent-tracks');
+      const perPage = isHomeRecent ? 6 : 15;
+      const totalItems = tracks.length;
+      const totalPages = isHomeRecent ? 1 : Math.ceil(totalItems / perPage);
+      const safePage = Math.max(1, Math.min(page, totalPages));
+
+      PAGINATION_STATE[containerId] = {
+        items: tracks,
+        customOnClick,
+        perPage,
+        page: safePage
+      };
+
+      const startIdx = (safePage - 1) * perPage;
+      const pageTracks = tracks.slice(startIdx, startIdx + perPage);
+
+      container.innerHTML = pageTracks.map((t, idx) => {
+        const realIdx = startIdx + idx;
         const isCurrentPlaying = (CURRENT_QUEUE[currentQueueIndex]?.id === t.id && isPlaying);
-        const clickHandler = customOnClick ? `${customOnClick}(${idx})` : `playFromTrackList(ALL_TRACKS, ${idx})`;
+        const clickHandler = customOnClick
+          ? `${customOnClick}(${realIdx})`
+          : (isHomeRecent ? `playFromTrackList(ALL_TRACKS, ${realIdx})` : `playTrackFromPaginatedList('${containerId}', ${realIdx})`);
 
         return `
           <div class="track-row ${isCurrentPlaying ? 'playing' : ''}" onclick="${clickHandler}">
-            <div class="track-num">${idx + 1}</div>
+            <div class="track-num">${realIdx + 1}</div>
             <div class="equalizer-wave">
               <div class="eq-bar"></div>
               <div class="eq-bar"></div>
@@ -3297,7 +3542,58 @@
             </div>
           </div>
         `;
-      }).join('');
+      }).join('') + (!isHomeRecent ? buildPaginationBarHtml(containerId, safePage, totalPages, totalItems, 'changeTrackListPage') : '');
+    }
+
+    function changeTrackListPage(containerId, newPage) {
+      const st = PAGINATION_STATE[containerId];
+      if (!st) return;
+      renderTracksTableList(st.items, containerId, st.customOnClick, newPage);
+      const el = document.getElementById(containerId);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function playTrackFromPaginatedList(containerId, realIdx) {
+      const st = PAGINATION_STATE[containerId];
+      const list = (st && st.items) ? st.items : ALL_TRACKS;
+      playFromTrackList(list, realIdx);
+    }
+
+    // قابلیت کشیدن افقی کاروسل‌ها با موس در دسکتاپ (Drag to Scroll)
+    function initDesktopCarouselDrag() {
+      document.querySelectorAll('.mobile-carousel-row').forEach(row => {
+        if (row.dataset.dragBound) return;
+        row.dataset.dragBound = 'true';
+
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        row.addEventListener('mousedown', (e) => {
+          isDown = true;
+          row.classList.add('dragging');
+          startX = e.pageX - row.offsetLeft;
+          scrollLeft = row.scrollLeft;
+        });
+
+        row.addEventListener('mouseleave', () => {
+          isDown = false;
+          row.classList.remove('dragging');
+        });
+
+        row.addEventListener('mouseup', () => {
+          isDown = false;
+          row.classList.remove('dragging');
+        });
+
+        row.addEventListener('mousemove', (e) => {
+          if (!isDown) return;
+          e.preventDefault();
+          const x = e.pageX - row.offsetLeft;
+          const walk = (x - startX) * 1.6;
+          row.scrollLeft = scrollLeft - walk;
+        });
+      });
     }
 
     async function openPlaylistPage(playlistId) {
@@ -4276,8 +4572,8 @@
         renderTracksTableList(filteredTracks, 'search-tracks-list');
       }
 
-      if (filteredAlbums.length > 0 && document.getElementById('search-albums-grid')) {
-        document.getElementById('search-albums-grid').innerHTML = filteredAlbums.map(alb => `
+     if (filteredAlbums.length > 0 && document.getElementById('search-albums-grid')) {
+        renderPaginatedGrid(filteredAlbums, 'search-albums-grid', alb => `
           <div class="music-card" onclick="openAlbumPage('${alb.id}')">
             <div class="card-art-box">
               <img class="card-art-img" src="${alb.cover || 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=300'}" alt="${escapeHtml(alb.title)}" />
@@ -4286,28 +4582,29 @@
             <div class="card-title">${escapeHtml(alb.title)}</div>
             <div class="card-subtitle">${escapeHtml(alb.artist_name || 'نامشخص')} • ${(alb.tracks ? alb.tracks.length : 0)} قطعه</div>
           </div>
-        `).join('');
+        `, '', 12, 1);
       }
 
       if (filteredArtists.length > 0 && document.getElementById('search-artists-grid')) {
-        document.getElementById('search-artists-grid').innerHTML = filteredArtists.map(a => `
+        renderPaginatedGrid(filteredArtists, 'search-artists-grid', a => `
           <div class="music-card artist-card" onclick="openArtistPage('${a.id}')">
             <div class="card-art-box"><img class="card-art-img" src="${a.image || ''}" /></div>
             <div class="card-title">${escapeHtml(a.name)}</div>
             <div class="card-subtitle">${escapeHtml(a.genre_names || '')}</div>
           </div>
-        `).join('');
+        `, '', 12, 1);
       }
 
       if (filteredPlaylists.length > 0 && document.getElementById('search-playlists-grid')) {
-        document.getElementById('search-playlists-grid').innerHTML = filteredPlaylists.map(p => `
+        renderPaginatedGrid(filteredPlaylists, 'search-playlists-grid', p => `
           <div class="music-card" onclick="openPlaylistPage('${p.id}')">
             <div class="card-art-box"><img class="card-art-img" src="${p.cover || ''}" /></div>
             <div class="card-title">${escapeHtml(p.title)}</div>
             <div class="card-subtitle">${(p.tracks ? p.tracks.length : 0)} قطعه</div>
           </div>
-        `).join('');
+        `, '', 12, 1);
       }
+      
     }
 
     function setSearchFilter(filter, btn) {
