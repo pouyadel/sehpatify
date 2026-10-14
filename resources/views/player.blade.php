@@ -2234,6 +2234,25 @@
         padding: 0 8px;
       }
     }
+    .mobile-carousel-row {
+      display: flex !important;
+      overflow-x: auto !important;
+      flex-wrap: nowrap !important;
+      gap: 16px !important;
+      padding: 12px 6px 16px !important;
+      margin: -8px -6px 0 !important;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      cursor: grab;
+    }
+
+    .grid-container {
+      padding-top: 6px;
+    }
+
+    .music-card:hover {
+      z-index: 10;
+    }
   </style>
 </head>
 <body>

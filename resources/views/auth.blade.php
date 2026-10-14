@@ -6,12 +6,12 @@
   <title>ورود و عضویت | سهپاتیفای — Sehpatify</title>
   <meta name="theme-color" content="#07070C" />
   <meta name="csrf-token" content="{{ csrf_token() }}">
+  <link rel="icon" type="image/png" href="/logo.png" />
 
   <!-- Google Fonts: Vazirmatn -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="icon" type="image/png" href="/logo.png" />
 
   <style>
     :root {
@@ -114,7 +114,7 @@
       -webkit-backdrop-filter: blur(28px);
       border: 1px solid var(--border-light);
       border-radius: var(--radius-lg);
-      padding: 32px 28px;
+      padding: 30px 26px;
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 40px rgba(16, 185, 84, 0.06);
       position: relative;
       z-index: 5;
@@ -131,12 +131,12 @@
       flex-direction: column;
       align-items: center;
       text-align: center;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
     }
 
     .auth-logo-wrap {
-      width: 64px;
-      height: 64px;
+      width: 60px;
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -144,7 +144,7 @@
       border: 1px solid var(--border-brand);
       border-radius: 18px;
       box-shadow: 0 0 24px var(--brand-glow-lg);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       padding: 8px;
     }
 
@@ -175,7 +175,7 @@
       padding: 4px;
       border-radius: var(--radius-full);
       border: 1px solid var(--border);
-      margin-bottom: 22px;
+      margin-bottom: 20px;
     }
 
     .auth-tab-btn {
@@ -224,7 +224,7 @@
     .auth-form-panel {
       display: none;
       flex-direction: column;
-      gap: 14px;
+      gap: 13px;
     }
 
     .auth-form-panel.active {
@@ -240,7 +240,7 @@
     .field-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 5px;
     }
 
     .field-label {
@@ -288,7 +288,7 @@
 
     .auth-input {
       width: 100%;
-      height: 46px;
+      height: 45px;
       background: var(--surface-input);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
@@ -334,10 +334,67 @@
       color: var(--text);
     }
 
-    .btn-submit-auth {
-      margin-top: 6px;
+    /* استایل کپچای ضد ربات */
+    .captcha-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .captcha-canvas-box {
+      position: relative;
+      height: 45px;
+      width: 135px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border-brand);
+      background: #0B0B14;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 12px rgba(16, 185, 84, 0.15);
+    }
+
+    .captcha-canvas-box canvas {
       width: 100%;
-      height: 48px;
+      height: 100%;
+      display: block;
+    }
+
+    .btn-refresh-captcha {
+      height: 45px;
+      width: 42px;
+      border-radius: var(--radius-sm);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+
+    .btn-refresh-captcha:hover {
+      color: var(--brand);
+      border-color: var(--border-brand);
+      background: var(--brand-dim);
+    }
+
+    .captcha-input {
+      padding: 0 14px !important;
+      text-align: center !important;
+      letter-spacing: 3px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .btn-submit-auth {
+      margin-top: 4px;
+      width: 100%;
+      height: 46px;
       background: var(--brand);
       color: #052410;
       font-size: 14px;
@@ -366,8 +423,8 @@
     }
 
     .auth-footer-note {
-      margin-top: 18px;
-      padding-top: 14px;
+      margin-top: 14px;
+      padding-top: 12px;
       border-top: 1px solid var(--border);
       text-align: center;
       font-size: 12px;
@@ -399,22 +456,21 @@
       }
 
       .auth-glass-card {
-        padding: 24px 18px;
+        padding: 22px 16px;
         border-radius: 20px;
       }
 
       .auth-logo-wrap {
-        width: 48px;
-        height: 48px;
+        width: 50px;
+        height: 50px;
       }
 
       .auth-brand-title {
         font-size: 18px;
       }
 
-      .auth-input {
-        height: 44px;
-        font-size: 13px;
+      .auth-input, .captcha-canvas-box, .btn-refresh-captcha {
+        height: 42px;
       }
 
       .btn-submit-auth {
@@ -477,6 +533,23 @@
             <input type="password" class="auth-input" id="login-password" placeholder="رمز عبور خود را وارد کنید..." required />
             <button type="button" class="toggle-pass-btn" onclick="togglePasswordVisibility('login-password', this)" title="نمایش رمز">
               <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- فیلد کپچای امنیتی ورود -->
+        <div class="field-group">
+          <label class="field-label">
+            <span>کد امنیتی (ضد ربات)</span>
+            <span class="field-hint">حروف تصویر را وارد کنید</span>
+          </label>
+          <div class="captcha-row">
+            <input type="text" class="auth-input captcha-input" id="login-captcha" maxlength="5" placeholder="کد تصویر" required />
+            <div class="captcha-canvas-box" onclick="refreshCaptcha()" title="کلیک برای تغییر کد">
+              <canvas id="captcha-canvas-login" width="135" height="45"></canvas>
+            </div>
+            <button type="button" class="btn-refresh-captcha" onclick="refreshCaptcha()" title="کد جدید">
+              <svg width="17" height="17" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
             </button>
           </div>
         </div>
@@ -546,6 +619,23 @@
           </div>
         </div>
 
+        <!-- فیلد کپچای امنیتی ثبت‌نام -->
+        <div class="field-group">
+          <label class="field-label">
+            <span>کد امنیتی (ضد ربات)</span>
+            <span class="field-hint">حروف تصویر را وارد کنید</span>
+          </label>
+          <div class="captcha-row">
+            <input type="text" class="auth-input captcha-input" id="reg-captcha" maxlength="5" placeholder="کد تصویر" required />
+            <div class="captcha-canvas-box" onclick="refreshCaptcha()" title="کلیک برای تغییر کد">
+              <canvas id="captcha-canvas-register" width="135" height="45"></canvas>
+            </div>
+            <button type="button" class="btn-refresh-captcha" onclick="refreshCaptcha()" title="کد جدید">
+              <svg width="17" height="17" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            </button>
+          </div>
+        </div>
+
         <button type="submit" class="btn-submit-auth" id="btn-register-submit">
           <span>تکمیل ثبت‌نام و ورود</span>
         </button>
@@ -555,7 +645,7 @@
         </div>
       </form>
 
-      <!-- ۳. فرم بازیابی رمز عبور (ارسال به ایمیل) -->
+      <!-- ۳. فرم بازیابی رمز عبور -->
       <form class="auth-form-panel" id="form-forgot" onsubmit="submitForgot(event)">
         <div style="text-align:center; margin-bottom: 4px;">
           <h3 style="font-size:15px; font-weight:800; color:var(--text);">بازیابی رمز عبور</h3>
@@ -587,6 +677,72 @@
   </div>
 
   <script>
+    // دریافت کد کپچا از سرور و رسم گرافیکی روی Canvas
+    async function refreshCaptcha() {
+      try {
+        const res = await fetch('/auth/captcha', { headers: { 'Accept': 'application/json' } });
+        const data = await res.json();
+        if (data.code) {
+          drawCaptchaOnCanvas('captcha-canvas-login', data.code);
+          drawCaptchaOnCanvas('captcha-canvas-register', data.code);
+        }
+      } catch (e) {}
+    }
+
+    function drawCaptchaOnCanvas(canvasId, text) {
+      const canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // پس‌زمینه تیره
+      ctx.fillStyle = '#0A0A12';
+      ctx.fillRect(0, 0, w, h);
+
+      // خطوط نویز امنیتی سبز
+      for (let i = 0; i < 5; i++) {
+        ctx.strokeStyle = `rgba(16, 185, 84, ${0.18 + Math.random() * 0.25})`;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(Math.random() * w, Math.random() * h);
+        ctx.lineTo(Math.random() * w, Math.random() * h);
+        ctx.stroke();
+      }
+
+      // نقاط نویز
+      for (let i = 0; i < 25; i++) {
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.25})`;
+        ctx.beginPath();
+        ctx.arc(Math.random() * w, Math.random() * h, 1, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // رسم کاراکترهای کپچا با چرخش تصادفی
+      const chars = text.split('');
+      const space = w / (chars.length + 1);
+
+      chars.forEach((ch, idx) => {
+        ctx.save();
+        const x = space * (idx + 1);
+        const y = h / 2 + (Math.random() * 6 - 3);
+        const angle = (Math.random() - 0.5) * 0.4;
+
+        ctx.translate(x, y);
+        ctx.rotate(angle);
+        ctx.font = '900 20px monospace';
+        ctx.fillStyle = idx % 2 === 0 ? '#10B954' : '#F8F8FA';
+        ctx.shadowColor = 'rgba(16, 185, 84, 0.6)';
+        ctx.shadowBlur = 6;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(ch, 0, 0);
+        ctx.restore();
+      });
+    }
+
     function switchAuthTab(tab) {
       const alertBox = document.getElementById('auth-alert-box');
       alertBox.className = 'auth-alert';
@@ -603,6 +759,10 @@
       document.getElementById('form-login').classList.toggle('active', tab === 'login');
       document.getElementById('form-register').classList.toggle('active', tab === 'register');
       document.getElementById('form-forgot').classList.toggle('active', tab === 'forgot');
+
+      if (tab === 'login' || tab === 'register') {
+        refreshCaptcha();
+      }
     }
 
     function togglePasswordVisibility(inputId, btn) {
@@ -633,21 +793,31 @@
           },
           body: JSON.stringify({
             identifier: document.getElementById('login-identifier').value.trim(),
-            password: document.getElementById('login-password').value
+            password: document.getElementById('login-password').value,
+            captcha: document.getElementById('login-captcha').value.trim()
           })
         });
+
+        if (res.status === 429) {
+          showAuthAlert('تعداد تلاش‌های شما بیش از حد مجاز است. لطفاً ۱ دقیقه صبر کنید.', 'error');
+          refreshCaptcha();
+          return;
+        }
 
         const data = await res.json();
 
         if (!res.ok) {
           const firstError = data.errors ? Object.values(data.errors)[0][0] : data.message;
           showAuthAlert(firstError || 'خطا در ورود به حساب', 'error');
+          document.getElementById('login-captcha').value = '';
+          refreshCaptcha();
         } else {
           showAuthAlert(data.message, 'success');
           window.location.href = data.redirect || '/';
         }
       } catch (err) {
         showAuthAlert('خطا در برقراری ارتباط با سرور', 'error');
+        refreshCaptcha();
       } finally {
         btn.disabled = false;
         btn.textContent = 'ورود به سهپاتیفای';
@@ -672,21 +842,31 @@
             username: document.getElementById('reg-username').value.trim(),
             email: document.getElementById('reg-email').value.trim(),
             phone: document.getElementById('reg-phone').value.trim(),
-            password: document.getElementById('reg-password').value
+            password: document.getElementById('reg-password').value,
+            captcha: document.getElementById('reg-captcha').value.trim()
           })
         });
+
+        if (res.status === 429) {
+          showAuthAlert('تعداد درخواست‌های شما بیش از حد مجاز است. لطفاً ۱ دقیقه صبر کنید.', 'error');
+          refreshCaptcha();
+          return;
+        }
 
         const data = await res.json();
 
         if (!res.ok) {
           const firstError = data.errors ? Object.values(data.errors)[0][0] : data.message;
           showAuthAlert(firstError || 'خطا در ثبت اطلاعات', 'error');
+          document.getElementById('reg-captcha').value = '';
+          refreshCaptcha();
         } else {
           showAuthAlert(data.message, 'success');
           window.location.href = data.redirect || '/';
         }
       } catch (err) {
         showAuthAlert('خطا در برقراری ارتباط با سرور', 'error');
+        refreshCaptcha();
       } finally {
         btn.disabled = false;
         btn.textContent = 'تکمیل ثبت‌نام و ورود';
@@ -728,7 +908,52 @@
         btn.textContent = 'ارسال رمز عبور جدید به ایمیل';
       }
     }
-    
+
+    // حذف خودکار پس‌زمینه سفید لوگو
+    function makeLogoTransparent() {
+      const logoImages = document.querySelectorAll('img[src*="logo.png"]');
+      if (logoImages.length === 0) return;
+
+      const tempImg = new Image();
+      tempImg.crossOrigin = 'anonymous';
+      tempImg.src = '/logo.png';
+
+      tempImg.onload = function () {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = tempImg.naturalWidth || tempImg.width;
+        canvas.height = tempImg.naturalHeight || tempImg.height;
+
+        ctx.drawImage(tempImg, 0, 0);
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imgData.data;
+
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i], g = data[i + 1], b = data[i + 2];
+          const minChannel = Math.min(r, g, b);
+          if (minChannel >= 248) {
+            data[i + 3] = 0;
+          } else {
+            let alpha = Math.min(1, ((255 - minChannel) / 255) * 1.35);
+            data[i]   = Math.max(0, Math.min(255, Math.round((r - (1 - alpha) * 255) / alpha)));
+            data[i+1] = Math.max(0, Math.min(255, Math.round((g - (1 - alpha) * 255) / alpha)));
+            data[i+2] = Math.max(0, Math.min(255, Math.round((b - (1 - alpha) * 255) / alpha)));
+            data[i+3] = Math.round(alpha * 255);
+          }
+        }
+
+        ctx.putImageData(imgData, 0, 0);
+        const transparentUrl = canvas.toDataURL('image/png');
+        logoImages.forEach(img => img.src = transparentUrl);
+        const favLink = document.querySelector('link[rel="icon"]');
+        if (favLink) favLink.href = transparentUrl;
+      };
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      makeLogoTransparent();
+      refreshCaptcha();
+    });
   </script>
 </body>
 </html>

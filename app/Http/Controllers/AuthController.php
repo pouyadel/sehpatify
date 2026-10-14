@@ -19,8 +19,42 @@ class AuthController extends Controller
         return view('auth');
     }
 
+    // تولید کد کپچای امنیتی در سشن سرور
+    public function getCaptcha()
+    {
+        $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        $code = '';
+        for ($i = 0; $i < 5; $i++) {
+            $code .= $chars[ random_int(0, strlen($chars) - 1) ];
+        }
+
+        session(['sehpatify_captcha' => strtoupper($code)]);
+
+        return response()->json([
+            'code' => $code
+        ]);
+    }
+
+    private function verifyCaptcha(Request $request)
+    {
+        $input = strtoupper(trim($request->input('captcha', '')));
+        $stored = session('sehpatify_captcha');
+
+        // یک‌بار مصرف کردن کپچا پس از هر تلاش
+        session()->forget('sehpatify_captcha');
+
+        return !empty($stored) && $input === $stored;
+    }
+
     public function register(Request $request)
     {
+        if (!$this->verifyCaptcha($request)) {
+            return response()->json([
+                'message' => 'کد امنیتی (کپچا) اشتباه وارد شده است. لطفاً دوباره تلاش کنید.',
+                'captcha_error' => true,
+            ], 422);
+        }
+
         $request->validate([
             'username' => 'required|string|min:3|max:50|unique:users,username|regex:/^[a-zA-Z0-9_.-]+$/',
             'email'    => 'required|email|max:255|unique:users,email',
@@ -61,6 +95,13 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        if (!$this->verifyCaptcha($request)) {
+            return response()->json([
+                'message' => 'کد امنیتی (کپچا) اشتباه وارد شده است. لطفاً دوباره تلاش کنید.',
+                'captcha_error' => true,
+            ], 422);
+        }
+
         $request->validate([
             'identifier' => 'required|string',
             'password'   => 'required|string',
@@ -96,7 +137,6 @@ class AuthController extends Controller
         ]);
     }
 
-    // بازیابی و ارسال رمز عبور جدید به ایمیل کاربر
     public function forgotPassword(Request $request)
     {
         $request->validate([
@@ -108,17 +148,13 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', trim($request->email))->firstOrFail();
-
-        // تولید رمز عبور جدید ۸ کاراکتری
         $newPassword = Str::random(8);
 
-        // ذخیره رمز جدید در دیتابیس
         $user->password = Hash::make($newPassword);
         $user->save();
 
         $username = $user->username ?: $user->name;
 
-        // قالب ایمیل هماهنگ با استایل سهپاتیفای
         $htmlContent = "
         <div dir='rtl' style='font-family: Tahoma, Arial, sans-serif; background-color: #07070C; color: #F8F8FA; padding: 32px 20px; border-radius: 18px; max-width: 500px; margin: 0 auto; border: 1px solid rgba(16, 185, 84, 0.4); text-align: right;'>
             <div style='text-align: center; margin-bottom: 20px;'>
@@ -149,7 +185,7 @@ class AuthController extends Controller
             ], 500);
         }
     }
-    // ۱. بروزرسانی اطلاعات شخصی کاربر (نام، یوزرنیم، ایمیل، موبایل)
+
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
@@ -191,7 +227,6 @@ class AuthController extends Controller
         ]);
     }
 
-    // ۲. تغییر رمز عبور با بررسی رمز فعلی
     public function updatePassword(Request $request)
     {
         $user = Auth::user();
@@ -219,6 +254,7 @@ class AuthController extends Controller
             'message' => 'رمز عبور شما با موفقیت تغییر یافت ✓'
         ]);
     }
+
     public function logout(Request $request)
     {
         Auth::logout();
