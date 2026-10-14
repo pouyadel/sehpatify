@@ -1957,6 +1957,138 @@
         font-size: 11px;
       }
     }
+    /* استایل‌های پنل حساب کاربری */
+    .profile-grid-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .profile-glass-card {
+      background: var(--surface-card);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .profile-card-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .profile-card-head svg {
+      color: var(--brand);
+      flex-shrink: 0;
+    }
+
+    .profile-field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .profile-field-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .profile-input {
+      width: 100%;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-size: 13px;
+      padding: 0 14px;
+      transition: all var(--transition-fast);
+    }
+
+    .profile-input.ltr-input {
+      direction: ltr;
+      text-align: left;
+    }
+
+    .profile-input:focus {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--brand);
+      box-shadow: 0 0 14px var(--brand-glow-lg);
+    }
+
+    .profile-alert-box {
+      display: none;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.5;
+    }
+
+    .profile-alert-box.error {
+      display: block;
+      background: rgba(248, 113, 113, 0.12);
+      border: 1px solid rgba(248, 113, 113, 0.35);
+      color: #f87171;
+    }
+
+    .profile-alert-box.success {
+      display: block;
+      background: var(--brand-dim);
+      border: 1px solid var(--border-brand);
+      color: var(--brand);
+    }
+
+    .profile-stats-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .profile-stat-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .profile-stat-pill strong {
+      color: var(--brand);
+      font-weight: 800;
+    }
+
+    @media (max-width: 860px) {
+      .profile-grid-layout {
+        grid-template-columns: 1fr;
+      }
+      .profile-glass-card {
+        padding: 18px;
+      }
+      .profile-stats-row {
+        justify-content: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -2023,6 +2155,12 @@
       <div class="nav-label">کتابخانه من</div>
       <ul class="nav-list">
         <li>
+          <a class="nav-link" id="nav-profile" onclick="switchView('profile')">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+            <span>تنظیمات حساب من</span>
+          </a>
+        </li>
+        <li>
           <a class="nav-link" id="nav-playlists" onclick="switchView('playlists')">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
             <span>پلی‌لیست‌ها</span>
@@ -2077,9 +2215,10 @@
         <div class="topbar-actions">
           @auth
             <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:12px; font-weight:700; color:var(--brand); background:var(--brand-dim); border:1px solid var(--border-brand); padding:5px 12px; border-radius:var(--radius-full);">
-                {{ auth()->user()->username ?? auth()->user()->name }}
-              </span>
+              <button type="button" onclick="switchView('profile')" style="cursor:pointer; font-size:12px; font-weight:700; color:var(--brand); background:var(--brand-dim); border:1px solid var(--border-brand); padding:6px 14px; border-radius:var(--radius-full); display:flex; align-items:center; gap:6px; transition:var(--transition-fast);" title="مشاهده و ویرایش پروفایل">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span id="topbar-username-label">{{ auth()->user()->username ?? auth()->user()->name }}</span>
+              </button>
               <form action="/auth/logout" method="POST" style="margin:0;">
                 @csrf
                 <button type="submit" class="user-pill-badge" title="خروج از حساب کاربری">
@@ -2110,6 +2249,7 @@
         <button class="quick-pill-item" id="pill-artists" onclick="switchView('artists')">هنرمندان</button>
         <button class="quick-pill-item" id="pill-playlists" onclick="switchView('playlists')">پلی‌لیست‌ها</button>
         <button class="quick-pill-item" id="pill-favorites" onclick="switchView('favorites')">موردعلاقه‌ها</button>
+        <button class="quick-pill-item" id="pill-profile" onclick="switchView('profile')">حساب کاربری</button>
       </div>
 
       <div class="content-viewport" id="viewport">
@@ -2441,7 +2581,158 @@
           </div>
           <div class="track-list" id="favorites-tracks-list"></div>
         </section>
+        <!-- VIEW 10: USER PROFILE & ACCOUNT SETTINGS -->
+        <section class="view-panel" id="view-profile">
+          @auth
+            <!-- هدر پروفایل کاربر -->
+            <div class="artist-header-box">
+              <div class="artist-avatar-lg" style="background: linear-gradient(135deg, #10B954 0%, #063d1b 100%); display:flex; align-items:center; justify-content:center; font-size:58px; font-weight:900; color:#fff; text-transform:uppercase;">
+                <span id="profile-avatar-char">{{ mb_substr(auth()->user()->username ?? auth()->user()->name, 0, 1) }}</span>
+              </div>
+              <div class="artist-info-col">
+                <span class="artist-verified-tag">
+                  <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                  <span>{{ auth()->user()->role === 'مدیر' ? 'مدیر ارشد سیستم' : 'کاربر رسمی سهپاتیفای' }}</span>
+                </span>
+                <h1 class="artist-name-title" id="profile-header-name">{{ auth()->user()->name }}</h1>
+                <p class="artist-header-desc" id="profile-header-sub" style="direction:ltr; text-align:right;">
+                  {{ '@' . (auth()->user()->username ?? 'user') }} • {{ auth()->user()->email }}
+                </p>
 
+                <div class="profile-stats-row">
+                  <div class="profile-stat-pill">
+                    <span>آهنگ‌های موردعلاقه:</span>
+                    <strong id="profile-stat-favs">۰</strong>
+                  </div>
+                  <div class="profile-stat-pill">
+                    <span>پلی‌لیست‌های شخصی:</span>
+                    <strong id="profile-stat-playlists">۰</strong>
+                  </div>
+                  <div class="profile-stat-pill">
+                    <span>کیفیت استریم:</span>
+                    <strong>FLAC 24-bit Lossless</strong>
+                  </div>
+                </div>
+
+                <div class="artist-actions-row" style="margin-top:10px;">
+                  @if(auth()->user()->role === 'مدیر')
+                    <a href="/admin" class="btn-brand" style="text-decoration:none;">
+                      <svg width="17" height="17" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                      <span>ورود به پنل مدیریت (Studio)</span>
+                    </a>
+                  @endif
+                  <form action="/auth/logout" method="POST" style="margin:0;">
+                    @csrf
+                    <button type="submit" class="btn-secondary" style="color:#f87171; border-color:rgba(248,113,113,0.3);">
+                      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                      <span>خروج از حساب</span>
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <!-- گرید دو ستونه فرم‌های ویرایش اطلاعات و تغییر رمز -->
+            <div class="profile-grid-layout">
+              
+              <!-- کارت ۱: ویرایش مشخصات فردی -->
+              <form class="profile-glass-card" onsubmit="submitUserProfileUpdate(event)">
+                <div class="profile-card-head">
+                  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                  <span>ویرایش اطلاعات شخصی</span>
+                </div>
+
+                <div class="profile-alert-box" id="profile-info-alert"></div>
+
+                <div class="profile-field-group">
+                  <label class="profile-field-label">نام نمایشی</label>
+                  <input type="text" class="profile-input" id="prof-name" value="{{ auth()->user()->name }}" required />
+                </div>
+
+                <div class="profile-field-group">
+                  <label class="profile-field-label">
+                    <span>نام کاربری (Username)</span>
+                    <span style="font-size:10.5px; color:var(--muted-dark);">حروف انگلیسی و اعداد</span>
+                  </label>
+                  <input type="text" class="profile-input ltr-input" id="prof-username" value="{{ auth()->user()->username }}" required />
+                </div>
+
+                <div class="profile-field-group">
+                  <label class="profile-field-label">آدرس ایمیل</label>
+                  <input type="email" class="profile-input ltr-input" id="prof-email" value="{{ auth()->user()->email }}" required />
+                </div>
+
+                <div class="profile-field-group">
+                  <label class="profile-field-label">شماره موبایل</label>
+                  <input type="tel" class="profile-input ltr-input" id="prof-phone" maxlength="11" value="{{ auth()->user()->phone }}" placeholder="09123456789" required />
+                </div>
+
+                <button type="submit" class="btn-brand" id="btn-save-profile-info" style="justify-content:center; margin-top:6px;">
+                  <span>ذخیره تغییرات پروفایل</span>
+                </button>
+              </form>
+
+              <!-- کارت ۲: تغییر رمز عبور و امنیت -->
+              <form class="profile-glass-card" onsubmit="submitUserPasswordUpdate(event)">
+                <div class="profile-card-head">
+                  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                  <span>تغییر رمز عبور و امنیت</span>
+                </div>
+
+                <div class="profile-alert-box" id="profile-pass-alert"></div>
+
+                <div class="profile-field-group">
+                  <label class="profile-field-label">رمز عبور فعلی</label>
+                  <input type="password" class="profile-input ltr-input" id="prof-current-password" placeholder="••••••••" required />
+                </div>
+
+                <div class="profile-field-group">
+                  <label class="profile-field-label">
+                    <span>رمز عبور جدید</span>
+                    <span style="font-size:10.5px; color:var(--muted-dark);">حداقل ۶ کاراکتر</span>
+                  </label>
+                  <input type="password" class="profile-input ltr-input" id="prof-new-password" placeholder="••••••••" required />
+                </div>
+
+                <div class="profile-field-group">
+                  <label class="profile-field-label">تکرار رمز عبور جدید</label>
+                  <input type="password" class="profile-input ltr-input" id="prof-confirm-password" placeholder="••••••••" required />
+                </div>
+
+                <button type="submit" class="btn-brand" id="btn-save-profile-pass" style="justify-content:center; margin-top:auto;">
+                  <span>بروزرسانی رمز عبور</span>
+                </button>
+              </form>
+
+            </div>
+
+            <!-- کارت ۳: تنظیمات کاربردی حساب و حافظه -->
+            <div class="profile-glass-card">
+              <div class="profile-card-head">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+                <span>تنظیمات پخش و مدیریت داده‌های شخصی</span>
+              </div>
+              <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+                <div>
+                  <div style="font-weight:700; font-size:13.5px; color:var(--text);">پاک‌سازی پلی‌لیست‌های شخصی مرورگر</div>
+                  <div style="font-size:12px; color:var(--muted);">در صورت تمایل می‌توانید پلی‌لیست‌های شخصی ساخته‌شده در این دستگاه را بازنشانی کنید.</div>
+                </div>
+                <button type="button" class="btn-secondary" onclick="clearAllCustomUserPlaylists()" style="color:#f87171; border-color:rgba(248,113,113,0.3);">
+                  <span>حذف پلی‌لیست‌های شخصی</span>
+                </button>
+              </div>
+            </div>
+          @else
+            <div class="profile-glass-card" style="text-align:center; align-items:center; padding:48px 20px;">
+              <div style="width:64px; height:64px; border-radius:50%; background:var(--brand-dim); border:1px solid var(--border-brand); color:var(--brand); display:flex; align-items:center; justify-content:center; margin-bottom:10px;">
+                <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+              </div>
+              <h3 style="font-size:18px; font-weight:800;">وارد حساب کاربری خود نشده‌اید</h3>
+              <p style="font-size:13px; color:var(--muted); max-width:360px;">برای مدیریت اطلاعات شخصی، تغییر رمز عبور و دسترسی کامل به امکانات حساب، وارد شوید.</p>
+              <a href="/auth" class="btn-brand" style="text-decoration:none; margin-top:8px;">ورود / ثبت‌نام در سهپاتیفای</a>
+            </div>
+          @endauth
+        </section>
       </div>
     </main>
 
@@ -3885,6 +4176,9 @@
       if (viewId === 'favorites') {
         renderFavoritesView();
       }
+      if (viewId === 'profile') {
+        updateProfileStatsView();
+      }
     }
     // تابع انتخاب فیلتر سرچ (دکمه‌های تگ)
     function setSearchFilter(filter, btn) {
@@ -4203,6 +4497,125 @@ function escapeHtml(str) {
       if (viewId === 'favorites') {
         renderFavoritesView();
       }
+    }
+    // بروزرسانی آمار نمایش‌داده‌شده در پروفایل کاربر
+    function updateProfileStatsView() {
+      const favEl = document.getElementById('profile-stat-favs');
+      const plEl = document.getElementById('profile-stat-playlists');
+      if (favEl) favEl.textContent = ALL_TRACKS.filter(t => t.favorited).length;
+      if (plEl) plEl.textContent = USER_CUSTOM_PLAYLISTS.length;
+    }
+
+    function showProfileBoxAlert(boxId, msg, type = 'error') {
+      const el = document.getElementById(boxId);
+      if (!el) return;
+      el.className = `profile-alert-box ${type}`;
+      el.textContent = msg;
+    }
+
+    // ارسال فرم ویرایش اطلاعات شخصی
+    async function submitUserProfileUpdate(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-save-profile-info');
+      btn.disabled = true;
+      btn.textContent = 'در حال ذخیره‌سازی...';
+
+      const alertId = 'profile-info-alert';
+      document.getElementById(alertId).className = 'profile-alert-box';
+
+      try {
+        const res = await fetch('/auth/profile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+          },
+          body: JSON.stringify({
+            name: document.getElementById('prof-name').value.trim(),
+            username: document.getElementById('prof-username').value.trim(),
+            email: document.getElementById('prof-email').value.trim(),
+            phone: document.getElementById('prof-phone').value.trim(),
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          const err = data.errors ? Object.values(data.errors)[0][0] : data.message;
+          showProfileBoxAlert(alertId, err || 'خطا در بروزرسانی اطلاعات', 'error');
+        } else {
+          showProfileBoxAlert(alertId, data.message, 'success');
+          // بروزرسانی آنی نام و یوزرنیم در هدر و پروفایل بدون نیاز به رفرش
+          if (data.user) {
+            const topLabel = document.getElementById('topbar-username-label');
+            if (topLabel) topLabel.textContent = data.user.username || data.user.name;
+            const headerName = document.getElementById('profile-header-name');
+            if (headerName) headerName.textContent = data.user.name;
+            const headerSub = document.getElementById('profile-header-sub');
+            if (headerSub) headerSub.textContent = `@${data.user.username} • ${data.user.email}`;
+            const avatarChar = document.getElementById('profile-avatar-char');
+            if (avatarChar) avatarChar.textContent = (data.user.username || data.user.name).charAt(0);
+          }
+        }
+      } catch (err) {
+        showProfileBoxAlert(alertId, 'خطا در ارتباط با سرور', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'ذخیره تغییرات پروفایل';
+      }
+    }
+
+    // ارسال فرم تغییر رمز عبور
+    async function submitUserPasswordUpdate(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-save-profile-pass');
+      btn.disabled = true;
+      btn.textContent = 'در حال بررسی...';
+
+      const alertId = 'profile-pass-alert';
+      document.getElementById(alertId).className = 'profile-alert-box';
+
+      try {
+        const res = await fetch('/auth/password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+          },
+          body: JSON.stringify({
+            current_password: document.getElementById('prof-current-password').value,
+            new_password: document.getElementById('prof-new-password').value,
+            new_password_confirmation: document.getElementById('prof-confirm-password').value,
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          const err = data.errors ? Object.values(data.errors)[0][0] : data.message;
+          showProfileBoxAlert(alertId, err || 'خطا در تغییر رمز عبور', 'error');
+        } else {
+          showProfileBoxAlert(alertId, data.message, 'success');
+          document.getElementById('prof-current-password').value = '';
+          document.getElementById('prof-new-password').value = '';
+          document.getElementById('prof-confirm-password').value = '';
+        }
+      } catch (err) {
+        showProfileBoxAlert(alertId, 'خطا در ارتباط با سرور', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'بروزرسانی رمز عبور';
+      }
+    }
+
+    function clearAllCustomUserPlaylists() {
+      if (!confirm('آیا از حذف تمام پلی‌لیست‌های شخصی ساخته‌شده در مرورگر مطمئن هستید؟')) return;
+      USER_CUSTOM_PLAYLISTS = [];
+      saveCustomPlaylistsToStorage();
+      renderAppViews();
+      updateProfileStatsView();
     }
   </script>
 </body>

@@ -75,3 +75,7 @@ Route::post('/auth/register', [AuthController::class, 'register']);
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('/auth/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::middleware('auth')->group(function () {
+    Route::post('/auth/profile', [AuthController::class, 'updateProfile']);
+    Route::post('/auth/password', [AuthController::class, 'updatePassword']);
+});

@@ -149,7 +149,76 @@ class AuthController extends Controller
             ], 500);
         }
     }
+    // ۱. بروزرسانی اطلاعات شخصی کاربر (نام، یوزرنیم، ایمیل، موبایل)
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
 
+        $request->validate([
+            'name'     => 'required|string|max:100',
+            'username' => 'required|string|min:3|max:50|regex:/^[a-zA-Z0-9_.-]+$/|unique:users,username,' . $user->id,
+            'email'    => 'required|email|max:255|unique:users,email,' . $user->id,
+            'phone'    => 'required|string|regex:/^09[0-9]{9}$/|unique:users,phone,' . $user->id,
+        ], [
+            'name.required'     => 'نام نمایشی الزامی است.',
+            'username.required' => 'نام کاربری الزامی است.',
+            'username.min'      => 'نام کاربری باید حداقل ۳ کاراکتر باشد.',
+            'username.regex'    => 'نام کاربری فقط می‌تواند شامل حروف انگلیسی، اعداد، نقطه و خط تیره باشد.',
+            'username.unique'   => 'این نام کاربری قبلاً توسط شخص دیگری انتخاب شده است.',
+            'email.required'    => 'آدرس ایمیل الزامی است.',
+            'email.email'       => 'فرمت ایمیل معتبر نیست.',
+            'email.unique'      => 'این ایمیل قبلاً ثبت شده است.',
+            'phone.required'    => 'شماره موبایل الزامی است.',
+            'phone.regex'       => 'شماره موبایل باید ۱۱ رقم و با 09 شروع شود.',
+            'phone.unique'      => 'این شماره موبایل قبلاً ثبت شده است.',
+        ]);
+
+        $user->update([
+            'name'     => trim($request->name),
+            'username' => trim($request->username),
+            'email'    => trim($request->email),
+            'phone'    => trim($request->phone),
+        ]);
+
+        return response()->json([
+            'message' => 'اطلاعات حساب کاربری شما با موفقیت بروزرسانی شد ✓',
+            'user'    => [
+                'name'     => $user->name,
+                'username' => $user->username,
+                'email'    => $user->email,
+                'phone'    => $user->phone,
+            ]
+        ]);
+    }
+
+    // ۲. تغییر رمز عبور با بررسی رمز فعلی
+    public function updatePassword(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password'     => 'required|string|min:6|confirmed',
+        ], [
+            'current_password.required' => 'وارد کردن رمز عبور فعلی الزامی است.',
+            'new_password.required'     => 'رمز عبور جدید را وارد کنید.',
+            'new_password.min'          => 'رمز عبور جدید باید حداقل ۶ کاراکتر باشد.',
+            'new_password.confirmed'    => 'تکرار رمز عبور جدید با رمز وارد شده مطابقت ندارد.',
+        ]);
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json([
+                'message' => 'رمز عبور فعلی وارد شده اشتباه است.'
+            ], 422);
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return response()->json([
+            'message' => 'رمز عبور شما با موفقیت تغییر یافت ✓'
+        ]);
+    }
     public function logout(Request $request)
     {
         Auth::logout();
