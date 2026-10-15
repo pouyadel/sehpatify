@@ -132,24 +132,24 @@
     }
 
     .auth-logo-wrap {
-      width: 60px;
-      height: 60px;
+      width: 68px;
+      height: 68px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, rgba(16, 185, 84, 0.18), rgba(14, 14, 23, 0.9));
-      border: 1px solid var(--border-brand);
-      border-radius: 18px;
-      box-shadow: 0 0 24px var(--brand-glow-lg);
+      background: transparent; /* حذف پس‌زمینه باکس */
+      border: none;            /* حذف خط دور باکس */
+      box-shadow: none;        /* حذف سایه دور باکس */
       margin-bottom: 10px;
-      padding: 8px;
+      padding: 0;              /* حذف فاصله داخلی برای بزرگ‌تر دیده شدن لوگو */
     }
 
     .auth-logo-svg {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      filter: drop-shadow(0 0 10px rgba(16, 185, 84, 0.7));
+      /* اگر هاله سبز دور خود لوگو هم ظاهر بدی به آن داده، خط زیر را کامل پاک کنید */
+      filter: drop-shadow(0 0 8px rgba(16, 185, 84, 0.4));
     }
 
     .auth-brand-title {
@@ -948,7 +948,6 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      makeLogoTransparent();
       refreshCaptcha();
     });
   </script>

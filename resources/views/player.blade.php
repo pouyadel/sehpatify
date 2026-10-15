@@ -2250,6 +2250,597 @@
     .music-card:hover {
       z-index: 10;
     }
+    /* ==========================================================================
+       اصلاح جامع رسپانسیو موبایل (پلی‌لیست‌ها، موردعلاقه‌ها، کتابخانه، آلبوم‌ها و لیست‌ها)
+       ========================================================================== */
+    @media (max-width: 768px) {
+
+      /* ۱. دو ستونه کردن استاندارد کارت‌ها در صفحات پلی‌لیست، کتابخانه، آلبوم‌ها و ژانرها */
+      .grid-container:not(.mobile-carousel-row) {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 12px !important;
+      }
+
+      .grid-container:not(.mobile-carousel-row) .music-card {
+        padding: 10px !important;
+        border-radius: 14px !important;
+      }
+
+      .grid-container:not(.mobile-carousel-row) .card-art-box {
+        margin-bottom: 8px !important;
+        border-radius: 10px !important;
+      }
+
+      .grid-container:not(.mobile-carousel-row) .artist-card .card-art-box {
+        border-radius: 50% !important;
+      }
+
+      .grid-container:not(.mobile-carousel-row) .card-title {
+        font-size: 12.5px !important;
+      }
+
+      .grid-container:not(.mobile-carousel-row) .card-subtitle {
+        font-size: 11px !important;
+      }
+
+      /* نمایش دائمی و ظریف دکمه پخش روی کارت‌ها در صفحات لمسی */
+      .grid-container:not(.mobile-carousel-row) .card-play-overlay {
+        width: 34px !important;
+        height: 34px !important;
+        bottom: 6px !important;
+        left: 6px !important;
+        opacity: 0.95 !important;
+        transform: translateY(0) !important;
+      }
+
+      /* ۲. اصلاح هدر صفحات پلی‌لیست‌ها و کتابخانه من (#view-playlists, #view-library) */
+      #view-playlists .section-header,
+      #view-library .section-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        margin-bottom: 18px !important;
+      }
+
+      #view-playlists .section-title,
+      #view-library .section-title {
+        font-size: 16px !important;
+        white-space: normal !important;
+      }
+
+      #view-playlists .btn-create-playlist,
+      #view-library .btn-create-playlist {
+        width: 100% !important;
+        justify-content: center !important;
+        min-height: 40px !important;
+        font-size: 12.5px !important;
+        padding: 8px 16px !important;
+      }
+
+      /* ۳. بازطراحی هدر صفحات جزئیات (پلی‌لیست تکی، موردعلاقه‌ها، آلبوم، خواننده و پروفایل) */
+      .artist-header-box {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 14px !important;
+        padding: 18px 14px !important;
+        border-radius: 18px !important;
+        margin-bottom: 20px !important;
+      }
+
+      .artist-avatar-lg,
+      .playlist-cover-lg {
+        width: 124px !important;
+        height: 124px !important;
+        border-radius: 16px !important;
+      }
+
+      .artist-avatar-lg {
+        border-radius: 50% !important;
+      }
+
+      /* کوچک‌تر کردن آیکون قلب در کاور صفحه موردعلاقه‌ها */
+      #view-favorites .playlist-cover-lg svg {
+        width: 56px !important;
+        height: 56px !important;
+      }
+
+      .artist-name-title {
+        font-size: 18px !important;
+        line-height: 1.4 !important;
+        margin: 0 !important;
+      }
+
+      .artist-header-desc {
+        font-size: 11.5px !important;
+        line-height: 1.6 !important;
+        color: var(--muted) !important;
+        text-align: center !important;
+        padding: 0 4px !important;
+      }
+
+      /* وسط‌چین کردن زیرعنوان انگلیسی در صفحه پروفایل */
+      #profile-header-sub {
+        text-align: center !important;
+      }
+
+      /* جلوگیری از بیرون‌زدن متادیتا (نام خواننده • سال • تعداد آهنگ) */
+      .artist-meta-txt {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 6px 8px !important;
+        font-size: 11px !important;
+      }
+
+      /* چیدمان منظم و تمام‌عرض دکمه‌های عملیات در هدر پلی‌لیست و علاقه‌مندی‌ها */
+      .artist-actions-row {
+        width: 100% !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        margin-top: 6px !important;
+      }
+
+      /* دکمه اصلی (پخش همه) در موبایل تمام‌عرض و شاخص باشد */
+      .artist-actions-row > .btn-brand {
+        width: 100% !important;
+        justify-content: center !important;
+        min-height: 42px !important;
+        font-size: 13px !important;
+      }
+
+      /* دکمه‌های فرعی (بازگشت، ویرایش، حذف) به صورت متقارن کنار هم قرار بگیرند */
+      .artist-actions-row > .btn-secondary,
+      .artist-actions-row > form {
+        flex: 1 1 calc(50% - 4px) !important;
+        justify-content: center !important;
+        min-height: 38px !important;
+        font-size: 11.5px !important;
+        padding: 8px 10px !important;
+      }
+
+      .artist-actions-row > form > button {
+        width: 100% !important;
+        justify-content: center !important;
+      }
+
+      #playlist-owner-actions {
+        width: 100% !important;
+        display: flex !important;
+        gap: 8px !important;
+      }
+
+      #playlist-owner-actions .btn-secondary {
+        flex: 1 1 calc(50% - 4px) !important;
+        justify-content: center !important;
+        padding: 8px 6px !important;
+        font-size: 11px !important;
+        min-height: 38px !important;
+      }
+
+      /* ۴. بهینه‌سازی لیست آهنگ‌ها (.track-row) برای خوانایی کامل نام آهنگ در موبایل */
+      .track-row {
+        grid-template-columns: 18px 42px 1fr auto !important;
+        gap: 8px !important;
+        padding: 8px 8px !important;
+        min-height: 54px !important;
+      }
+
+      .track-num {
+        font-size: 11.5px !important;
+      }
+
+      .track-thumb {
+        width: 42px !important;
+        height: 42px !important;
+        border-radius: 8px !important;
+      }
+
+      .track-name {
+        font-size: 13px !important;
+      }
+
+      .track-artist {
+        font-size: 11px !important;
+      }
+
+      .track-actions-cell {
+        gap: 2px !important;
+      }
+
+      .action-icon-btn {
+        width: 28px !important;
+        height: 28px !important;
+      }
+
+      /* ۵. مرتب‌سازی کپسول‌های آماری پروفایل و مودال ساخت پلی‌لیست در موبایل */
+      .profile-stats-row {
+        gap: 6px !important;
+        justify-content: center !important;
+      }
+
+      .profile-stat-pill {
+        font-size: 11px !important;
+        padding: 4px 10px !important;
+      }
+
+      #modal-create-playlist .modal-glass-box {
+        padding: 16px !important;
+      }
+
+      #modal-create-playlist div[style*="grid-template-columns: 1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    /* تنظیمات تکمیلی برای گوشی‌های با صفحه نمایش کوچک‌تر (زیر ۳۸۰ پیکسل) */
+    @media (max-width: 380px) {
+      .grid-container:not(.mobile-carousel-row) {
+        gap: 8px !important;
+      }
+      .track-row {
+        grid-template-columns: 40px 1fr auto !important;
+      }
+      .track-num, .track-row.playing .equalizer-wave {
+        display: none !important;
+      }
+    }
+    #playlist-owner-actions[style*="inline-flex"] {
+        width: 100% !important;
+        display: flex !important;
+        gap: 8px !important;
+      }
+
+      /* ==========================================================================
+       دکمه شناور پشتیبانی و شبکه‌های اجتماعی (تلگرام و اینستاگرام)
+       ========================================================================== */
+    .floating-social-wrap {
+      position: fixed;
+      bottom: calc(var(--mini-player-h) + 18px);
+      left: 24px;
+      z-index: 55;
+      direction: rtl;
+    }
+
+    .floating-social-btn {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--surface-glass-heavy);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border-brand);
+      color: var(--brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--shadow-md), 0 0 18px var(--brand-glow-lg);
+      transition: all var(--transition-normal);
+      position: relative;
+    }
+
+    .floating-social-btn:hover {
+      transform: translateY(-3px) scale(1.04);
+      background: var(--brand);
+      color: #052410;
+      box-shadow: 0 8px 25px var(--brand-glow);
+    }
+
+    .floating-social-btn .icon-close {
+      display: none;
+    }
+
+    .floating-social-wrap.open .floating-social-btn {
+      background: var(--surface-elevated);
+      color: var(--text);
+      border-color: var(--border-light);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .floating-social-wrap.open .floating-social-btn .icon-support {
+      display: none;
+    }
+
+    .floating-social-wrap.open .floating-social-btn .icon-close {
+      display: block;
+    }
+
+    /* پاپ‌آپ شیشه‌ای منوی شبکه‌های اجتماعی */
+    .floating-social-menu {
+      position: absolute;
+      bottom: calc(100% + 12px);
+      left: 0;
+      width: 235px;
+      background: var(--surface-glass-heavy);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-md);
+      padding: 10px;
+      box-shadow: var(--shadow-lg), 0 0 24px rgba(0, 0, 0, 0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(12px) scale(0.94);
+      transform-origin: bottom left;
+      transition: all var(--transition-normal);
+      pointer-events: none;
+    }
+
+    .floating-social-wrap.open .floating-social-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .social-menu-header {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted);
+      padding: 2px 6px 6px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .social-menu-header span.dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--brand);
+      box-shadow: 0 0 8px var(--brand);
+    }
+
+    .social-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid transparent;
+      transition: all var(--transition-fast);
+    }
+
+    .social-menu-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--border-light);
+      transform: translateX(3px);
+    }
+
+    .social-icon-box {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #fff;
+    }
+
+    .social-icon-box.telegram {
+      background: linear-gradient(135deg, #2AABEE 0%, #229ED9 100%);
+      box-shadow: 0 4px 12px rgba(34, 158, 217, 0.35);
+    }
+
+    .social-icon-box.instagram {
+      background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+      box-shadow: 0 4px 12px rgba(220, 39, 67, 0.35);
+    }
+
+    .social-item-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .social-item-title {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .social-item-handle {
+      font-size: 11px;
+      color: var(--muted);
+      direction: ltr;
+      text-align: right;
+      font-family: monospace, sans-serif !important;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* تنظیم موقعیت در موبایل برای تداخل نداشتن با مینی‌پلیر و منوی پایین */
+    @media (max-width: 768px) {
+      .floating-social-wrap {
+        bottom: calc(var(--mobile-nav-h) + env(safe-area-inset-bottom, 0px) + 76px);
+        left: 14px;
+      }
+
+      .floating-social-btn {
+        width: 40px;
+        height: 40px;
+      }
+
+      .floating-social-menu {
+        width: 215px;
+      }
+    }
+    /* ==========================================================================
+   بنر مینیمال حمایت مالی (اول صفحه اصلی - #view-home)
+   ========================================================================== */
+.support-hero-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 22px;
+  margin-bottom: 24px;
+  border-radius: var(--radius-md);
+  background: 
+    radial-gradient(circle at 92% 50%, rgba(16, 185, 84, 0.14) 0%, transparent 55%),
+    linear-gradient(135deg, rgba(22, 22, 34, 0.75) 0%, rgba(14, 14, 23, 0.88) 100%);
+  border: 1px solid rgba(16, 185, 84, 0.3);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  transition: all var(--transition-normal);
+}
+
+.support-hero-card:hover {
+  border-color: var(--border-brand);
+  box-shadow: var(--shadow-md), 0 0 22px rgba(16, 185, 84, 0.12);
+}
+
+.support-content-col {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+  flex: 1;
+}
+
+.support-mini-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--brand-dim);
+  border: 1px solid var(--border-brand);
+  color: var(--brand);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.support-text-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.support-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.support-main-title {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.support-main-title span.highlight {
+  color: var(--brand);
+}
+
+.support-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(16, 185, 84, 0.1);
+  border: 1px solid rgba(16, 185, 84, 0.28);
+  color: var(--brand);
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: var(--radius-full);
+}
+
+.support-live-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--brand);
+  box-shadow: 0 0 6px var(--brand);
+}
+
+.support-desc-text {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.btn-donate-minimal {
+  background: var(--brand);
+  color: #052410 !important;
+  font-size: 12.5px;
+  font-weight: 800;
+  padding: 0 20px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px var(--brand-glow-lg);
+  transition: all var(--transition-fast);
+}
+
+.btn-donate-minimal:hover {
+  background: var(--brand-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px var(--brand-glow);
+}
+
+/* واکنش‌گرایی در موبایل و تبلت */
+@media (max-width: 768px) {
+  .support-hero-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 14px;
+    gap: 12px;
+    margin-bottom: 18px;
+    border-radius: 14px;
+  }
+
+  .support-content-col {
+    gap: 10px;
+  }
+
+  .support-mini-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .support-main-title {
+    font-size: 13px;
+  }
+
+  .support-desc-text {
+    font-size: 11.5px;
+    line-height: 1.6;
+  }
+
+  .btn-donate-minimal {
+    width: 100%;
+    height: 38px;
+    font-size: 12px;
+  }
+}
   </style>
 </head>
 <body>
@@ -2409,6 +3000,37 @@
 
         <!-- VIEW 1: HOME -->
         <section class="view-panel active" id="view-home">
+          <!-- بنر مینیمال حمایت مالی از سهپاتیفای -->
+          <div class="support-hero-card">
+            <div class="support-content-col">
+              <div class="support-mini-icon">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </div>
+              <div class="support-text-body">
+                <div class="support-title-row">
+                  <h2 class="support-main-title">
+                    همراهی در نگهداری و ارتقای <span class="highlight">سهپاتیفای</span>
+                  </h2>
+                  <span class="support-live-badge">
+                    <span class="support-live-dot"></span>
+                    <span>حمایت مردمی</span>
+                  </span>
+                </div>
+                <p class="support-desc-text">
+                  سهپاتیفای بدون تبلیغات و کاملاً رایگان در اختیار شماست. برای تأمین هزینه‌های نگهداری سرور، ترافیک دانلود و ارائه خدمات بهتر، خوشحال می‌شویم با هر مبلغی که برایتان مقدور است ما را یاری کنید.
+                </p>
+              </div>
+            </div>
+
+            <a href="https://daramet.com/sehpatify" target="_blank" rel="noopener noreferrer" class="btn-donate-minimal">
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+              <span>حمایت مالی (دونیت)</span>
+            </a>
+          </div>
           <!-- پلی‌لیست‌های برگزیده -->
           <div class="section-header">
             <h2 class="section-title">پلی‌لیست‌های برگزیده</h2>
@@ -3156,7 +3778,52 @@
         <span>کتابخانه</span>
       </div>
     </nav>
+    <!-- ویجت شناور پشتیبانی و شبکه‌های اجتماعی -->
+    <div class="floating-social-wrap" id="floating-social-wrap">
+      <div class="floating-social-menu">
+        <div class="social-menu-header">
+          <span>شبکه‌های اجتماعی و پشتیبانی</span>
+          <span class="dot"></span>
+        </div>
 
+        <!-- لینک کانال تلگرام -->
+        <a href="https://t.me/sehpatify" target="_blank" rel="noopener noreferrer" class="social-menu-item">
+          <div class="social-icon-box telegram">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+            </svg>
+          </div>
+          <div class="social-item-info">
+            <span class="social-item-title">کانال تلگرام</span>
+            <span class="social-item-handle">@sehpatify</span>
+          </div>
+        </a>
+
+        <!-- لینک پیج اینستاگرام -->
+        <a href="https://www.instagram.com/sehpatify.ir?xtok=cmJ0NXZ5NWwxZms4" target="_blank" rel="noopener noreferrer" class="social-menu-item">
+          <div class="social-icon-box instagram">
+            <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </div>
+          <div class="social-item-info">
+            <span class="social-item-title">صفحه اینستاگرام</span>
+            <span class="social-item-handle">@sehpatify.ir</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- دکمه اصلی شناور با آیکون هدست پشتیبانی -->
+      <button type="button" class="floating-social-btn" onclick="toggleSocialFloat(event)" title="پشتیبانی و شبکه‌های اجتماعی">
+        <svg class="icon-support" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 18v-6a9 9 0 0118 0v6"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z"></path>
+        </svg>
+        <svg class="icon-close" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
     <div class="toast-container" id="toast-shelf"></div>
   </div>
 
@@ -4918,6 +5585,19 @@
       initSliders();
       initTouchGestures();
       initAppData();
+    });
+    // کنترل باز و بسته شدن دکمه شناور شبکه‌های اجتماعی
+    function toggleSocialFloat(e) {
+      if (e) e.stopPropagation();
+      const wrap = document.getElementById('floating-social-wrap');
+      if (wrap) wrap.classList.toggle('open');
+    }
+
+    document.addEventListener('click', (e) => {
+      const wrap = document.getElementById('floating-social-wrap');
+      if (wrap && wrap.classList.contains('open') && !wrap.contains(e.target)) {
+        wrap.classList.remove('open');
+      }
     });
   </script>
 </body>
